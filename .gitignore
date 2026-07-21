@@ -1,0 +1,26 @@
+node_modules
+.next
+out
+*.log
+dev.db
+dev.db-journal
+.env.local
+.DS_Store
+
+# ===== 环境变量（含密钥，禁止提交） =====
+.env
+.env.*
+!.env.example
+
+# ===== Prisma 本地数据库 =====
+prisma/*.db
+prisma/*.db-journal
+
+# ===== 项目管理数据（.workbuddy 内部记忆，不入库） =====
+.workbuddy/
+
+# ===== 构建/缓存产物 =====
+*.tsbuildinfo
+.turbo
+.vercel
+coverage

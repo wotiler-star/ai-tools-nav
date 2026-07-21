@@ -1,0 +1,161 @@
+// Prisma 数据模型 —— 开发期 SQLite，上线改 datasource 的 provider/url 即可切 PostgreSQL
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ===== 工具导航 =====
+model Category {
+  id        String  @id @default(cuid())
+  slug      String  @unique
+  name      String
+  icon      String
+  desc      String?
+  sort      Int     @default(0)
+  tools     Tool[]
+}
+
+model Tool {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  summary     String
+  description String?
+  url         String
+  logo        String?
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  tags        String   // JSON 字符串数组
+  featured    Boolean  @default(false)
+  clicks      Int      @default(0)
+  favorites   Int      @default(0)
+  rating      Float    @default(0)
+  createdAt   DateTime @default(now())
+}
+
+// ===== 社交社区 =====
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?   @map("password_hash")
+  avatar        String?
+  bio           String?
+  role          String    @default("member") // member | editor | admin
+  points        Int       @default(0)
+  posts         Post[]
+  comments      Comment[]
+  likes         Like[]
+  prompts       Prompt[]
+  following     Follow[]  @relation("Following")
+  followers     Follow[]  @relation("Follower")
+
+  @@map("users")
+}
+
+model Post {
+  id        String    @id @default(cuid())
+  title     String
+  content   String
+  authorId  String?
+  author    User?     @relation(fields: [authorId], references: [id])
+  authorName String   @default("匿名")
+  type      String    @default("discussion") // discussion | question | share | showcase
+  tags      String    @default("[]") // JSON 数组
+  likes     Int       @default(0)
+  comments  Int       @default(0)
+  views     Int       @default(0)
+  status    String    @default("PUBLISHED") // PENDING | PUBLISHED | REJECTED
+  createdAt DateTime  @default(now())
+  commentList Comment[]
+  likeList    Like[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String?
+  author    User?    @relation(fields: [authorId], references: [id])
+  authorName String @default("匿名")
+  content   String
+  parentId  String?
+  likes     Int      @default(0)
+  status    String   @default("PUBLISHED")
+  createdAt DateTime @default(now())
+}
+
+model Like {
+  id     String @id @default(cuid())
+  userId String?
+  user   User?  @relation(fields: [userId], references: [id])
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model Follow {
+  id         String @id @default(cuid())
+  followerId String
+  follower   User   @relation("Follower", fields: [followerId], references: [id])
+  followingId String
+  following  User   @relation("Following", fields: [followingId], references: [id])
+  createdAt  DateTime @default(now())
+  @@unique([followerId, followingId])
+}
+
+model Prompt {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  category  String
+  tags      String   @default("[]")
+  authorId  String?
+  author    User?    @relation(fields: [authorId], references: [id])
+  authorName String  @default("匿名")
+  uses      Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+// ===== MCP 服务广场 =====
+model McpServer {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  summary   String
+  logo      String   @default("🔌")
+  category  String
+  tags      String   @default("[]") // JSON 字符串数组
+  url       String
+  stars     Int      @default(0)
+  installs  Int      @default(0)
+  featured  Boolean  @default(false)
+  status    String   @default("PENDING") // PENDING | PUBLISHED | REJECTED
+  createdAt DateTime @default(now())
+
+  @@map("mcp_servers")
+}
+
+// ===== Skills 技能库 =====
+model Skill {
+  id         String   @id @default(cuid())
+  name       String
+  slug       String   @unique
+  summary    String
+  logo       String   @default("🧩")
+  category   String
+  tags       String   @default("[]") // JSON 字符串数组
+  installCmd String
+  author     String   @default("AI 导航")
+  uses       Int      @default(0)
+  featured   Boolean  @default(false)
+  status     String   @default("PENDING") // PENDING | PUBLISHED | REJECTED
+  createdAt  DateTime @default(now())
+
+  @@map("skills")
+}

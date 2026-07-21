@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ainav
+      POSTGRES_PASSWORD: ainav123
+      POSTGRES_DB: ainav
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ainav"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # 注意：使用 Postgres 前，需把 prisma/schema.prisma 的 provider 改为 "postgresql"
+      DATABASE_URL: postgresql://ainav:ainav123@db:5432/ainav?schema=public
+      AUTH_SECRET: please-change-this-to-a-long-random-string
+      NEXTAUTH_URL: http://localhost:3000
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
