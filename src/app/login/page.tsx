@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import { signIn } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "登录 / 注册",
+  robots: { index: false, follow: false },
+};
 
 async function loginAction(formData: FormData) {
   "use server";

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth-helpers";
 import { adminSignOut } from "@/lib/admin-actions";
@@ -11,6 +12,11 @@ import {
   ExternalLink,
   LogOut,
 } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "后台管理",
+  robots: { index: false, follow: false },
+};
 
 const NAV = [
   { href: "/admin", label: "概览", icon: LayoutDashboard, exact: true },

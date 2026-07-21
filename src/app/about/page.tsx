@@ -1,3 +1,13 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "关于 AI 导航",
+  description:
+    "AI 导航是一个面向中文用户的 AI 工具发现与社区平台，聚合精选工具、热榜、最新收录，并配套交流社区、AI 资讯与提示词广场。",
+  keywords: ["关于AI导航", "AI导航介绍", "AI工具平台"],
+  alternates: { canonical: "/about" },
+};
+
 export default function AboutPage() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-10">

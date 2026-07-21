@@ -1,6 +1,12 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import ToolGrid from "@/components/ToolGrid";
 import { tools, getCategoryName } from "@/lib/mock-data";
+
+export const metadata: Metadata = {
+  title: "搜索 AI 工具",
+  robots: { index: false, follow: true },
+};
 
 export default async function SearchPage({
   searchParams,

@@ -1,9 +1,35 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ThumbsUp, MessageSquare, Eye, ArrowLeft, Reply } from "lucide-react";
 import CommentForm from "@/components/CommentForm";
+import JsonLd from "@/components/JsonLd";
 import { posts, comments } from "@/lib/mock-data";
+import { siteConfig } from "@/lib/site";
 import type { Comment } from "@/lib/types";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const post = posts.find((p) => p.id === id);
+  if (!post) return { title: "内容未找到" };
+  return {
+    title: post.title,
+    description: post.content.slice(0, 120),
+    keywords: post.tags,
+    alternates: { canonical: `/community/${id}` },
+    openGraph: {
+      type: "article",
+      title: post.title,
+      description: post.content.slice(0, 120),
+      url: `/community/${id}`,
+      tags: post.tags,
+    },
+  };
+}
 
 type TreeNode = Comment & { children: TreeNode[] };
 
@@ -50,8 +76,23 @@ export default async function PostDetailPage({
   if (!post) notFound();
 
   const tree = buildTree(comments.filter((c) => c.postId === id));
+  const base = siteConfig.url.replace(/\/$/, "");
+
+  const articleLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.content.slice(0, 160),
+    datePublished: post.createdAt,
+    dateModified: post.createdAt,
+    author: { "@type": "Person", name: post.author },
+    keywords: post.tags.join(", "),
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${base}/community/${post.id}` },
+  };
 
   return (
+    <>
+      <JsonLd data={articleLd} />
     <main className="mx-auto max-w-3xl px-4 py-8">
       <Link href="/community" className="text-sm flex items-center gap-1 mb-4 hover:underline" style={{ color: "var(--primary)" }}>
         <ArrowLeft size={14} /> 返回社区
@@ -88,5 +129,6 @@ export default async function PostDetailPage({
         </div>
       </div>
     </main>
+    </>
   );
 }
