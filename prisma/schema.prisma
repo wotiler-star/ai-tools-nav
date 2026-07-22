@@ -31,6 +31,7 @@ model Tool {
   category    Category @relation(fields: [categoryId], references: [id])
   tags        String   // JSON 字符串数组
   featured    Boolean  @default(false)
+  status      String   @default("PUBLISHED") // PENDING | PUBLISHED | REJECTED
   clicks      Int      @default(0)
   favorites   Int      @default(0)
   rating      Float    @default(0)
@@ -158,4 +159,27 @@ model Skill {
   createdAt  DateTime @default(now())
 
   @@map("skills")
+}
+
+// ===== AI 资讯 =====
+model News {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  summary     String
+  content     String    @default("")
+  source      String    @default("AI 导航")
+  sourceUrl   String?   @map("source_url")
+  cover       String?   // 列表封面：渐变 CSS 或 emoji
+  tags        String    @default("[]") // JSON 字符串数组
+  views       Int       @default(0)
+  likes       Int       @default(0)
+  published   Boolean   @default(true)
+  publishedAt DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  authorId    String?
+  authorName  String    @default("AI 导航")
+
+  @@map("news")
 }

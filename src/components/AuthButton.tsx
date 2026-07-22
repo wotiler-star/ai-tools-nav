@@ -2,10 +2,12 @@
 
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
-import { User, LogOut, LayoutDashboard, Shield } from "lucide-react";
+import { User, LogOut, Shield } from "lucide-react";
+import { useAuthModal } from "@/components/AuthModalContext";
 
 export default function AuthButton() {
   const { data: session, status } = useSession();
+  const { open } = useAuthModal();
 
   if (status === "loading") {
     return (
@@ -17,14 +19,14 @@ export default function AuthButton() {
 
   if (!session?.user) {
     return (
-      <Link
-        href="/login"
+      <button
+        onClick={() => open("login")}
         className="w-9 h-9 grid place-items-center rounded-full hover:bg-[var(--bg-subtle)]"
         aria-label="登录"
-        title="登录"
+        title="登录 / 注册"
       >
         <User size={18} />
-      </Link>
+      </button>
     );
   }
 
@@ -42,9 +44,9 @@ export default function AuthButton() {
         </Link>
       )}
       <Link
-        href="/community"
+        href="/member"
         className="flex items-center gap-2 text-sm px-2 h-9 rounded-full hover:bg-[var(--bg-subtle)]"
-        title={session.user.name ?? "我的"}
+        title={session.user.name ?? "会员中心"}
       >
         <span className="w-7 h-7 grid place-items-center rounded-full bg-[var(--primary-soft)] text-[var(--primary)]">
           {session.user.image || (session.user.name?.[0] ?? "🙂")}

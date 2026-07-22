@@ -6,7 +6,8 @@ import {
   deleteSkill,
   toggleSkillFeatured,
 } from "@/lib/admin-actions";
-import { Check, X, Trash2, Star, Plus, Copy } from "lucide-react";
+import { Check, X, Trash2, Star, Plus } from "lucide-react";
+import CopyButton from "@/components/CopyButton";
 
 export const dynamic = "force-dynamic";
 
@@ -83,14 +84,12 @@ export default async function AdminSkills() {
                 <Star size={16} className={s.featured ? "fill-[var(--warning)] text-[var(--warning)]" : ""} />
               </button>
             </form>
-            <button
+            <CopyButton
+              text={s.installCmd}
               className="w-9 h-9 grid place-items-center rounded-full hover:bg-[var(--bg-subtle)]"
               title="复制安装命令"
-              aria-label="复制安装命令"
-              onClick={() => navigator.clipboard.writeText(s.installCmd)}
-            >
-              <Copy size={16} />
-            </button>
+              label="复制安装命令"
+            />
             <form action={deleteSkill.bind(null, s.id)}>
               <button className="w-9 h-9 grid place-items-center rounded-full hover:bg-[var(--bg-subtle)]" title="删除" aria-label="删除">
                 <Trash2 size={16} />

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 工具导航 · 部署状态</title>
+<style>
+  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#f5f7fa;color:#1f2937;margin:0;padding:32px}
+  .card{background:#fff;border-radius:14px;padding:24px 28px;box-shadow:0 2px 12px rgba(0,0,0,.06);max-width:820px;margin:0 auto}
+  h1{margin:0 0 4px;font-size:22px}
+  .sub{color:#6b7280;font-size:14px;margin-bottom:20px}
+  .ok{display:inline-block;background:#ecfdf5;color:#059669;font-weight:600;padding:3px 10px;border-radius:999px;font-size:13px}
+  .url{font-size:20px;font-weight:700;color:#2563eb;margin:10px 0 18px;word-break:break-all}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0 18px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid #eef2f7}
+  th{color:#6b7280;font-weight:600;width:160px}
+  code{background:#f3f4f6;padding:2px 6px;border-radius:5px;font-size:13px}
+  .note{background:#fffbeb;border-left:4px solid #f59e0b;padding:12px 16px;border-radius:8px;font-size:13px;line-height:1.7;color:#78350f}
+  .note b{color:#92400e}
+  ul{margin:6px 0;padding-left:20px;line-height:1.8}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>AI 工具导航网站 · 部署状态</h1>
+  <div class="sub">腾讯云轻量应用服务器（Windows Server 2022 · 广州）· 部署时间 2026-07-22</div>
+  <span class="ok">● 部署成功 · 公网可访问</span>
+  <div class="url">http://175.178.23.30/</div>
+
+  <h3 style="margin:18px 0 6px">公网访问验证</h3>
+  <table>
+    <tr><th>路径</th><th>状态</th><th>说明</th></tr>
+    <tr><td><code>/</code></td><td>200</td><td>首页（标题「AI 导航 · 发现最好的 AI 工具与社区」）</td></tr>
+    <tr><td><code>/robots.txt</code></td><td>200</td><td>已 Disallow /admin、/api、/login、/submit</td></tr>
+    <tr><td><code>/sitemap.xml</code></td><td>200</td><td>SEO 站点地图</td></tr>
+    <tr><td><code>/login</code> <code>/community</code></td><td>200</td><td>登录 / 社区页</td></tr>
+    <tr><td><code>/mcp</code> <code>/skills</code></td><td>200</td><td>MCP / Skills 页</td></tr>
+    <tr><td><code>/manifest.webmanifest</code> <code>/icon.svg</code></td><td>200</td><td>PWA / 站点图标</td></tr>
+  </table>
+
+  <h3 style="margin:14px 0 6px">运行架构</h3>
+  <table>
+    <tr><th>运行方式</th><td>Next.js 15 standalone + <code>pm2</code> 进程守护，监听 <code>80</code> 端口（PID 5200）</td></tr>
+    <tr><th>开机自启</th><td>已注册系统计划任务 <code>ainav-boot</code>（状态 Ready），服务器重启自动拉起</td></tr>
+    <tr><th>数据库</th><td>内置 SQLite <code>prisma/dev.db</code>（已灌种子数据），随包发布，无需外部数据库</td></tr>
+    <tr><th>演示账号</th><td><code>admin@ainav.dev</code> / <code>admin123</code></td></tr>
+    <tr><th>部署目录</th><td><code>C:\www\ai-tools-nav</code>（服务器）</td></tr>
+  </table>
+
+  <div class="note">
+    <b>当前限制与后续建议：</b>
+    <ul>
+      <li><b>仅 HTTP，未绑域名 / 未上 HTTPS</b>：当前用服务器 IP 直接访问。如需 HTTPS，需先准备<b>已备案域名</b>绑定到该服务器，再申请 Let's Encrypt 或腾讯云免费证书；同时把 <code>NEXT_PUBLIC_SITE_URL</code> / <code>AUTH_URL</code> 改为域名。</li>
+      <li><b>服务器仅 2GB 内存</b>：访问量大时建议升级配置或加虚拟内存。</li>
+      <li><b>凭证安全</b>：本次使用的腾讯云 SecretId/SecretKey、服务器 Administrator 密码、GitHub PAT 建议<b>用后撤销/重置</b>，避免长期留存。</li>
+      <li>源码已托管 GitHub：<code>https://github.com/wotiler-star/ai-tools-nav</code>，后续改代码后重新构建发布即可。</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

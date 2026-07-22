@@ -11,6 +11,7 @@ import {
   Puzzle,
   ExternalLink,
   LogOut,
+  Newspaper,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -25,6 +26,7 @@ const NAV = [
   { href: "/admin/prompts", label: "提示词", icon: Sparkles },
   { href: "/admin/mcp", label: "MCP 服务", icon: Plug },
   { href: "/admin/skills", label: "Skills 技能", icon: Puzzle },
+  { href: "/admin/news", label: "AI 资讯", icon: Newspaper },
 ];
 
 export default async function AdminLayout({

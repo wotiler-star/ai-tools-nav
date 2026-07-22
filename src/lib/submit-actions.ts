@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { McpSchema, SkillSchema } from "@/lib/validation";
+import { McpSchema, SkillSchema, ToolSubmitSchema } from "@/lib/validation";
 import { moderate } from "@/lib/moderation";
 
 export type SubmitState = { error?: string };
@@ -106,4 +106,50 @@ export async function submitSkill(_prev: SubmitState, formData: FormData): Promi
 
   revalidatePath("/skills");
   redirect("/skills?submitted=1");
+}
+
+export async function submitTool(_prev: SubmitState, formData: FormData): Promise<SubmitState> {
+  const parsed = ToolSubmitSchema.safeParse({
+    name: String(formData.get("name") || "").trim(),
+    summary: String(formData.get("summary") || "").trim(),
+    url: String(formData.get("url") || "").trim(),
+    category: String(formData.get("category") || "").trim(),
+    logo: String(formData.get("logo") || "").trim() || undefined,
+    tags: String(formData.get("tags") || "").trim() || undefined,
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "表单校验失败" };
+  }
+
+  const m = moderate(`${parsed.data.name}\n${parsed.data.summary}`);
+  if (!m.ok) {
+    return { error: "内容包含违规词，请修改后重试" };
+  }
+
+  // 根据 category slug 查找 categoryId
+  const category = await prisma.category.findUnique({
+    where: { slug: parsed.data.category },
+  });
+
+  if (!category) {
+    return { error: "分类不存在，请重新选择" };
+  }
+
+  await prisma.tool.create({
+    data: {
+      name: parsed.data.name,
+      slug: slugify(parsed.data.name),
+      summary: m.clean,
+      url: parsed.data.url,
+      categoryId: category.id,
+      logo: parsed.data.logo ?? "🔧",
+      tags: parseTags(parsed.data.tags),
+      featured: false,
+      status: "PENDING",
+    },
+  });
+
+  revalidatePath("/tools");
+  redirect("/tools?submitted=1");
 }

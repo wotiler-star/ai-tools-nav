@@ -2,7 +2,7 @@ import Link from "next/link";
 import { PlusCircle, Plug, Puzzle } from "lucide-react";
 
 const ENTRIES = [
-  { href: "/submit", label: "AI 工具", desc: "提交一个 AI 工具，展示在工具大全与对应分类页。", icon: PlusCircle, ready: false },
+  { href: "/submit/tool", label: "AI 工具", desc: "提交一个 AI 工具，展示在工具大全与对应分类页。", icon: PlusCircle, ready: true },
   { href: "/submit/mcp", label: "MCP 服务", desc: "提交 Model Context Protocol 服务，上线到 MCP 广场与首页。", icon: Plug, ready: true },
   { href: "/submit/skill", label: "Skills 技能", desc: "提交可复用 AI 技能包，上线到 Skills 技能库与首页。", icon: Puzzle, ready: true },
 ];

@@ -35,3 +35,12 @@ export const SkillSchema = z.object({
   logo: z.string().max(8).optional(),
   tags: z.string().max(200).optional(),
 });
+
+export const ToolSubmitSchema = z.object({
+  name: z.string().min(2, "名称至少 2 个字").max(60),
+  summary: z.string().min(4, "简介太短").max(500),
+  url: z.string().url("请输入合法的链接"),
+  category: z.string().min(1, "请选择分类"),
+  logo: z.string().max(8).optional(),
+  tags: z.string().max(200).optional(),
+});

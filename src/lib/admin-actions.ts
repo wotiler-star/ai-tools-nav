@@ -75,6 +75,21 @@ export async function toggleFeatured(id: string) {
   revalidatePath("/");
 }
 
+// ===== 工具审核（用户提交） =====
+export async function approveTool(id: string) {
+  await requireAdmin();
+  await prisma.tool.update({ where: { id }, data: { status: "PUBLISHED" } });
+  revalidatePath("/admin/tools");
+  revalidatePath("/tools");
+  revalidatePath("/");
+}
+
+export async function rejectTool(id: string) {
+  await requireAdmin();
+  await prisma.tool.update({ where: { id }, data: { status: "REJECTED" } });
+  revalidatePath("/admin/tools");
+}
+
 export async function approvePost(id: string) {
   await requireAdmin();
   await prisma.post.update({ where: { id }, data: { status: "PUBLISHED" } });

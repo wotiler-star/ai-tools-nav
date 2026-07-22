@@ -1,9 +1,19 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { createTool, toggleFeatured, deleteTool } from "@/lib/admin-actions";
-import { Pencil, Star, Trash2, Plus } from "lucide-react";
+import { createTool, toggleFeatured, deleteTool, approveTool, rejectTool } from "@/lib/admin-actions";
+import { Pencil, Star, Trash2, Plus, Check, X } from "lucide-react";
 
 export const dynamic = "force-dynamic";
+
+function StatusBadge({ status }: { status: string }) {
+  if (status === "PENDING") {
+    return <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "color-mix(in srgb, var(--warning) 16%, transparent)", color: "var(--warning)" }}>待审核</span>;
+  }
+  if (status === "REJECTED") {
+    return <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "color-mix(in srgb, #ef4444 12%, transparent)", color: "#ef4444" }}>已拒绝</span>;
+  }
+  return <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "color-mix(in srgb, var(--success) 14%, transparent)", color: "var(--success)" }}>已发布</span>;
+}
 
 export default async function AdminTools() {
   const [tools, categories] = await Promise.all([
@@ -18,10 +28,11 @@ export default async function AdminTools() {
     <div>
       <h1 className="text-2xl font-bold mb-1">工具管理</h1>
       <p className="text-sm mb-5" style={{ color: "var(--text-muted)" }}>
-        共 {tools.length} 个工具。新增工具会出现在首页「精选」与对应分类页。
+        共 {tools.length} 个工具，其中 {tools.filter((t) => t.status === "PENDING").length} 个待审核。
+        新增工具会出现在首页「精选」与对应分类页。
       </p>
 
-      {/* 新增表单 */}
+      {/* 新增表单（管理员直接创建，默认 PUBLISHED） */}
       <form
         action={createTool}
         className="card p-4 mb-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-3"
@@ -53,7 +64,10 @@ export default async function AdminTools() {
               {t.logo || "🔧"}
             </div>
             <div className="min-w-0 flex-1">
-              <div className="font-medium truncate">{t.name}</div>
+              <div className="font-medium truncate flex items-center gap-2">
+                {t.name}
+                <StatusBadge status={t.status} />
+              </div>
               <div className="text-xs truncate" style={{ color: "var(--text-muted)" }}>
                 {t.category?.name} · {t.clicks} 访问 · {t.favorites} 收藏
               </div>
@@ -63,11 +77,31 @@ export default async function AdminTools() {
                 精选
               </span>
             )}
-            <form action={toggleFeatured.bind(null, t.id)}>
-              <button className="w-9 h-9 grid place-items-center rounded-full hover:bg-[var(--bg-subtle)]" title="切换精选" aria-label="切换精选">
-                <Star size={16} className={t.featured ? "fill-[var(--warning)] text-[var(--warning)]" : ""} />
-              </button>
-            </form>
+            {/* 审核按钮（仅待审核状态显示） */}
+            {t.status === "PENDING" && (
+              <>
+                <form action={approveTool.bind(null, t.id)}>
+                  <button className="w-9 h-9 grid place-items-center rounded-full hover:bg-[var(--bg-subtle)] text-green-600" title="通过审核" aria-label="通过">
+                    <Check size={16} />
+                  </button>
+                </form>
+                <form action={rejectTool.bind(null, t.id)}>
+                  <button className="w-9 h-9 grid place-items-center rounded-full hover:bg-[var(--bg-subtle)] text-red-500" title="拒绝" aria-label="拒绝">
+                    <X size={16} />
+                  </button>
+                </form>
+              </>
+            )}
+            {/* 已发布的工具显示操作按钮 */}
+            {t.status !== "PENDING" && (
+              <>
+                <form action={toggleFeatured.bind(null, t.id)}>
+                  <button className="w-9 h-9 grid place-items-center rounded-full hover:bg-[var(--bg-subtle)]" title="切换精选" aria-label="切换精选">
+                    <Star size={16} className={t.featured ? "fill-[var(--warning)] text-[var(--warning)]" : ""} />
+                  </button>
+                </form>
+              </>
+            )}
             <Link href={`/admin/tools/${t.id}`} className="w-9 h-9 grid place-items-center rounded-full hover:bg-[var(--bg-subtle)]" title="编辑" aria-label="编辑">
               <Pencil size={16} />
             </Link>

@@ -15,7 +15,7 @@ const NAV = [
   { label: "MCP", href: "/mcp" },
   { label: "Skills", href: "/skills" },
   { label: "AI学习资源", href: "/#learn" },
-  { label: "AI资讯", href: "/#news" },
+  { label: "AI资讯", href: "/news" },
 ];
 
 export default function Navbar() {

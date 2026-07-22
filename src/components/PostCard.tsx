@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { ThumbsUp, MessageSquare, Eye, Flame, Trophy } from "lucide-react";
 import type { Post, Prompt } from "@/lib/types";
