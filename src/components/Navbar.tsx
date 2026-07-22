@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Search, Menu, Sun, Moon, PlusCircle, Github, Headphones } from "lucide-react";
 import AuthButton from "@/components/AuthButton";
+import { categories } from "@/lib/mock-data";
 
 // 对齐截图：主页 | 社区 | AI工具 | AI知识库 | AI提示词 | MCP | Skills | AI学习资源 | AI资讯
 const NAV = [
   { label: "主页", href: "/" },
   { label: "社区", href: "/community" },
-  { label: "AI工具", href: "/category" },
+  { label: "AI工具", href: "/category", children: categories },
   { label: "AI知识库", href: "/#learn" },
   { label: "AI提示词", href: "/#prompts" },
   { label: "MCP", href: "/mcp" },
@@ -52,13 +53,33 @@ export default function Navbar() {
         {/* 桌面菜单 — 与截图完全一致的 9 项 */}
         <ul className="hidden lg:flex items-center gap-0.5 h-full">
           {NAV.map((item) => (
-            <li key={item.label} className="h-full flex items-center">
+            <li key={item.label} className="h-full flex items-center group relative">
               <Link
                 href={item.href}
-                className="px-3 py-2 rounded-lg text-sm font-medium hover:bg-[var(--bg-subtle)] transition-colors"
+                className="px-3 py-2 rounded-lg text-sm font-medium hover:bg-[var(--bg-subtle)] transition-colors inline-flex items-center gap-1"
               >
                 {item.label}
+                {item.children ? <span className="text-[10px] opacity-60">▼</span> : null}
               </Link>
+              {item.children && (
+                <div className="absolute left-0 top-full hidden group-hover:block pt-1 z-50">
+                  <div
+                    className="grid grid-cols-2 gap-1 p-3 rounded-xl border shadow-lg w-[460px]"
+                    style={{ background: "var(--bg-elevated)", borderColor: "var(--border)" }}
+                  >
+                    {item.children.map((c) => (
+                      <Link
+                        key={c.slug}
+                        href={`/category/${c.slug}`}
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[var(--bg-subtle)] text-sm"
+                      >
+                        <span className="text-lg">{c.icon}</span>
+                        <span className="truncate">{c.name}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
             </li>
           ))}
         </ul>
@@ -157,17 +178,32 @@ export default function Navbar() {
             </form>
             {/* 全部菜单项 */}
             <ul className="space-y-0.5">
-              {NAV.map((item) => (
-                <li key={item.label}>
-                  <Link
-                    href={item.href}
-                    onClick={() => setOpen(false)}
-                    className="block px-3 py-2.5 rounded-lg hover:bg-[var(--bg-subtle)] font-medium text-sm"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
+            {NAV.map((item) => (
+              <li key={item.label}>
+                <Link
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className="block px-3 py-2.5 rounded-lg hover:bg-[var(--bg-subtle)] font-medium text-sm"
+                >
+                  {item.label}
+                </Link>
+                {item.children && (
+                  <ul className="ml-3 border-l pl-2" style={{ borderColor: "var(--border)" }}>
+                    {item.children.map((c) => (
+                      <li key={c.slug}>
+                        <Link
+                          href={`/category/${c.slug}`}
+                          onClick={() => setOpen(false)}
+                          className="block px-3 py-2 rounded-lg hover:bg-[var(--bg-subtle)] text-sm"
+                        >
+                          {c.icon} {c.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
             </ul>
             <hr className="my-3" style={{ borderColor: "var(--border)" }} />
             <Link href="/submit" onClick={() => setOpen(false)} className="btn-primary block text-center text-sm mb-2">
