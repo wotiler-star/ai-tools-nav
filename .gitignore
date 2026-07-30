@@ -1,26 +1,86 @@
-node_modules
-.next
-out
-*.log
-dev.db
-dev.db-journal
-.env.local
-.DS_Store
+# ---------- 依赖 ----------
+node_modules/
+**/node_modules/
+.pnp
+.pnp.js
+.yarn/
+jspm_packages/
 
-# ===== 环境变量（含密钥，禁止提交） =====
+# ---------- 构建产物 ----------
+.next/
+out/
+build/
+dist/
+target/
+*.tsbuildinfo
+next-env.d.ts
+
+# ---------- 环境变量 / 密钥 ----------
 .env
 .env.*
 !.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+*.jks
+id_rsa*
+credentials.json
+secrets.json
 
-# ===== Prisma 本地数据库 =====
-prisma/*.db
-prisma/*.db-journal
+# ---------- 日志 ----------
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
 
-# ===== 项目管理数据（.workbuddy 内部记忆，不入库） =====
+# ---------- 缓存 / 临时 ----------
+.cache/
+.temp/
+.tmp/
+tmp/
+*.tmp
+.eslintcache
+.turbo/
+.swc/
+
+# ---------- 运行时数据 ----------
+runtime/
+*.db
+*.sqlite
+*.sqlite3
+*.mv.db
+*.trace.db
+data/
+uploads/
+
+# ---------- IDE / 系统 ----------
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------- Agent 工作区（本地记忆/状态，不上传） ----------
 .workbuddy/
 
-# ===== 构建/缓存产物 =====
-*.tsbuildinfo
-.turbo
-.vercel
-coverage
+# ---------- 参考用的第三方旧版仓库（自带 .git，不纳入本仓库） ----------
+code-nav/
+
+# ---------- 测试 / 覆盖率 ----------
+coverage/
+.nyc_output/
+
+# ---------- Java / Maven ----------
+!**/src/main/**/target/
+!**/src/test/**/target/
+.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+*.war

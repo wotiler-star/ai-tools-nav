@@ -1,0 +1,471 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * 全局样式。
+ * 字体：文档实测 ai.codefather.cn 使用 Inter(next/font) + 系统兜底。
+ * 为保证离线可构建，这里用系统字体栈近似 Inter；如需严格一致，
+ * 可在 layout 中启用 next/font/google 的 Inter 并绑定 --font-inter。
+ */
+:root {
+  --font-inter: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-inter);
+  background: #f9fafb;
+  color: #1f2937;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* nprogress 加载条 */
+#nprogress .bar {
+  background: #3874f7 !important;
+  height: 3px !important;
+}
+#nprogress .peg {
+  box-shadow: 0 0 10px #3874f7, 0 0 5px #3874f7 !important;
+}
+
+/* 通用容器与工具类 */
+.container-1200 {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+/* 统一 hover 品牌语言：浅灰默认边框 → 悬停 浅蓝底 + 品牌蓝描边
+   配合 .group 父级与 .hover-brand-title 使用，全站卡片 hover 一致。 */
+.hover-brand {
+  border: 1px solid #eaecef;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.hover-brand:hover {
+  border-color: rgba(56, 116, 247, 0.3);
+  background-color: #f1f5ff;
+}
+.hover-brand-title {
+  transition: color 0.2s ease;
+}
+.group:hover .hover-brand-title {
+  color: #3874f7;
+}
+
+/* 变体：上浮 + 阴影（复用原 hover-lift 的位移/阴影数值，动效完全同源）
+   适用于工具卡、社区卡等需要"抬起"反馈的卡片；全站只此一处定义位移/阴影。 */
+.hover-brand-lift {
+  border: 1px solid #eaecef;
+  transition: border-color 0.2s ease, background-color 0.2s ease,
+    transform 0.2s ease, box-shadow 0.2s ease;
+}
+.hover-brand-lift:hover {
+  border-color: rgba(56, 116, 247, 0.3);
+  background-color: #f1f5ff;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(56, 116, 247, 0.12);
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #c9cdd4;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a8abb2;
+}
+
+/* ===== 主题变量（明 / 暗，由 <html data-theme> 切换） ===== */
+:root {
+  --page-bg: #f9fafb;
+  --surface: #ffffff;
+  --surface-2: #f3f4f6;
+  --border: #eaecef;
+  --text-1: #1f2937;
+  --text-2: #4e5969;
+  --text-3: #86909c;
+  --brand-tint: #f1f5ff;
+  /* 语义化表面：Hero / 横幅 / 标签胶囊 / 列表行 hover（供暗色模式切换） */
+  --hero-bg: linear-gradient(135deg, #eef3ff 0%, #f7f9ff 40%, #fdf2fb 100%);
+  --banner-bg: linear-gradient(135deg, #e3ecff 0%, #ece9ff 50%, #fbe7fb 100%);
+  --banner-inner: rgba(255, 255, 255, 0.8);
+  --chip-bg: #ffffff;
+  --chip-text: #4b5563;
+  --chip-border: #e5e7eb;
+  --tint-blue: #eef3ff;
+  --tint-pink: #fdf2fb;
+  --qr-bg: #f3f4f6;
+  --list-row-hover: #f1f5ff;
+}
+[data-theme="dark"] {
+  --page-bg: #0f1115;
+  --surface: #16191f;
+  --surface-2: #1a1d24;
+  --border: #2a2f3a;
+  --text-1: #e6e8eb;
+  --text-2: #c9cdd4;
+  --text-3: #9aa0a6;
+  --brand-tint: #16233f;
+  --hero-bg: linear-gradient(135deg, #16203a 0%, #14161f 40%, #2a1730 100%);
+  --banner-bg: linear-gradient(135deg, #1a2238 0%, #211b36 50%, #2a1730 100%);
+  --banner-inner: rgba(22, 25, 31, 0.7);
+  --chip-bg: #1a1d24;
+  --chip-text: #c9cdd4;
+  --chip-border: #2a2f3a;
+  --tint-blue: #16233f;
+  --tint-pink: #2a1730;
+  --qr-bg: #1a1d24;
+  --list-row-hover: #16233f;
+}
+
+/* 页面底色 + 文字跟随主题变量（覆盖上面的硬编码值） */
+html,
+body {
+  background: var(--page-bg);
+  color: var(--text-1);
+}
+
+/* 顶栏 / 页脚 暗色（内联背景用 !important 覆盖） */
+[data-theme="dark"] header {
+  background: #14171c !important;
+  border-bottom-color: #2a2f3a !important;
+}
+[data-theme="dark"] footer {
+  background: #14171c !important;
+  border-top-color: #2a2f3a !important;
+  color: var(--text-2) !important;
+}
+
+/* hover 卡片暗色：边框/底色调暗，hover 仍保留品牌蓝描边 + 蓝调底 */
+[data-theme="dark"] .hover-brand,
+[data-theme="dark"] .hover-brand-lift {
+  border-color: var(--border);
+  background-color: var(--surface);
+}
+[data-theme="dark"] .hover-brand:hover,
+[data-theme="dark"] .hover-brand-lift:hover {
+  border-color: rgba(56, 116, 247, 0.5);
+  background-color: var(--brand-tint);
+}
+
+/* 暗色下覆盖常用 Tailwind 灰阶，保证可读性（仅作用于暗色作用域） */
+[data-theme="dark"] .text-gray-900 { color: #e6e8eb !important; }
+[data-theme="dark"] .text-gray-800 { color: #d6d9dd !important; }
+[data-theme="dark"] .text-gray-700 { color: #c9cdd4 !important; }
+[data-theme="dark"] .text-gray-600 { color: #b3b8bf !important; }
+[data-theme="dark"] .text-gray-500 { color: #9aa0a6 !important; }
+[data-theme="dark"] .text-gray-400 { color: #7a8089 !important; }
+[data-theme="dark"] .bg-white { background-color: #16191f !important; }
+[data-theme="dark"] .bg-gray-50 { background-color: #1a1d24 !important; }
+[data-theme="dark"] .bg-gray-100 { background-color: #1f232b !important; }
+[data-theme="dark"] .border-gray-50 { border-color: #20242c !important; }
+[data-theme="dark"] .border-gray-100 { border-color: #2a2f3a !important; }
+[data-theme="dark"] .border-gray-200 { border-color: #2a2f3a !important; }
+
+/* 搜索关键词高亮 */
+.search-hl {
+  background: #fff3bf;
+  color: #1f2937;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+[data-theme="dark"] .search-hl {
+  background: #3a2f00;
+  color: #ffe48a;
+}
+
+/* 回到顶部悬浮按钮 */
+.back-to-top {
+  position: fixed;
+  right: 24px;
+  bottom: 28px;
+  z-index: 200;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #3874f7;
+  color: #fff;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 6px 18px rgba(56, 116, 247, 0.35);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.back-to-top:hover {
+  transform: translateY(-2px);
+}
+.back-to-top.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+}
+
+/* ===== 首页 Tab 切换（服务端直出全部面板 + 客户端事件委托切换，保证 SSR 完整） ===== */
+.tab-pill {
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  border: 1px solid var(--chip-border);
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+}
+.tab-pill[data-active="true"] {
+  background: #3874f7;
+  color: #fff;
+  border-color: #3874f7;
+}
+[data-theme="dark"] .tab-pill[data-active="true"] {
+  background: #3874f7;
+  color: #fff;
+}
+
+/* 品牌色按钮（替代 antd Button，便于服务端直出） */
+.brand-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #3874f7;
+  color: #fff;
+  border-radius: 9999px;
+  padding: 0 28px;
+  height: 44px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.brand-btn:hover {
+  background: #2f63d6;
+  transform: translateY(-1px);
+}
+
+/* 原生搜索框（无 JS 也可提交，保证 SSR 完整 + 首屏可交互） */
+.home-search-form {
+  display: flex;
+  max-width: 42rem;
+  margin: 2rem auto 0;
+}
+.home-search-input {
+  height: 52px;
+  flex: 1;
+  border-radius: 26px 0 0 26px;
+  border: 1px solid #e5e7eb;
+  border-right: none;
+  padding: 0 18px;
+  font-size: 15px;
+  outline: none;
+  width: 100%;
+  background: #fff;
+  color: #1f2937;
+}
+.home-search-input:focus {
+  border-color: #3874f7;
+}
+.home-search-btn {
+  height: 52px;
+  width: 110px;
+  border-radius: 0 26px 26px 0;
+  border: none;
+  background: #3874f7;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.home-search-btn:hover {
+  background: #2f63d6;
+}
+[data-theme="dark"] .home-search-input {
+  background: #1a1d24;
+  color: #e6e8eb;
+  border-color: #2a2f3a;
+}
+
+/* ===== 详情页正文：移动端放大阅读字号，提升手机可读性（SSR 安全，无 JS 闪烁） ===== */
+.article-body {
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--text-1);
+}
+.article-body h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: var(--text-1);
+}
+.article-body p {
+  margin: 0;
+}
+@media (max-width: 767px) {
+  .article-body {
+    font-size: 17px;
+    line-height: 1.95;
+  }
+  .article-body h2 {
+    font-size: 19px;
+  }
+}
+
+/* 工具详情描述：移动端同步放大 */
+.tool-desc {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text-1);
+}
+@media (max-width: 767px) {
+  .tool-desc {
+    font-size: 17px;
+    line-height: 1.9;
+  }
+}
+
+/* ===== Hero 搜索框移动端微调：降低高度/按钮宽、收紧上间距，输入框获得更多空间 ===== */
+@media (max-width: 640px) {
+  .home-search-form {
+    margin-top: 1.25rem;
+  }
+  .home-search-input {
+    height: 46px;
+    font-size: 15px;
+  }
+  .home-search-btn {
+    height: 46px;
+    width: 84px;
+    font-size: 15px;
+  }
+}
+
+/* ===== 详情页卡片：移动端收窄内边距，正文获得更宽阅读区 ===== */
+.detail-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+}
+@media (max-width: 767px) {
+  .detail-card {
+    padding: 18px;
+  }
+}
+
+/* ===== 顶栏原生图标按钮（替代 antd Button，去除 antd 依赖） ===== */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.icon-btn:hover {
+  background: var(--brand-tint);
+  color: #3874f7;
+}
+[data-theme="dark"] .icon-btn:hover {
+  color: #69b1ff;
+}
+
+/* 次要按钮（描边胶囊，替代 antd Button 次级样式） */
+.brand-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--surface);
+  color: var(--text-1);
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  padding: 0 22px;
+  height: 44px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.brand-btn-ghost:hover {
+  border-color: #3874f7;
+  color: #3874f7;
+  background: var(--brand-tint);
+}
+[data-theme="dark"] .brand-btn-ghost:hover {
+  color: #69b1ff;
+}
+
+/* 标签胶囊（替代 antd Tag） */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  border: 1px solid var(--chip-border);
+  border-radius: 9999px;
+  padding: 2px 10px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.chip-brand {
+  background: var(--brand-tint);
+  color: #3874f7;
+  border-color: transparent;
+}
+[data-theme="dark"] .chip-brand {
+  color: #69b1ff;
+}
+
+/* 原生骨架屏（替代 antd Skeleton，去除 antd 依赖） */
+.skeleton-block {
+  background: linear-gradient(90deg, var(--chip-bg) 25%, var(--border) 50%, var(--chip-bg) 75%);
+  background-size: 400% 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+}
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+/* 原生加载旋转（替代 antd Spin，去除 antd 依赖） */
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: #3874f7;
+  border-radius: 50%;
+  animation: spinner-rotate 0.8s linear infinite;
+  display: inline-block;
+}
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,32 +1,27 @@
-services:
-  db:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ainav
-      POSTGRES_PASSWORD: ainav123
-      POSTGRES_DB: ainav
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ainav"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+version: "3.8"
 
-  app:
-    build: .
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
+# 后端依赖：MySQL 8 + Redis 7（对齐 ai.codefather.cn 后端栈）
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ai-nav-mysql
+    restart: always
     environment:
-      # 注意：使用 Postgres 前，需把 prisma/schema.prisma 的 provider 改为 "postgresql"
-      DATABASE_URL: postgresql://ainav:ainav123@db:5432/ainav?schema=public
-      AUTH_SECRET: please-change-this-to-a-long-random-string
-      NEXTAUTH_URL: http://localhost:3000
-    depends_on:
-      db:
-        condition: service_healthy
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ai_nav
+      TZ: Asia/Shanghai
+    ports:
+      - "3306:3306"
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  redis:
+    image: redis:7.0
+    container_name: ai-nav-redis
+    restart: always
+    ports:
+      - "6379:6379"
 
 volumes:
-  pgdata:
+  mysql-data:

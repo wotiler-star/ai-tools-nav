@@ -1,0 +1,60 @@
+server:
+  port: 8123
+  servlet:
+    context-path: /api   # 前端 API_BASE 默认 http://localhost:8123/api
+
+spring:
+  application:
+    name: ai-nav
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ai_nav?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      test-while-idle: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+
+# Sa-Token：SESSION Cookie 登录认证（与前端 credentials:include 对应）
+sa-token:
+  token-name: satoken
+  timeout: 2592000
+  active-timeout: -1
+  is-concurrent: true
+  is-share: true
+  token-style: uuid
+  is-log: false
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+  mapper-locations: classpath*:/mapper/**/*.xml
+
+# Knife4j 接口文档（访问 /doc.html）
+knife4j:
+  enable: true
+  openapi:
+    title: AI 导航站 API
+    version: 1.0.0
+    description: 复刻 api.codefather.cn
+    group:
+      default:
+        api-rule: package
+        api-rule-resources:
+          - com.ainav.controller
+
+logging:
+  level:
+    com.ainav: info
