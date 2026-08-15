@@ -1,0 +1,16 @@
+# ===== Nacos 服务注册 profile =====
+# 启用后：把 ai-nav 服务注册到 Nacos（服务发现）。配置中心默认关闭，
+# 如需从 Nacos 拉取配置，请额外准备 bootstrap.yml 并打开 spring.cloud.nacos.config.enabled。
+# 组合启动：--spring.profiles.active=prod,nacos
+spring:
+  cloud:
+    nacos:
+      discovery:
+        enabled: true
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+        service: ${spring.application.name}
+        namespace: ${NACOS_NAMESPACE:public}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:nacos}
+      config:
+        enabled: false

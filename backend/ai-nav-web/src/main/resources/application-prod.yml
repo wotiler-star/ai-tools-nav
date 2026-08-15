@@ -1,0 +1,6 @@
+# ===== 生产 profile：在默认（MySQL + Redis）基础上开启 Redis 查询缓存 =====
+# 启动：java -jar ai-nav-web.jar --spring.profiles.active=prod
+# 可与 es / nacos 组合：--spring.profiles.active=prod,es,nacos
+ainav:
+  cache:
+    enabled: true

@@ -1,0 +1,11 @@
+# ===== Elasticsearch 搜索 profile =====
+# 启用后：启动时全量同步 ai_tool 到 ES 索引，/ai_tool/search 优先走 ES（未启用则回退 DB）。
+# 组合启动：--spring.profiles.active=prod,es
+ainav:
+  es:
+    enabled: true
+    index: ai_tool
+    host: ${ES_HOST:http://localhost:9200}
+spring:
+  elasticsearch:
+    uris: ${ainav.es.host}

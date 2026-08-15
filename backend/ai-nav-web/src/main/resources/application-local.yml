@@ -17,10 +17,13 @@ spring:
       schema-locations: classpath:schema-h2.sql
       encoding: UTF-8
   # 本地不用 Redis：排除自动配置，Sa-Token 走内存存储
+  # 关键：必须同时排除 sa-token 的 Redis DAO 实现（它强依赖 RedisTemplate），
+  #       否则 local 启动会因“找不到 RedisTemplate”而失败。排除后回退为内存 SaTokenDao。
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
       - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+      - cn.dev33.satoken.dao.SaTokenDaoRedisJackson
 
 # 分页方言切换为 H2（生产默认 mysql）
 mybatis-plus:

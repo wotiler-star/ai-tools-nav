@@ -33,6 +33,9 @@
         <druid.version>1.2.23</druid.version>
         <sa-token.version>1.38.0</sa-token.version>
         <knife4j.version>4.5.0</knife4j.version>
+        <!-- 中间件：Spring Cloud / Spring Cloud Alibaba（Nacos 注册中心）版本需与 Spring Boot 3.2.5 对齐 -->
+        <spring-cloud.version>2023.0.1</spring-cloud.version>
+        <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
     </properties>
 
     <dependencyManagement>
@@ -63,10 +66,16 @@
                 <version>${druid.version}</version>
             </dependency>
 
-            <!-- Sa-Token 权限认证 -->
+            <!-- Sa-Token 权限认证（Spring Boot 3.x 用 spring-boot3-starter） -->
             <dependency>
                 <groupId>cn.dev33</groupId>
-                <artifactId>sa-token-spring-boot-starter</artifactId>
+                <artifactId>sa-token-spring-boot3-starter</artifactId>
+                <version>${sa-token.version}</version>
+            </dependency>
+            <!-- Sa-Token Redis 集成：将 token 存储到 Redis（生产 profile 启用，local 走内存） -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-redis-jackson</artifactId>
                 <version>${sa-token.version}</version>
             </dependency>
 
@@ -75,6 +84,23 @@
                 <groupId>com.github.xiaoymin</groupId>
                 <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>
                 <version>${knife4j.version}</version>
+            </dependency>
+
+            <!-- Spring Cloud BOM（Nacos 等需要） -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Spring Cloud Alibaba BOM（Nacos 注册 / 配置中心） -->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

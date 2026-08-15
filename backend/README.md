@@ -2,7 +2,7 @@
 
 复刻 api.codefather.cn 的 AI 工具导航与社区站后端。
 
-技术栈：Spring Boot 3.2.5 + MyBatis-Plus 3.5.7 + Druid + MySQL / Redis + Sa-Token + Knife4j。
+技术栈：Spring Boot 3.2.5 + MyBatis-Plus 3.5.7 + Druid + MySQL / Redis / Elasticsearch 8 / Nacos 2 + Sa-Token + Knife4j。
 前端技术栈：Next.js 14（App Router）+ React 18 + TypeScript + Zustand + SWR + Ant Design 5。
 
 ---
@@ -10,7 +10,7 @@
 ## 环境要求
 - JDK 17+
 - Maven 3.9+
-- （仅生产用）MySQL 8 + Redis
+- （仅生产 / 特定 profile 用）MySQL 8 + Redis 7 + Elasticsearch 8 + Nacos 2
 
 ---
 
@@ -63,6 +63,33 @@ java -jar ai-nav-web/target/ai-nav-web.jar
 
 ---
 
+## 中间件接入（Redis / Elasticsearch / Sa-Token / Nacos）
+
+四个中间件都以 **profile 维度** 接入，`local`（H2 内存、免外部服务）始终保持可跑：
+
+| 中间件 | 依赖 | 启用方式 | 默认行为 |
+| --- | --- | --- | --- |
+| **Sa-Token** | `sa-token-spring-boot3-starter` | 始终启用 | 登录态 + `@SaCheckRole` 角色鉴权（Spring Boot 3.x 必须用 3 系列 starter） |
+| **Redis** | `spring-boot-starter-data-redis` + `sa-token-redis-jackson` | 默认（非 local）即生效 | token 存储到 Redis；`prod` profile 额外开启查询缓存 |
+| **Elasticsearch** | `spring-boot-starter-data-elasticsearch` | `es` profile | 启动全量同步索引，`/ai_tool/search` 走 ES；未启用则回退 DB |
+| **Nacos** | `spring-cloud-starter-alibaba-nacos-*` | `nacos` profile | 服务注册到 Nacos（配置中心默认关闭） |
+
+- `StpInterface`（`SaTokenPermissionImpl`）从 user 表读取角色，修复了先前 `@SaCheckRole("admin")` 把管理员也拒绝的真实 bug。
+- Redis 查询缓存（`RedisCacheService`）仅 `ainav.cache.enabled=true`（prod profile）时生效，所有读写 try-catch 穿透到 DB。
+- ES 搜索（`EsToolSearchService`）`@ConditionalOnProperty(ainav.es.enabled=true)`，异常 / 未启用时由 `/ai_tool/search` 回退到 DB `listToolByPage`。
+- Nacos 在 `application.yml` 中默认 `enabled=false`，仅在 `nacos` profile 打开 `spring.cloud.nacos.discovery.enabled=true`。
+
+### 组合启动示例（生产全量）
+
+```bash
+# 同时启用 Redis 缓存 + ES 搜索 + Nacos 注册（需先 docker-compose up -d 起 ES/Nacos）
+java -jar ai-nav-web/target/ai-nav-web.jar --spring.profiles.active=prod,es,nacos
+```
+
+`docker-compose.yml` 已包含 `mysql / redis / elasticsearch / nacos` 四个独立服务，按需 `docker-compose up -d elasticsearch nacos` 拉起即可。
+
+---
+
 ## 前端对接
 
 前端通过 `.env` 切换 Mock / 真实后端（`NEXT_PUBLIC_*` 为构建期变量，改完需重新 `dev` / `build`）：
@@ -83,6 +110,7 @@ NEXT_PUBLIC_API_BASE=http://localhost:8123/api
 | --- | --- | --- |
 | GET  | `/category/list` | 分类列表 |
 | GET  | `/ai_tool/list/page?current=1&pageSize=12&categoryId=&keyword=` | 工具分页 |
+| GET  | `/ai_tool/search?keyword=xxx&current=1&pageSize=12` | 工具搜索（ES 优先，回退 DB） |
 | GET  | `/ai_tool/get?id=1` | 工具详情 |
 | POST | `/user/login` | 登录（返回 Sa-Token Cookie） |
 | GET  | `/user/get/login` | 当前登录用户 |
@@ -101,3 +129,8 @@ NEXT_PUBLIC_API_BASE=http://localhost:8123/api
 - **MySQL 保留字**：`user` 是 MySQL 保留字，`sql/schema.sql` 中已用反引号转义。
 - **分页方言**：`MybatisPlusConfig` 的分页 `DbType` 从环境变量 `mybatis-plus.db-type` 读取（local=h2，默认 mysql）。
 - **CORS**：`CorsConfig` 用 `allowedOriginPatterns("*")` + `allowCredentials(true)`，放行前端跨端口请求。
+- **Sa-Token 角色鉴权**：必须实现 `StpInterface`（`SaTokenPermissionImpl`），从 user 表读 role，否则 `@SaCheckRole("admin")` 因解析不到角色而拒绝所有后台接口（早期版本缺该实现，管理员登录也被拦）。
+- **Redis 双职责**：① `sa-token-redis-jackson` 将 token 存储到 Redis（非 local profile 生效）；② `RedisCacheService` 在 `prod` profile 下缓存分类列表等读多写少数据，写失效则穿透 DB。
+- **Elasticsearch 搜索**：`es` profile 启动全量同步 `ai_tool` 索引；`/ai_tool/search` 优先 ES 多字段检索，未启用 / 异常时回退 DB `listToolByPage`，保证可用性。
+- **Nacos 服务注册**：`nacos` profile 打开 `spring.cloud.nacos.discovery.enabled=true` 将 `ai-nav` 注册到 Nacos；`spring.cloud.nacos.config.enabled` 默认关闭（配置中心需额外 bootstrap.yml）。
+- **Profile 组合**：中间件均可叠加，如 `--spring.profiles.active=prod,es,nacos`；`local` 始终排除 Redis/ES/Nacos 自动配置，仅靠 H2 即可启动。
