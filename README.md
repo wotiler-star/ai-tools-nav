@@ -85,24 +85,40 @@ NEXT_PUBLIC_API_BASE=http://localhost:8123/api
 
 ---
 
-## 四、启动后端（需 Java 17 + Maven + MySQL + Redis）
+## 四、启动后端（需 Java 17 + Maven）
+
+> 两种方式，**推荐先跑方案 A**（H2 内存库，零外部依赖，30 秒起服务）。
+
+### 方案 A：本地秒起（H2 内存库，免 MySQL / 免 Redis）⭐
+
+```bash
+cd backend
+mvn clean package -DskipTests
+java -jar ai-nav-web/target/ai-nav-web.jar --spring.profiles.active=local
+```
+
+- `local` profile 用 H2 内存库自动建表灌数据，并排除 Redis 自动配置（Sa-Token 走内存），**启动即用**。
+- 服务端口 `8123`，context-path `/api` → 接口形如 `http://localhost:8123/api/ai_tool/list/page`
+- 接口文档 Knife4j：`http://localhost:8123/api/doc.html`
+- 默认管理员：`admin` / `12345678`
+
+### 方案 B：接 MySQL + Redis
 
 ```bash
 # 1. 启动依赖（MySQL 8 + Redis 7）
-docker compose up -d
+docker compose up -d mysql redis
 
 # 2. 初始化数据库
 mysql -uroot -proot ai_nav < backend/sql/schema.sql
 
-# 3. 打包并运行
+# 3. 打包并运行（默认 profile，读取 application.yml 的 MySQL/Redis 配置）
 cd backend
 mvn clean package -DskipTests
 java -jar ai-nav-web/target/ai-nav-web.jar
 ```
 
-- 服务端口 `8123`，context-path `/api` → 接口形如 `http://localhost:8123/api/ai_tool/list/page`
-- 接口文档 Knife4j：`http://localhost:8123/api/doc.html`
-- 登录（演示）：`POST /api/user/login/phone?phone=13800000000`
+- 默认 profile 依赖 Redis（Sa-Token 令牌存储）。不想装 Redis 时请改用方案 A 的 `local`。
+- 更多中间件（ES / Nacos）与 profile 组合见下一节《部署指南》。
 
 ---
 
@@ -128,3 +144,149 @@ java -jar ai-nav-web/target/ai-nav-web.jar
 - 后台管理模块（`/admin/**`，已配置登录拦截）
 - 图片上传至 `pic.code-nav.cn` 风格 CDN
 - Docker Compose 增加 Nginx 反代，对齐目标站部署架构
+
+---
+
+## 七、部署指南（Docker Compose + Nginx 生产架构）
+
+### 7.1 整体架构
+
+```
+                ┌─────────────┐
+   浏览器 ─────► │   Nginx     │  :80  (HTTPS 由 Nginx 终止)
+                │ 反向代理     │
+                └──────┬──────┘
+           ┌──────────┼──────────────┐
+           │ /         │             │ /api
+           ▼           │             ▼
+   ┌──────────────┐    │     ┌──────────────────────┐
+   │ 前端 Next.js │    │     │ 后端 Spring Boot      │
+   │ (build 产物) │    │     │ :8123  context /api   │
+   └──────────────┘    │     └───────────┬──────────┘
+                       │                 │
+                       │        ┌────────┼────────┬────────┐
+                       │        │MySQL  │Redis  │  ES 8  │ Nacos 2
+                       │        │ :3306 │ :6379 │ :9200  │ :8848
+                       │        └───────┴───────┴────────┴────────┘
+                  docker-compose 管理上述中间件
+```
+
+- 前端：Next.js 14 生产模式（`npm run build && npm run start`，或静态导出 + 任意静态服务器）。
+- 后端：Spring Boot 打 jar，`java -jar` 运行；`local` 免外部服务，`prod/es/nacos` 按需接中间件。
+- Nginx：把站点根路径反代到前端、把 `/api` 反代到后端，统一端口对外。
+
+### 7.2 本地开发联调（前端 Mock / 真实后端随时切）
+
+```bash
+# 终端 1：前端（默认 Mock 模式，无需后端即可看完整页面）
+cd frontend && npm install && npm run dev          # http://localhost:3000
+
+# 终端 2：后端（H2 内存秒起）
+cd backend && mvn clean package -DskipTests
+java -jar ai-nav-web/target/ai-nav-web.jar --spring.profiles.active=local
+
+# 想让前端走真实后端：frontend/.env.local 写
+#   NEXT_PUBLIC_USE_MOCK=false
+#   NEXT_PUBLIC_API_BASE=http://localhost:8123/api
+# 然后重启前端 dev（NEXT_PUBLIC_* 是构建期变量，必须重启生效）
+```
+
+### 7.3 一键中间件（Docker Compose）
+
+`docker-compose.yml` 已内置 `mysql / redis / elasticsearch / nacos` 四个独立服务，按需拉起：
+
+```bash
+docker compose up -d                       # 全部拉起
+docker compose up -d mysql redis          # 仅 MySQL + Redis（prod 够用）
+docker compose up -d elasticsearch nacos  # 仅 ES + Nacos（配 es/nacos profile 用）
+docker compose down                       # 全部停止
+```
+
+- MySQL：root/`root`，库名 `ai_nav`（首次 `up` 自动建库），字符集 utf8mb4。
+- Redis：无密码，`6379`。
+- Elasticsearch：单节点、关闭 xpack 安全、堆 512m，`9200`。
+- Nacos：standalone、关闭鉴权，`8848`；仅做服务注册（配置中心默认关闭）。
+
+### 7.4 生产部署步骤
+
+**后端（jar）**
+
+```bash
+cd backend
+mvn clean package -DskipTests
+# 全量中间件：MySQL+Redis+ES+Nacos 都已 docker compose up -d
+java -jar ai-nav-web/target/ai-nav-web.jar --spring.profiles.active=prod,es,nacos
+# 或仅 MySQL+Redis：java -jar ai-nav-web/target/ai-nav-web.jar   （默认 profile）
+```
+
+**前端（Next.js 生产模式）**
+
+```bash
+cd frontend
+# 写入真实后端地址（生产环境改成你的域名/IP）
+echo "NEXT_PUBLIC_USE_MOCK=false" > .env.production
+echo "NEXT_PUBLIC_API_BASE=http://<你的服务器IP>:8123/api" >> .env.production
+npm run build
+npm run start -- -p 3000          # 或 pm2/nohup 常驻
+```
+
+**Nginx 反代示例**（`/etc/nginx/conf.d/ainav.conf`）
+
+```nginx
+upstream ainav_front { server 127.0.0.1:3000; }
+upstream ainav_api   { server 127.0.0.1:8123; }
+
+server {
+    listen 80;
+    server_name your.domain.com;
+
+    # 前端站点
+    location / {
+        proxy_pass http://ainav_front;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    # 后端 API（context-path 已是 /api，这里透传即可）
+    location /api/ {
+        proxy_pass http://ainav_api;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        # Sa-Token 用 SESSION Cookie，必须透传 Cookie 才能保持登录态
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+> 生产建议再加 HTTPS（Let's Encrypt / 自有证书），并在 Nginx 终止 TLS；Sa-Token 的 `tokenName` 与 `isReadCookie=true` 默认即可，跨端口/跨域靠 `CorsConfig`（已配 `allowedOriginPatterns("*")` + `allowCredentials(true)`）放行。
+
+### 7.5 环境变量 / 配置速查
+
+| 配置项 | 位置 | 说明 |
+| --- | --- | --- |
+| `NEXT_PUBLIC_USE_MOCK` | frontend `.env*` | `true` 走前端内置 Mock；`false` 走真实后端（**构建期固化**，改后需重启 dev / 重 build） |
+| `NEXT_PUBLIC_API_BASE` | frontend `.env*` | 真实后端基址，如 `http://localhost:8123/api` |
+| `spring.profiles.active` | 启动参数 | `local` / 默认 / `prod` / `es` / `nacos`，可叠加如 `prod,es,nacos` |
+| `spring.datasource.*` | `application.yml` | MySQL 连接（默认 `localhost:3306/ai_nav`，root/root） |
+| `spring.data.redis.*` | `application.yml` | Redis 连接（默认 `localhost:6379`，无密码） |
+| `ainav.es.host` | `application-es.yml` | ES 地址，默认 `http://localhost:9200` |
+| `spring.cloud.nacos.discovery.server-addr` | `application-nacos.yml` | Nacos 地址，env `NACOS_SERVER_ADDR` 可覆盖 |
+
+### 7.6 Profile 矩阵
+
+| Profile | 数据库 | Redis | ES 搜索 | Nacos 注册 | 适用场景 |
+| --- | --- | --- | --- | --- | --- |
+| `local` | H2 内存 | 关闭 | 关闭 | 关闭 | 本地秒起、CI 验证（零外部依赖） |
+| 默认（无 profile） | MySQL | 开启（token 存储） | 关闭 | 关闭 | 基础生产 |
+| `prod` | MySQL | 开启 + 查询缓存 | 关闭 | 关闭 | 带 Redis 缓存的生产 |
+| `prod,es,nacos` | MySQL | 开启 | 开启 | 开启 | 全量中间件生产 |
+
+### 7.7 常见部署坑
+
+- **`NEXT_PUBLIC_*` 是构建期变量**：改了 `.env` 必须重新 `npm run dev` 或 `npm run build`，热更新不会生效。
+- **Sa-Token 必须 Boot3 starter**：Spring Boot 3.x 用 `sa-token-spring-boot3-starter`，用 2.x 的 `sa-token-spring-boot-starter` 会直接框架报错。
+- **`local` 免 Redis 却会崩**：已通过排除 `SaTokenDaoRedisJackson` 自动配置修复；若自定义 profile 想免 Redis，记得同样排除该 DAO。
+- **跨域 / 登录态**：前端 `credentials: include` + 后端 `CorsConfig` 已放行；Nginx 反代时务必 `proxy_set_header` 透传 Cookie，否则 Sa-Token 登录态丢失。
+- **H2 ↔ MySQL 方言**：`local` 用 `MODE=MySQL` + `NON_KEYWORDS=USER`；生产用 MySQL，二者表结构一致（`backend/sql/schema.sql`）。
+- **ES 同步失败不致命**：`EsToolSearchService` 全量同步与查询都包 try-catch，`/ai_tool/search` 异常时自动回退 DB 分页，不影响可用性。
+- **admin 接口 403**：必须实现 `StpInterface`（`SaTokenPermissionImpl`）从 user 表读角色，否则 `@SaCheckRole("admin")` 会拒绝所有管理员——默认管理员 `admin/12345678` 已带 `admin` 角色。
