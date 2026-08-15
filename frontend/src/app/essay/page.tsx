@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Avatar, Button, Input, Tag, message } from "antd";
+import { Avatar, Button, Input, Tag, App, Modal } from "antd";
 import {
   UserOutlined,
   SmileOutlined,
@@ -14,18 +14,61 @@ import {
 } from "@ant-design/icons";
 import { ESSAY_POSTS, ESSAY_TOPICS } from "@/lib/mockData";
 import { useAppStore } from "@/store/useAppStore";
+import { EssayPost } from "@/types";
+import RichTextEditor from "@/components/RichTextEditor";
 
 const BRAND = "#3874F7";
 
 export default function EssayPage() {
   const [topic, setTopic] = useState("推荐");
   const { loginUser, openLoginModal } = useAppStore();
+  const { message } = App.useApp();
+
+  const [localPosts, setLocalPosts] = useState<EssayPost[]>(ESSAY_POSTS);
+  const [quickText, setQuickText] = useState("");
+
+  // 写文章弹窗状态
+  const [writeOpen, setWriteOpen] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [newTags, setNewTags] = useState("");
+  const [editorText, setEditorText] = useState("");
 
   const posts = useMemo(() => {
-    if (topic === "推荐") return ESSAY_POSTS;
-    if (topic === "精选") return ESSAY_POSTS.filter((p) => p.featured);
-    return ESSAY_POSTS.filter((p) => p.topic === topic);
-  }, [topic]);
+    if (topic === "推荐") return localPosts;
+    if (topic === "精选") return localPosts.filter((p) => p.featured);
+    return localPosts.filter((p) => p.topic === topic);
+  }, [topic, localPosts]);
+
+  const publish = (title: string, summary: string, tags: string[], content: string) => {
+    if (!loginUser) {
+      openLoginModal();
+      return;
+    }
+    if (!title.trim()) {
+      message.warning("请填写标题");
+      return;
+    }
+    const post: EssayPost = {
+      id: -Date.now(),
+      authorName: loginUser.userName || "我",
+      authorAvatar: loginUser.userAvatar || "",
+      authorTag: "我",
+      topic: topic === "推荐" || topic === "精选" ? "AI编程" : topic,
+      createTime: new Date().toISOString().slice(0, 10),
+      title: title.trim(),
+      summary: summary.trim() || (content ? content.slice(0, 60) : "（无简介）"),
+      tags,
+      likeNum: 0,
+      commentNum: 0,
+      content
+    };
+    setLocalPosts((prev) => [post, ...prev]);
+    setWriteOpen(false);
+    setNewTitle("");
+    setNewTags("");
+    setEditorText("");
+    message.success("已发布（演示）");
+  };
 
   return (
     <div style={{ maxWidth: 820, margin: "0 auto", padding: "24px 16px" }}>
@@ -47,6 +90,8 @@ export default function EssayPage() {
             style={{ background: BRAND, flexShrink: 0 }}
           />
           <Input.TextArea
+            value={quickText}
+            onChange={(e) => setQuickText(e.target.value)}
             placeholder={loginUser ? "随便聊，或点「写文章」发布长内容～" : "点击登录，快来和大家讨论吧～"}
             autoSize={{ minRows: 2, maxRows: 5 }}
             onClick={() => !loginUser && openLoginModal()}
@@ -75,14 +120,21 @@ export default function EssayPage() {
           </div>
           <div style={{ display: "flex", gap: 10 }}>
             <Button
-              onClick={() => (loginUser ? message.info("写文章功能开发中") : openLoginModal())}
+              onClick={() => (loginUser ? setWriteOpen(true) : openLoginModal())}
             >
               写文章
             </Button>
             <Button
               type="primary"
               style={{ background: BRAND }}
-              onClick={() => (loginUser ? message.success("已发布（演示）") : openLoginModal())}
+              onClick={() => {
+                if (!loginUser) {
+                  openLoginModal();
+                  return;
+                }
+                publish(`来自 ${loginUser.userName || "我"} 的分享`, quickText, [], "");
+                setQuickText("");
+              }}
             >
               发布
             </Button>
@@ -183,6 +235,43 @@ export default function EssayPage() {
           </Link>
         ))}
       </div>
+
+      {/* 写文章弹窗（Slate 富文本编辑器） */}
+      <Modal
+        title="写文章"
+        open={writeOpen}
+        onCancel={() => setWriteOpen(false)}
+        onOk={() =>
+          publish(
+            newTitle,
+            editorText.slice(0, 60),
+            newTags
+              .split(/[,，]/)
+              .map((s) => s.trim())
+              .filter(Boolean),
+            editorText
+          )
+        }
+        okText="发布"
+        cancelText="取消"
+        width={680}
+        destroyOnClose
+      >
+        <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 12 }}>
+          <Input
+            placeholder="标题"
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+            maxLength={60}
+          />
+          <Input
+            placeholder="标签（逗号分隔，如：AI编程,效率）"
+            value={newTags}
+            onChange={(e) => setNewTags(e.target.value)}
+          />
+          <RichTextEditor onChange={(_nodes, plain) => setEditorText(plain)} />
+        </div>
+      </Modal>
     </div>
   );
 }

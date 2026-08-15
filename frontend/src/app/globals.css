@@ -326,6 +326,57 @@ body {
   }
 }
 
+/* markdown-it 生成元素的排版（Markdown 组件包裹在 .article-body 内） */
+.article-body h1,
+.article-body h3 {
+  color: var(--text-1);
+  line-height: 1.4;
+  margin: 22px 0 10px;
+}
+.article-body h1 { font-size: 22px; font-weight: 800; }
+.article-body h3 { font-size: 16px; font-weight: 700; }
+.article-body ul,
+.article-body ol { margin: 0 0 14px; padding-left: 22px; }
+.article-body li { margin: 6px 0; }
+.article-body a {
+  color: var(--brand, #3874f7);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(56, 116, 247, 0.3);
+}
+.article-body a:hover { border-bottom-color: var(--brand, #3874f7); }
+.article-body strong { font-weight: 700; color: var(--text-1); }
+.article-body em { font-style: italic; }
+.article-body blockquote {
+  margin: 0 0 14px;
+  padding: 8px 14px;
+  border-left: 3px solid var(--brand, #3874f7);
+  background: var(--brand-tint, rgba(56, 116, 247, 0.06));
+  color: var(--text-2);
+  border-radius: 0 8px 8px 0;
+}
+.article-body code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  background: var(--surface-2, #f2f3f5);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.article-body pre {
+  background: #1e1e2e;
+  color: #e4e4e7;
+  padding: 14px 16px;
+  border-radius: 10px;
+  overflow: auto;
+  margin: 0 0 14px;
+}
+.article-body pre code { background: transparent; padding: 0; color: inherit; font-size: 13px; }
+.article-body img { max-width: 100%; border-radius: 10px; margin: 8px 0; }
+.article-body hr { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+.article-body table { width: 100%; border-collapse: collapse; margin: 0 0 14px; font-size: 14px; }
+.article-body th,
+.article-body td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; }
+.article-body th { background: var(--surface-2, #f2f3f5); font-weight: 700; }
+
 /* 工具详情描述：移动端同步放大 */
 .tool-desc {
   font-size: 15px;

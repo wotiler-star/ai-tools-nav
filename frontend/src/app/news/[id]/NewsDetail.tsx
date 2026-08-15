@@ -9,28 +9,26 @@ import {
   ArrowLeftOutlined
 } from "@ant-design/icons";
 import { useToast, Toast } from "@/components/Toast";
+import Markdown from "@/components/Markdown";
 import { NewsItem } from "@/types";
 import { AI_NEWS } from "@/lib/mockData";
 import { SITE } from "@/config/site";
 
 const SOURCES = ["机器之心", "量子位", "InfoQ", "36氪", "新智元", "钛媒体"];
 
-function buildBody(item: NewsItem): { h: string; p: string }[] {
+function buildMarkdown(item: NewsItem): string {
+  if (item.content?.trim()) return item.content;
   const source = SOURCES[(item.rank - 1) % SOURCES.length];
   return [
-    {
-      h: "事件概要",
-      p: `${item.title}。本条资讯来自 ${source}，在${SITE.name} AI 资讯榜位列第 ${item.rank} 位，是近期社区关注的热点之一。`
-    },
-    {
-      h: "为什么重要",
-      p: `这一进展反映了 AI 行业的快速演进：从底层模型能力到上层应用生态，相关技术正在被更快地落地到真实场景。对开发者与使用者而言，及时掌握此类动态有助于把握工具选型与学习路线。`
-    },
-    {
-      h: "可能影响",
-      p: `若趋势延续，相关能力与产品形态会进一步普及，带动上下游工具链的更新。建议持续关注官方发布与社区实测，优先在低风险场景中验证再投入生产。`
-    }
-  ];
+    `## 事件概要`,
+    `${item.title}。本条资讯来自 **${source}**，在 ${SITE.name} AI 资讯榜位列第 **${item.rank}** 位，是近期社区关注的热点之一。`,
+    ``,
+    `## 为什么重要`,
+    `这一进展反映了 AI 行业的快速演进：从底层模型能力到上层应用生态，相关技术正在被更快地落地到真实场景。对开发者与使用者而言，及时掌握此类动态有助于把握工具选型与学习路线。`,
+    ``,
+    `## 可能影响`,
+    `若趋势延续，相关能力与产品形态会进一步普及，带动上下游工具链的更新。建议持续关注官方发布与社区实测，优先在低风险场景中验证再投入生产。`
+  ].join("\n");
 }
 
 export default function NewsDetail({ item }: { item: NewsItem }) {
@@ -38,7 +36,7 @@ export default function NewsDetail({ item }: { item: NewsItem }) {
   const [liked, setLiked] = useState(false);
 
   const source = SOURCES[(item.rank - 1) % SOURCES.length];
-  const body = buildBody(item);
+  const mdSource = buildMarkdown(item);
   const heat = 2000 - (item.rank - 1) * 130;
 
   const jsonLd = {
@@ -106,12 +104,7 @@ export default function NewsDetail({ item }: { item: NewsItem }) {
         <Divider />
 
         <div className="article-body">
-          {body.map((sec, i) => (
-            <section key={i} style={{ marginBottom: 18 }}>
-              <h2>{sec.h}</h2>
-              <p>{sec.p}</p>
-            </section>
-          ))}
+          <Markdown source={mdSource} />
         </div>
 
         <div style={{ display: "flex", gap: 12, marginTop: 24, flexWrap: "wrap" }}>

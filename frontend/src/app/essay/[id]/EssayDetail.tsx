@@ -11,29 +11,28 @@ import {
   ArrowLeftOutlined
 } from "@ant-design/icons";
 import { useToast, Toast } from "@/components/Toast";
+import Markdown from "@/components/Markdown";
 import { EssayPost } from "@/types";
 import { ESSAY_POSTS } from "@/lib/mockData";
 import { SITE } from "@/config/site";
 
-/** 由 summary + 标签合成正文段落（mock 数据无正文，演示用） */
-function buildBody(post: EssayPost): { h: string; p: string }[] {
-  const lead = post.summary;
+/** 由 summary + 标签合成 markdown 正文（mock 数据无正文时演示用，真实数据优先用 post.content） */
+function buildMarkdown(post: EssayPost): string {
+  if (post.content?.trim()) return post.content;
   const tagText = post.tags.join("、");
   return [
-    { h: "导读", p: lead },
-    {
-      h: "核心思路",
-      p: `在「${post.topic}」这个话题下，作者（${post.authorName} · ${post.authorTag}）把实践中的关键经验梳理成了可复用的方法：${lead} 文中涉及的要点主要围绕 ${tagText} 展开。`
-    },
-    {
-      h: "实操建议",
-      p: `如果你也想上手，建议先明确目标场景，再结合文中提到的 ${tagText} 逐步验证。遇到问题时回到社区交流，往往比独自摸索更高效。`
-    },
-    {
-      h: "小结",
-      p: `这篇文章来自鱼皮 AI 社区的真实讨论，欢迎在评论区补充你的做法，或把同话题的优质内容推荐给更多人。`
-    }
-  ];
+    `## 导读`,
+    post.summary,
+    ``,
+    `## 核心思路`,
+    `在「${post.topic}」这个话题下，作者（**${post.authorName}** · ${post.authorTag}）把实践中的关键经验梳理成了可复用的方法：${post.summary} 文中涉及的要点主要围绕 ${tagText} 展开。`,
+    ``,
+    `## 实操建议`,
+    `如果你也想上手，建议先明确目标场景，再结合文中提到的 ${tagText} 逐步验证。遇到问题时回到社区交流，往往比独自摸索更高效。`,
+    ``,
+    `## 小结`,
+    `这篇文章来自鱼皮 AI 社区的真实讨论，欢迎在评论区补充你的做法，或把同话题的优质内容推荐给更多人。`
+  ].join("\n");
 }
 
 export default function EssayDetail({ post }: { post: EssayPost }) {
@@ -41,7 +40,7 @@ export default function EssayDetail({ post }: { post: EssayPost }) {
   const [liked, setLiked] = useState(false);
 
   const related = ESSAY_POSTS.filter((p) => p.topic === post.topic && p.id !== post.id).slice(0, 3);
-  const body = buildBody(post);
+  const mdSource = buildMarkdown(post);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -129,12 +128,7 @@ export default function EssayDetail({ post }: { post: EssayPost }) {
         <Divider />
 
         <div className="article-body">
-          {body.map((sec, i) => (
-            <section key={i} style={{ marginBottom: 18 }}>
-              <h2>{sec.h}</h2>
-              <p>{sec.p}</p>
-            </section>
-          ))}
+          <Markdown source={mdSource} />
         </div>
 
         <div style={{ display: "flex", gap: 12, marginTop: 24, flexWrap: "wrap" }}>

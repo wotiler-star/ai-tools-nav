@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import {
@@ -24,6 +24,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import { api, swrFetcher } from "@/lib/api";
 import { useAppStore } from "@/store/useAppStore";
 import SectionTitle from "@/components/SectionTitle";
+import CategoryChart, { CategoryDatum } from "@/components/CategoryChart";
 import {
   AiTool,
   BaseResponse,
@@ -106,6 +107,15 @@ export default function AdminPage() {
 
   const tools = toolData?.data?.records || [];
   const cats = catData?.data || [];
+
+  // 工具分类分布（d3 图表数据源）
+  const catCounts = useMemo<CategoryDatum[]>(() => {
+    if (!cats.length) return [];
+    return cats.map((c) => ({
+      name: c.name,
+      count: tools.filter((t) => t.categoryId === c.id).length
+    }));
+  }, [cats, tools]);
 
   // ===== 分类操作 =====
   const openAddCat = () => {
@@ -214,6 +224,14 @@ export default function AdminPage() {
           </span>
         }
       />
+      {catCounts.length > 0 && (
+        <div style={{ background: "#fff", border: "1px solid #eaecef", borderRadius: 12, padding: 16, marginBottom: 16 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#1d2129", marginBottom: 8 }}>
+            工具分类分布（共 {tools.length} 个工具）
+          </div>
+          <CategoryChart data={catCounts} />
+        </div>
+      )}
       <Tabs
         items={[
           {

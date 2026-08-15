@@ -51,6 +51,7 @@ export interface NewsItem {
   rank: number;
   title: string;
   hot?: boolean;
+  content?: string; // 正文（markdown 源），缺省时由详情页合成
 }
 
 /** 精选推荐卡片 */
@@ -108,6 +109,7 @@ export interface EssayPost {
   likeNum: number;
   commentNum: number;
   featured?: boolean; // 是否精选
+  content?: string; // 正文（markdown 源），缺省时由详情页合成
 }
 
 /** 学习教程（/resource/learn 页） */
