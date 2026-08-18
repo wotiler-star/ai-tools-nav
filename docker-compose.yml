@@ -24,6 +24,12 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
       - ./backend/sql:/docker-entrypoint-initdb.d:ro   # 首次启动自动建表 + 灌种子数据
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     networks:
       - ainav-net
 
@@ -33,6 +39,11 @@ services:
     restart: always
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     networks:
       - ainav-net
 
@@ -74,8 +85,10 @@ services:
     container_name: ai-nav-backend
     restart: always
     depends_on:
-      - mysql
-      - redis
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       # 覆盖 application.yml 的 localhost 默认值，指向 compose 服务名
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ai_nav?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&characterEncoding=utf8mb4
