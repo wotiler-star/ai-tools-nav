@@ -56,9 +56,15 @@
 ├── backend/                  # 后端（Spring Boot 多模块）
 │   ├── ai-nav-common/        # 公共模块：统一返回/分页/异常
 │   ├── ai-nav-web/           # Web 模块：实体/Mapper/Service/Controller/配置
-│   ├── sql/schema.sql        # 建表 + 初始数据
+│   ├── sql/schema.sql        # 建表 + 初始数据（Docker 下自动导入）
+│   ├── Dockerfile            # 多阶段：maven 构建 → jre 运行
 │   └── pom.xml
-├── docker-compose.yml        # MySQL 8 + Redis 7（后端依赖）
+├── frontend/                 # 前端（Next.js 14 App Router）
+│   ├── Dockerfile            # 多阶段：npm ci/build → next start
+│   └── ...（见前端目录）
+├── nginx/                    # Nginx 反代配置
+│   └── nginx.conf            # / → frontend，/api/ → backend
+├── docker-compose.yml        # 全栈编排：mysql/redis/es/nacos + backend/frontend/nginx
 └── docs/建站说明书.html       # 11 章建站说明书
 ```
 
@@ -191,18 +197,29 @@ java -jar ai-nav-web/target/ai-nav-web.jar --spring.profiles.active=local
 # 然后重启前端 dev（NEXT_PUBLIC_* 是构建期变量，必须重启生效）
 ```
 
-### 7.3 一键中间件（Docker Compose）
+### 7.3 一键全栈（Docker Compose，推荐）
 
-`docker-compose.yml` 已内置 `mysql / redis / elasticsearch / nacos` 四个独立服务，按需拉起：
+`docker-compose.yml` 已编排**全栈**：中间件 `mysql / redis / elasticsearch / nacos` + 应用 `backend / frontend / nginx`，一条命令拉起即可访问：
 
 ```bash
-docker compose up -d                       # 全部拉起
-docker compose up -d mysql redis          # 仅 MySQL + Redis（prod 够用）
-docker compose up -d elasticsearch nacos  # 仅 ES + Nacos（配 es/nacos profile 用）
-docker compose down                       # 全部停止
+# 全栈（含 ES/Nacos，首次构建镜像较慢）
+docker compose up -d
+
+# 最小可用（不含 ES/Nacos，启动最快）
+docker compose up -d mysql redis backend frontend nginx
+
+docker compose down                  # 停止并移除容器（数据卷保留）
+docker compose down -v               # 连数据卷一起删（清空 MySQL 数据）
 ```
 
-- MySQL：root/`root`，库名 `ai_nav`（首次 `up` 自动建库），字符集 utf8mb4。
+- **自动建表**：`backend/sql/schema.sql` 已挂载到 MySQL 的 `/docker-entrypoint-initdb.d`，首次启动自动建库 + 灌种子数据，无需手动导入。
+- **前端构建参数**：`frontend` 服务构建时注入 `NEXT_PUBLIC_API_base=/api`、`NEXT_PUBLIC_USE_MOCK=false`（见 `frontend/Dockerfile`），因此页面走同源 `/api`，由 Nginx 反代到后端，免 CORS。
+- **访问入口**：Nginx 监听 `:80`，`/` → 前端（:3000），`/api/` → 后端（:8123）。直接浏览器开 `http://<服务器IP>/` 即可。
+- 镜像构建：后端用 `backend/Dockerfile`（maven 多阶段 → jre 运行，默认 `prod` profile）；前端用 `frontend/Dockerfile`（`npm ci/build` → `next start`）。
+
+> 单独只起中间件时仍可按服务名拉起：`docker compose up -d mysql redis`、`docker compose up -d elasticsearch nacos`。
+
+- MySQL：root/`root`，库名 `ai_nav`，字符集 utf8mb4。
 - Redis：无密码，`6379`。
 - Elasticsearch：单节点、关闭 xpack 安全、堆 512m，`9200`。
 - Nacos：standalone、关闭鉴权，`8848`；仅做服务注册（配置中心默认关闭）。
