@@ -1,0 +1,10 @@
+target
+**/target
+.git
+.workbuddy
+*.iml
+.idea
+**/*.class
+**/*.log
+Dockerfile
+.dockerignore
