@@ -6,6 +6,8 @@ WORKDIR /build
 COPY pom.xml .
 COPY ai-nav-common ./ai-nav-common
 COPY ai-nav-web ./ai-nav-web
+# 注入阿里云 Maven 镜像（避免腾讯云首尔节点到 Maven Central 的下载被污染）
+COPY settings.xml /root/.m2/settings.xml
 RUN mvn -B -q clean package -DskipTests
 
 FROM eclipse-temurin:17-jre

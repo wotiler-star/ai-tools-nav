@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <!-- 腾讯云首尔节点到 Maven Central 的依赖下载会被污染(返回的 jar 损坏)，
+       改用阿里云镜像获取完整可靠的依赖包 -->
+  <mirrors>
+    <mirror>
+      <id>aliyun-public</id>
+      <name>Aliyun Maven Public</name>
+      <url>https://maven.aliyun.com/repository/public</url>
+      <mirrorOf>*</mirrorOf>
+    </mirror>
+  </mirrors>
+</settings>
