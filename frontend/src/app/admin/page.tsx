@@ -75,6 +75,19 @@ export default function AdminPage() {
     if (loginUser === null) openLoginModal();
   }, [loginUser, openLoginModal]);
 
+  // 所有 hook 必须在 early return 之前以固定顺序调用（React Hooks 规则）
+  const tools = useMemo(() => toolData?.data?.records || [], [toolData]);
+  const cats = useMemo(() => catData?.data || [], [catData]);
+
+  // 工具分类分布（d3 图表数据源）
+  const catCounts = useMemo<CategoryDatum[]>(() => {
+    if (!cats.length) return [];
+    return cats.map((c) => ({
+      name: c.name,
+      count: tools.filter((t) => t.categoryId === c.id).length
+    }));
+  }, [cats, tools]);
+
   if (!loginUser) {
     return (
       <Result
@@ -104,18 +117,6 @@ export default function AdminPage() {
       />
     );
   }
-
-  const tools = toolData?.data?.records || [];
-  const cats = catData?.data || [];
-
-  // 工具分类分布（d3 图表数据源）
-  const catCounts = useMemo<CategoryDatum[]>(() => {
-    if (!cats.length) return [];
-    return cats.map((c) => ({
-      name: c.name,
-      count: tools.filter((t) => t.categoryId === c.id).length
-    }));
-  }, [cats, tools]);
 
   // ===== 分类操作 =====
   const openAddCat = () => {

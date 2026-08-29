@@ -160,7 +160,157 @@ export const AI_TOOLS: AiTool[] = [
   // AI应用(14)
   t(71, "妙鸭相机", "AI 写真生成应用。", "https://miaoya.aliyun.com", 14, ["写真", "阿里"], 6600, false, true),
   t(72, "通义听悟", "阿里会议纪要/学习整理应用。", "https://tongyi.aliyun.com/tingwu", 14, ["中文", "纪要"], 5300, false, false),
-  t(73, "讯飞听见", "AI 实时转写与字幕应用。", "https://iflyrec.com", 14, ["转写", "讯飞"], 4900, false, false)
+  t(73, "讯飞听见", "AI 实时转写与字幕应用。", "https://iflyrec.com", 14, ["转写", "讯飞"], 4900, false, false),
+
+  // ===== 以下为批量扩充（id 74+），补齐各分类覆盖率 =====
+
+  // AI写作(1) 追加
+  t(74, "彩云小梦", "彩云科技 AI 写小说与故事创作工具。", "https://ifcyl.com", 1, ["小说", "创作"], 4200, false, false),
+  t(75, "百度文库AI", "百度文库智能写作与文档生成。", "https://wenku.baidu.com", 1, ["文档", "百度"], 4500, false, false),
+  t(76, "Copy.ai", "海外营销文案与品牌内容 AI 写作。", "https://copy.ai", 1, ["营销", "英文"], 5000, false, false),
+  t(77, "Writesonic", "长文与营销落地页 AI 生成。", "https://writesonic.com", 1, ["营销", "英文"], 4600, false, false),
+  t(78, "讯飞智作", "科大讯飞 AI 写作与音频创作平台。", "https://zhizuo.xfyun.cn", 1, ["中文", "讯飞"], 4100, false, false),
+  t(79, "QuillBot", "英文改写、摘要与润色助手。", "https://quillbot.com", 1, ["英文", "改写"], 4400, false, false),
+  t(80, "Sudowrite", "小说创作专用的 AI 写作伙伴。", "https://sudowrite.com", 1, ["小说", "英文"], 3600, false, false),
+  t(81, "HyperWrite", "个人写作助手，自动续写与改写。", "https://hyperwriteai.com", 1, ["英文", "助手"], 3500, false, false),
+  t(82, "Writer", "企业级品牌语气一致的 AI 写作。", "https://writer.com", 1, ["企业", "英文"], 3800, false, false),
+  t(83, "爱制作", "国产一站式 AI 写作与文案生成。", "https://www.aizhizuo.com", 1, ["中文", "文案"], 3300, false, false),
+
+  // AI图像(2) 追加
+  t(84, "Adobe Firefly", "Adobe 全家桶原生 AI 绘画与生成。", "https://firefly.adobe.com", 2, ["设计", "Adobe"], 8200, true, true),
+  t(85, "Leonardo.AI", "游戏资产与概念图 AI 生成平台。", "https://leonardo.ai", 2, ["游戏", "设计"], 7800, true, false),
+  t(86, "Fooocus", "基于 SDXL 的极简本地绘画工具。", "https://github.com/lllyasviel/Fooocus", 2, ["开源", "本地"], 5900, false, false),
+  t(87, "ComfyUI", "节点式 Stable Diffusion 工作流引擎。", "https://github.com/comfyanonymous/ComfyUI", 2, ["开源", "节点"], 6400, false, false),
+  t(88, "Recraft", "可生成矢量图标与插画的设计 AI。", "https://recraft.ai", 2, ["设计", "图标"], 5600, false, false),
+  t(89, "Ideogram", "擅长图文排版与海报的 AI 绘画。", "https://ideogram.ai", 2, ["文", "海报"], 6000, false, false),
+  t(90, "海艺 AI", "SeaArt，中文友好的二次元绘画社区。", "https://www.seaart.ai", 2, ["中文", "绘画"], 5200, false, false),
+  t(91, "Niji Journey", "专注于动漫二次元风格的绘画。", "https://nijijourney.com", 2, ["二次元", "动漫"], 5500, false, false),
+  t(92, "PixAI", "二次元头像与插画 AI 生成。", "https://pixai.art", 2, ["二次元", "绘画"], 4800, false, false),
+  t(93, "美图 AI", "美图秀秀旗下 AI 绘画与设计工具。", "https://ai.meitu.com", 2, ["中文", "美图"], 5000, false, false),
+
+  // AI视频创作(3) 追加
+  t(94, "Luma Dream Machine", "高保真运动视频生成模型。", "https://lumalabs.ai/dream-machine", 3, ["生成", "运动"], 7000, true, false),
+  t(95, "海螺 AI 视频", "MiniMax 出品的文生视频工具。", "https://minimax.io", 3, ["中文", "MiniMax"], 6500, false, false),
+  t(96, "Vidu", "生数科技出品的国产文生视频。", "https://vidu.com", 3, ["中文", "生数"], 6200, false, false),
+  t(97, "PixVerse", "带特效模板的 AI 视频生成。", "https://pixverse.ai", 3, ["生成", "特效"], 5800, false, false),
+  t(98, "Stable Video", "Stability AI 开源视频生成模型。", "https://stability.ai", 3, ["开源", "生成"], 5400, false, false),
+  t(99, "Kaiber", "艺术风格化的 AI 视频生成。", "https://kaiber.ai", 3, ["艺术", "视频"], 4600, false, false),
+  t(100, "Wonder Studio", "自动绑定与替换 CG 角色特效。", "https://wonderstudio.ai", 3, ["特效", "角色"], 4400, false, false),
+  t(101, "Captions", "自动字幕与口播视频 AI。", "https://captions.ai", 3, ["字幕", "口播"], 4200, false, false),
+  t(102, "Morph Studio", "智能剪辑与生成一体化视频工具。", "https://morph.studio", 3, ["剪辑", "生成"], 4000, false, false),
+  t(103, "Genmo", "开源动画与视频生成模型。", "https://genmo.ai", 3, ["生成", "动画"], 3800, false, false),
+
+  // AI办公(4) 追加
+  t(104, "飞书妙记", "字节飞书 AI 会议纪要转写。", "https://www.feishu.cn/product/minutes", 4, ["纪要", "字节"], 4800, false, false),
+  t(105, "腾讯文档AI", "腾讯文档智能写作与总结。", "https://docs.qq.com", 4, ["文档", "腾讯"], 4600, false, false),
+  t(106, "Microsoft 365 Copilot", "微软办公全家桶 AI 助手。", "https://microsoft.com/copilot", 4, ["办公", "微软"], 7000, true, false),
+  t(107, "Otter.ai", "会议实时转录与摘要。", "https://otter.ai", 4, ["转录", "会议"], 5300, false, false),
+  t(108, "Tome", "AI 叙事型演示文稿生成。", "https://tome.app", 4, ["PPT", "叙事"], 4900, false, false),
+  t(109, "Beautiful.ai", "智能排版自动生成 PPT。", "https://beautiful.ai", 4, ["PPT", "设计"], 4000, false, false),
+  t(110, "办公小浣熊", "商汤旗下 AI 办公助手。", "https://www.sensetime.com", 4, ["中文", "商汤"], 3800, false, false),
+  t(111, "办公小鲸", "WPS 智能办公助手同类工具。", "https://www.wps.cn", 4, ["文档", "协作"], 3700, false, false),
+  t(112, "MindShow", "一键把大纲变成演示视频。", "https://www.mindshow.fun", 4, ["PPT", "演示"], 3600, false, false),
+  t(113, "BoardMix", "AI 驱动的在线白板协作。", "https://boardmix.cn", 4, ["白板", "协作"], 3600, false, false),
+
+  // AI开发平台(5) 追加
+  t(114, "Amazon Q", "AWS 云原生 AI 编程助手。", "https://aws.amazon.com/codewhisperer", 5, ["AWS", "补全"], 5500, false, false),
+  t(115, "Windsurf", "AI 原生编辑器，Cascade 智能体。", "https://windsurf.com", 5, ["编辑器", "Agent"], 6800, true, false),
+  t(116, "Zed", "Rust 打造的高性能协作编辑器。", "https://zed.dev", 5, ["编辑器", "Rust"], 4700, false, false),
+  t(117, "Aider", "终端里的 AI 结对编程。", "https://aider.chat", 5, ["终端", "开源"], 5200, false, false),
+  t(118, "Cline", "VS Code 开源自主编程智能体。", "https://github.com/cline/cline", 5, ["开源", "VS Code"], 5600, false, false),
+  t(119, "Continue", "开源的 IDE 内 AI 编程助手。", "https://continue.dev", 5, ["开源", "IDE"], 4800, false, false),
+  t(120, "v0 by Vercel", "用自然语言生成前端界面。", "https://v0.dev", 5, ["前端", "生成"], 7200, true, false),
+  t(121, "Bolt.new", "浏览器里全栈 AI 开发环境。", "https://bolt.new", 5, ["全栈", "生成"], 7000, true, false),
+  t(122, "Replit Agent", "云端 IDE 内的 AI 开发智能体。", "https://replit.com", 5, ["云端", "Agent"], 6000, false, false),
+  t(123, "Sourcegraph Cody", "基于代码库语义的 AI 助手。", "https://sourcegraph.com/cody", 5, ["代码", "搜索"], 5000, false, false),
+
+  // AI智能体(6) 追加
+  t(124, "文心智能体", "百度一站式智能体搭建平台。", "https://agents.baidu.com", 6, ["中文", "百度"], 5200, false, false),
+  t(125, "阿里云百炼", "阿里智能体与应用编排平台。", "https://bailian.console.aliyun.com", 6, ["中文", "阿里"], 4900, false, false),
+  t(126, "腾讯元器", "腾讯开放智能体创作平台。", "https://yuanqi.tencent.com", 6, ["中文", "腾讯"], 5100, false, false),
+  t(127, "n8n", "开源工作流自动化与 AI 节点。", "https://n8n.io", 6, ["工作流", "开源"], 5400, false, false),
+  t(128, "Zapier AI", "无代码自动化连接上千应用。", "https://zapier.com/ai", 6, ["自动化", "工作流"], 4700, false, false),
+  t(129, "AgentGPT", "浏览器里配置自主 AI 智能体。", "https://agentgpt.reworkd.ai", 6, ["自主", "开源"], 4500, false, false),
+  t(130, "BabyAGI", "经典的任务分解自主智能体框架。", "https://github.com/yoheinakajima/babyagi", 6, ["自主", "开源"], 4000, false, false),
+  t(131, "CrewAI", "多角色协作的智能体编排框架。", "https://crewai.com", 6, ["多智能体", "框架"], 4900, false, false),
+  t(132, "Flowise", "拖拽式低代码 LLM 应用搭建。", "https://flowiseai.com", 6, ["低代码", "开源"], 4400, false, false),
+  t(133, "Botpress", "面向企业的对话智能体平台。", "https://botpress.com", 6, ["对话", "企业"], 4300, false, false),
+
+  // AI聊天对话(7) 追加
+  t(134, "Gemini", "谷歌多模态对话大模型。", "https://gemini.google.com", 7, ["谷歌", "多模态"], 8600, true, true),
+  t(135, "Microsoft Copilot", "微软整合 Bing 的 AI 助手。", "https://copilot.microsoft.com", 7, ["微软", "搜索"], 7000, true, false),
+  t(136, "豆包", "字节跳动出品的国民级 AI 助手。", "https://doubao.com", 7, ["字节", "中文"], 8000, true, false),
+  t(137, "元宝", "腾讯混元大模型对话助手。", "https://yuanbao.tencent.com", 7, ["腾讯", "中文"], 7500, true, false),
+  t(138, "DeepSeek 对话", "深度求索推理大模型在线对话。", "https://chat.deepseek.com", 7, ["中文", "推理"], 9200, true, true),
+  t(139, "Poe", "Quora 聚合多家模型的对话平台。", "https://poe.com", 7, ["聚合", "Quora"], 6400, false, false),
+  t(140, "Character.AI", "角色扮演与虚拟陪伴对话。", "https://character.ai", 7, ["角色", "陪伴"], 6000, false, false),
+  t(141, "HuggingChat", "Hugging Face 开源模型对话。", "https://huggingface.co/chat", 7, ["开源", "HF"], 5000, false, false),
+  t(142, "Groq", "极速推理的 LPU 对话服务。", "https://groq.com", 7, ["极速", "推理"], 5500, false, false),
+  t(143, "Pi", "Inflection 出品温和陪伴型 AI。", "https://pi.ai", 7, ["陪伴", "英文"], 4200, false, false),
+
+  // AI音频音乐(8) 追加
+  t(144, "ACE Studio", "AI 歌声合成与音乐人声。", "https://ace-studio.ai", 8, ["音乐", "歌声"], 4300, false, false),
+  t(145, "Riffusion", "实时生成音乐的 AI 工具。", "https://riffusion.com", 8, ["音乐", "生成"], 4000, false, false),
+  t(146, "Boomy", "一键生成并发布 AI 音乐。", "https://boomy.com", 8, ["音乐", "生成"], 4200, false, false),
+  t(147, "Lalal.ai", "人声与伴奏音轨分离。", "https://lalal.ai", 8, ["分离", "人声"], 3800, false, false),
+  t(148, "Moises", "音乐练习与扒谱 AI 助手。", "https://moises.ai", 8, ["练习", "音乐"], 3700, false, false),
+  t(149, "Resemble AI", "高拟真 AI 语音克隆。", "https://resemble.ai", 8, ["语音", "克隆"], 3600, false, false),
+  t(150, "Murf", "企业级 AI 配音与语音合成。", "https://murf.ai", 8, ["配音", "语音"], 4400, false, false),
+  t(151, "Voicemaker", "多语种 AI 文本转语音。", "https://voicemaker.in", 8, ["配音", "语音"], 3400, false, false),
+
+  // AI商业设计(9) 追加
+  t(152, "MasterGo AI", "国产 UI 设计协作与 AI 能力。", "https://mastergo.com", 9, ["UI", "协作"], 5000, false, false),
+  t(153, "Figma AI", "全球主流 UI 设计工具内置 AI。", "https://figma.com", 9, ["UI", "设计"], 6800, true, false),
+  t(154, "Adobe Express", "在线快速设计与海报生成。", "https://adobe.com/express", 9, ["设计", "模板"], 4600, false, false),
+  t(155, "美图设计室", "电商与商用 AI 设计工具。", "https://www.designkit.com", 9, ["电商", "中文"], 4200, false, false),
+  t(156, "Uizard", "文本生成可编辑 UI 设计稿。", "https://uizard.io", 9, ["UI", "生成"], 4000, false, false),
+  t(157, "Khroma", "AI 配色方案生成器。", "https://khroma.co", 9, ["配色", "设计"], 3200, false, false),
+  t(158, "Brandmark", "AI 一键生成 Logo 与品牌。", "https://brandmark.io", 9, ["Logo", "生成"], 3300, false, false),
+  t(159, "Designs.ai", "全套品牌视觉 AI 生成。", "https://designs.ai", 9, ["品牌", "设计"], 3100, false, false),
+
+  // AI大模型(10) 追加
+  t(160, "Qwen 通义千问", "阿里开源大模型系列（Qwen2.5）。", "https://qwenlm.com", 10, ["中文", "阿里"], 7800, true, true),
+  t(161, "Mistral", "欧洲开源大模型与 Le Chat。", "https://mistral.ai", 10, ["开源", "法国"], 6000, false, false),
+  t(162, "Grok", "xAI 马斯克出品推理大模型。", "https://x.com/grok", 10, ["马斯克", "推理"], 6500, false, false),
+  t(163, "Yi 零一万物", "李开复团队开源大模型。", "https://01.ai", 10, ["中文", "开源"], 5600, false, false),
+  t(164, "MiniMax", "国内多模态开源大模型。", "https://minimax.io", 10, ["中文", "多模态"], 5800, false, false),
+  t(165, "阶跃星辰 Step", "跃问多模态大模型对话。", "https://www.stepfun.com", 10, ["中文", "多模态"], 4800, false, false),
+  t(166, "Phi", "微软小参数高性能模型系列。", "https://azure.microsoft.com/phi", 10, ["微软", "小模型"], 4500, false, false),
+  t(167, "Gemma", "谷歌开源轻量大模型系列。", "https://deepmind.google/gemma", 10, ["谷歌", "开源"], 5200, false, false),
+
+  // AI学习平台(11) 追加
+  t(168, "Coursera", "国际名校 AI 与数据科学课程。", "https://coursera.org", 11, ["课程", "英文"], 5000, false, false),
+  t(169, "DeepLearning.AI", "吴恩达出品 AI 系统课程。", "https://deeplearning.ai", 11, ["课程", "Andrew"], 5500, false, false),
+  t(170, "fast.ai", "实战导向的深度学习课程。", "https://fast.ai", 11, ["课程", "实战"], 4200, false, false),
+  t(171, "freeCodeCamp", "完全免费的编程学习平台。", "https://freecodecamp.org", 11, ["免费", "英文"], 4300, false, false),
+  t(172, "菜鸟教程", "中文编程与 AI 入门教程站。", "https://www.runoob.com", 11, ["教程", "中文"], 4000, false, false),
+  t(173, "DataCamp", "交互式数据科学学习。", "https://datacamp.com", 11, ["数据", "课程"], 3800, false, false),
+  t(174, "Codecademy", "交互式编程技能学习。", "https://codecademy.com", 11, ["编程", "课程"], 3600, false, false),
+  t(175, "W3Schools", "基础 Web 与 AI 概念教程。", "https://w3schools.com", 11, ["教程", "英文"], 3400, false, false),
+
+  // AI搜索引擎(12) 追加
+  t(176, "Andi", "对话式无广告 AI 搜索引擎。", "https://andi.com", 12, ["搜索", "无广告"], 4000, false, false),
+  t(177, "You.com", "聚合多模型的 AI 搜索门户。", "https://you.com", 12, ["搜索", "聚合"], 5200, false, false),
+  t(178, "Brave Search AI", "注重隐私的 AI 搜索答案。", "https://search.brave.com", 12, ["搜索", "隐私"], 4300, false, false),
+  t(179, "Felo", "中日英多语 AI 搜索与总结。", "https://felo.ai", 12, ["搜索", "总结"], 3900, false, false),
+  t(180, "Genspark", "Agent 式 AI 搜索与写作。", "https://genspark.ai", 12, ["搜索", "代理"], 4100, false, false),
+  t(181, "iAsk", "免费 AI 问答搜索引擎。", "https://iask.ai", 12, ["搜索", "问答"], 3400, false, false),
+  t(182, "Komo", "聊天式 AI 搜索体验。", "https://komo.ai", 12, ["搜索", "聊天"], 3600, false, false),
+
+  // AI内容检测(13) 追加
+  t(183, "Originality.ai", "面向营销的 AI 内容与抄袭检测。", "https://originality.ai", 13, ["检测", "抄袭"], 4400, false, false),
+  t(184, "Writer AI Detector", "英文 AI 文本检测工具。", "https://writer.com/ai-content-detector", 13, ["检测", "英文"], 3600, false, false),
+  t(185, "ZeroGPT", "免费 AI 文本生成检测。", "https://zerogpt.com", 13, ["检测", "免费"], 4200, false, false),
+  t(186, "Hive Moderation", "图像与视频 AIGC 检测。", "https://hivemoderation.com", 13, ["检测", "图像"], 3700, false, false),
+  t(187, "Content at Scale", "长文 AI 检测与去 AI 味。", "https://contentatscale.ai", 13, ["检测", "营销"], 3400, false, false),
+
+  // AI应用(14) 追加
+  t(188, "Remini", "AI 修复老照片与高清放大。", "https://remini.ai", 14, ["老照片", "修复"], 5600, true, false),
+  t(189, "Lensa", "AI 魔法头像与艺术滤镜。", "https://lensa.ai", 14, ["头像", "魔法"], 5200, false, false),
+  t(190, "Wombo Dream", "手机端 AI 艺术绘画应用。", "https://dream.ai", 14, ["绘画", "手机"], 4800, false, false),
+  t(191, "FaceApp", "AI 人脸编辑与特效。", "https://faceapp.com", 14, ["照片", "特效"], 4500, false, false),
+  t(192, "PhotoRoom", "电商与社媒一键抠图。", "https://photoroom.com", 14, ["抠图", "电商"], 4600, false),
+  t(193, "Voicemod", "实时 AI 变声与音效。", "https://voicemod.net", 14, ["变声", "语音"], 4000, false, false)
 ];
 
 // ===== AI 社区帖子 =====
@@ -213,6 +363,102 @@ export const AI_POSTS: AiPost[] = [
     viewNum: 6100,
     likeNum: 320,
     commentNum: 47
+  },
+  {
+    id: 5,
+    title: "从 0 到 1 做 AI 绘画：我的工具流与出图心法",
+    content: "从灵感收集、提示词到后期，分享一套可复用的 AI 绘画工作流与避坑清单。",
+    authorName: "阿杰",
+    authorAvatar: "",
+    thumbUrl: "",
+    createTime: "2026-07-16 11:20:00",
+    viewNum: 5400,
+    likeNum: 380,
+    commentNum: 52
+  },
+  {
+    id: 6,
+    title: "Claude vs GPT：我同时用了 3 个月后的真实对比",
+    content: "长文本、代码、写作三个维度，说清两个模型的取舍与适用场景。",
+    authorName: "TechLin",
+    authorAvatar: "",
+    thumbUrl: "",
+    createTime: "2026-07-15 19:40:00",
+    viewNum: 8900,
+    likeNum: 520,
+    commentNum: 77
+  },
+  {
+    id: 7,
+    title: "用 Dify 十分钟搭一个客服 Bot，附完整配置",
+    content: "零代码把知识库问答接到微信，中小企业也能用，附导出配置。",
+    authorName: "产品记",
+    authorAvatar: "",
+    thumbUrl: "",
+    createTime: "2026-07-14 10:05:00",
+    viewNum: 4700,
+    likeNum: 290,
+    commentNum: 44
+  },
+  {
+    id: 8,
+    title: "AI 视频生成实测：6 款工具谁最适合做口播",
+    content: "统一脚本横测 6 款文生视频，给出口播场景的真实推荐。",
+    authorName: "影像猫",
+    authorAvatar: "",
+    thumbUrl: "",
+    createTime: "2026-07-13 15:25:00",
+    viewNum: 6100,
+    likeNum: 350,
+    commentNum: 61
+  },
+  {
+    id: 9,
+    title: "我把日常工作流全交给 Agent 之后",
+    content: "邮件、排期、周报自动化，一个月省下 40 小时，讲讲踩过的坑。",
+    authorName: "效率怪",
+    authorAvatar: "",
+    thumbUrl: "",
+    createTime: "2026-07-12 09:50:00",
+    viewNum: 7200,
+    likeNum: 410,
+    commentNum: 58
+  },
+  {
+    id: 10,
+    title: "提示词不是越长越好：3 个让效果翻倍的原则",
+    content: "结构、约束、示例，比堆字数更重要，附反面案例对照。",
+    authorName: "小柯",
+    authorAvatar: "",
+    thumbUrl: "",
+    createTime: "2026-07-11 21:10:00",
+    viewNum: 5300,
+    likeNum: 300,
+    commentNum: 39
+  },
+  {
+    id: 11,
+    title: "开源模型本地部署踩坑：显存到底怎么算",
+    content: "用一张表讲清 7B/13B/70B 的显存占用与量化方案。",
+    authorName: "老周",
+    authorAvatar: "",
+    thumbUrl: "",
+    createTime: "2026-07-10 13:30:00",
+    viewNum: 6800,
+    likeNum: 430,
+    commentNum: 66
+  },
+  {
+    id: 12,
+    title: "AI 编程三个月，我从手写 CRUD 到只写需求",
+    content: "真实项目复盘，AI 帮我做了什么、没做什么，以及我的新定位。",
+    authorName: "CoderZ",
+    authorAvatar: "",
+    thumbUrl: "",
+    createTime: "2026-07-09 18:00:00",
+    viewNum: 7600,
+    likeNum: 470,
+    commentNum: 72
   }
 ];
 
@@ -222,7 +468,17 @@ export const AI_PROMPTS: AiPrompt[] = [
   { id: 2, title: "代码审查专家", content: "你是资深架构师，请审查以下代码并给出性能、安全、可读性三方面的改进建议：\n{code}", categoryName: "编程", useCount: 2800 },
   { id: 3, title: "国风插画提示词", content: "水墨风格，远山如黛，一位侠客策马，留白构图，宣纸质感，8k。", categoryName: "绘画", useCount: 2500 },
   { id: 4, title: "周报生成器", content: "根据以下工作要点，生成一份结构清晰、语气专业的周报：\n{points}", categoryName: "办公", useCount: 2100 },
-  { id: 5, title: "英语口语陪练", content: "你是我的英语口语老师，请用 CEFR B1 水平与我对话，纠正我的语法错误。", categoryName: "学习", useCount: 1800 }
+  { id: 5, title: "英语口语陪练", content: "你是我的英语口语老师，请用 CEFR B1 水平与我对话，纠正我的语法错误。", categoryName: "学习", useCount: 1800 },
+  { id: 6, title: "小红书爆款标题", content: "你是有 10 年经验的小红书运营，为「{主题}」生成 10 个吸引点击的标题，带 emoji。", categoryName: "写作", useCount: 2600 },
+  { id: 7, title: "雅思写作批改", content: "你是雅思考官，请批改以下作文并给出 0-9 分与改进建议：\n{essay}", categoryName: "学习", useCount: 2300 },
+  { id: 8, title: "Python 代码注释", content: "请为以下 Python 代码逐行添加清晰中文注释，并解释核心逻辑：\n{code}", categoryName: "编程", useCount: 2100 },
+  { id: 9, title: "简历优化师", content: "你是资深 HR，请优化我的简历要点，突出量化成果与岗位匹配度：\n{points}", categoryName: "办公", useCount: 1900 },
+  { id: 10, title: "旅行攻略生成", content: "你是旅行规划师，为「{目的地}」制定 5 天 4 晚行程，含预算与美食推荐。", categoryName: "生活", useCount: 1700 },
+  { id: 11, title: "会议纪要整理", content: "根据以下录音转写，整理成结论、待办与负责人三段式纪要：\n{text}", categoryName: "办公", useCount: 2000 },
+  { id: 12, title: "故事续写大师", content: "你是小说家，请以悬疑风格续写以下段落，保持人设与节奏：\n{text}", categoryName: "写作", useCount: 1600 },
+  { id: 13, title: "Excel 公式专家", content: "请写出实现「{需求}」的 Excel 公式，并解释参数含义。", categoryName: "办公", useCount: 1500 },
+  { id: 14, title: "翻译润色", content: "将以下中文翻译成地道英文商务邮件，语气专业：\n{text}", categoryName: "学习", useCount: 1400 },
+  { id: 15, title: "思维导图大纲", content: "将「{主题}」拆解为层级化思维导图大纲，适合做分享。", categoryName: "学习", useCount: 1300 }
 ];
 
 // ===== 首页热门搜索词 =====
@@ -245,7 +501,17 @@ export const AI_NEWS: NewsItem[] = [
   { id: 7, rank: 7, title: "端侧小模型爆发，手机本地运行大模型成为现实" },
   { id: 8, rank: 8, title: "AI 绘画商用授权规范落地，创作者收益更有保障" },
   { id: 9, rank: 9, title: "检索增强新范式：知识库问答准确率突破新高" },
-  { id: 10, rank: 10, title: "开发者生态繁荣：MCP 与 Skills 成为新标配" }
+  { id: 10, rank: 10, title: "开发者生态繁荣：MCP 与 Skills 成为新标配" },
+  { id: 11, rank: 11, title: "AI 编程从辅助走向主导：自动修复 PR 成现实", hot: true },
+  { id: 12, rank: 12, title: "多语言实时翻译耳机发布，跨语言通话零延迟" },
+  { id: 13, rank: 13, title: "开源社区推出统一 Agent 协议，互联互通更进一步" },
+  { id: 14, rank: 14, title: "AI 面试官走红，校招初筛效率提升 10 倍" },
+  { id: 15, rank: 15, title: "图像生成迈入 4K 时代，细节与一致性双突破" },
+  { id: 16, rank: 16, title: "企业知识库接入大模型，内部搜索体验焕新" },
+  { id: 17, rank: 17, title: "AI 辅助科研：一周完成原需一月的文献综述" },
+  { id: 18, rank: 18, title: "端云协同推理落地，隐私与性能兼得" },
+  { id: 19, rank: 19, title: "AI 配音已难辨真伪，内容创作门槛再降低" },
+  { id: 20, rank: 20, title: "编程教育变革：中小学生也能用自然语言做应用" }
 ];
 
 // ===== 精选推荐（资讯区右侧） =====
@@ -330,7 +596,9 @@ export const TOOL_TABS: { key: number; label: string }[] = [
   { key: 9, label: "AI商业设计" },
   { key: 10, label: "AI大模型" },
   { key: 11, label: "AI学习平台" },
-  { key: 12, label: "AI搜索引擎" }
+  { key: 12, label: "AI搜索引擎" },
+  { key: 13, label: "AI内容检测" },
+  { key: 14, label: "AI应用" }
 ];
 
 // ===== MCP 服务器（/mcp 页，分类对齐真站） =====
@@ -418,7 +686,19 @@ export const SKILLS: SkillItem[] = [
   sk(13, "marketing-copy", "💼 商业与营销", "生成多平台的营销文案与投放素材。"),
   sk(14, "sql-expert", "🗄️ 数据库", "编写与优化 SQL，设计索引与表结构。"),
   sk(15, "research-assistant", "🔬 研究", "检索文献、归纳要点并生成综述。"),
-  sk(16, "meeting-notes", "👥 协作与管理", "整理会议记录并输出待办与结论。")
+  sk(16, "meeting-notes", "👥 协作与管理", "整理会议记录并输出待办与结论。"),
+  sk(17, "canvas-design", "🎨 内容与媒体", "把草图与需求转成可交付的 Canvas 视觉。"),
+  sk(18, "video-editing", "🎨 内容与媒体", "用 AI 完成剪辑、字幕与配乐。"),
+  sk(19, "python-pro", "💻 软件开发", "遵循 PEP8 生成与优化 Python 代码。"),
+  sk(20, "go-dev", "💻 软件开发", "编写符合 Go 惯用法的后端服务。"),
+  sk(21, "frontend-testing", "🔒 测试与安全", "为前端组件编写 Vitest 单测。"),
+  sk(22, "security-audit", "🔒 测试与安全", "审查依赖与代码中的安全风险。"),
+  sk(23, "data-viz", "📊 数据与分析", "把数据转成清晰图表与洞察。"),
+  sk(24, "bi-report", "📊 数据与分析", "自动生成业务分析报告。"),
+  sk(25, "seo-copy", "💼 商业与营销", "产出兼顾搜索与转化的内容。"),
+  sk(26, "social-media", "💼 商业与营销", "规划多平台社媒内容日历。"),
+  sk(27, "research-synth", "🔬 研究", "跨文献归纳研究综述。"),
+  sk(28, "knowledge-graph", "🗄️ 数据库", "从文本抽取实体构建知识图谱。")
 ];
 
 // ===== 社区帖子（/essay 页，带话题分类） =====
@@ -455,7 +735,15 @@ export const ESSAY_POSTS: EssayPost[] = [
   ep(5, "CoderZ", "算法", "资源教程", "04-29 11:40", "从零学 RAG：一篇讲清检索增强", "向量库、切分、召回、重排，配一个可跑的最小示例。", ["RAG", "教程"], 120, 40, true),
   ep(6, "小满", "运营", "创意玩法", "04-28 18:22", "AI 帮我写了一个月的短视频脚本", "如何用提示词把选题、脚本、分镜一条龙生成出来。", ["文案", "短视频"], 39, 9),
   ep(7, "老周", "后端", "AI编程", "04-27 10:00", "本地跑大模型的显卡选购建议", "不同预算下的显存与吞吐对比，附实测数据。", ["本地部署", "硬件"], 76, 25),
-  ep(8, "Nova", "设计", "资源教程", "04-26 14:16", "提示词工程新手常犯的 5 个错误", "从描述模糊到参数堆砌，逐条给出改法。", ["提示词", "入门"], 58, 15)
+  ep(8, "Nova", "设计", "资源教程", "04-26 14:16", "提示词工程新手常犯的 5 个错误", "从描述模糊到参数堆砌，逐条给出改法。", ["提示词", "入门"], 58, 15),
+  ep(9, "Leo", "算法", "AI智能体", "04-25 09:30", "用 Coze 做了个自动回复客服，配置全记录", "从触发器到知识库，一步步搭建可上线客服 Bot。", ["Coze", "客服"], 71, 28, true),
+  ep(10, "阿May", "运营", "创意玩法", "04-24 16:48", "AI 批量生成朋友圈九宫格", "一套模板稳定产出统一视觉的社媒图。", ["社媒", "效率"], 43, 11),
+  ep(11, "大山", "全栈", "AI编程", "04-23 11:05", "用 Bolt 三天做出 MVP 并拿到反馈", "零后端基础也能快速验证想法。", ["Bolt", "MVP"], 95, 33, true),
+  ep(12, "木子", "设计", "资源教程", "04-22 14:22", "Figma 变量与 AI 插件实战", "用变量系统管理多主题设计。", ["Figma", "设计"], 48, 14),
+  ep(13, "阿杰", "产品", "AI智能体", "04-21 10:40", "把公司 SOP 变成可对话的智能体", "让新人随时问、随时查。", ["SOP", "智能体"], 62, 22),
+  ep(14, "小满", "运营", "创意玩法", "04-20 19:15", "用 AI 写了一个月公众号，数据复盘", "标题、选题、排版哪些真的有用。", ["公众号", "复盘"], 55, 17),
+  ep(15, "老周", "后端", "资源教程", "04-19 13:00", "RAG 生产环境踩坑：召回与延迟如何平衡", "线上真实指标下的取舍。", ["RAG", "生产"], 88, 31, true),
+  ep(16, "Nova", "设计", "精选", "04-18 15:30", "提示词审美：为什么你的图总差点意思", "从构图与光影角度拆解。", ["提示词", "审美"], 64, 20)
 ];
 
 // ===== 学习教程（/resource/learn 页） =====

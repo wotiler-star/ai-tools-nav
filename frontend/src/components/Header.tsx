@@ -20,7 +20,7 @@ import {
 } from "@ant-design/icons";
 import { useAppStore } from "@/store/useAppStore";
 import { api } from "@/lib/api";
-import { useTheme } from "@/app/provider";
+import { useTheme } from "@/app/theme-context";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 /** 顶部主导航：与 ai.codefather.cn 实测顺序完全一致 */

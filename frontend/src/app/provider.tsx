@@ -7,22 +7,8 @@ import { App, ConfigProvider, theme } from "antd";
 import { SWRConfig } from "swr";
 import { swrFetcher } from "@/lib/api";
 import zhCN from "antd/locale/zh_CN";
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState
-} from "react";
-
-export type ThemeMode = "light" | "dark";
-
-const ThemeCtx = createContext<{
-  theme: ThemeMode;
-  toggle: () => void;
-}>({ theme: "light", toggle: () => {} });
-
-/** 主题上下文：在 Header 等组件里调用 useTheme() 读取/切换 */
-export const useTheme = () => useContext(ThemeCtx);
+import { useEffect, useState } from "react";
+import { ThemeCtx } from "@/app/theme-context";
 
 /**
  * 客户端 Provider：
