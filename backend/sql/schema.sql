@@ -1,3 +1,4 @@
+SET NAMES utf8mb4;
 -- AI 导航站数据库 schema（MySQL 8）
 -- 执行：mysql -uroot -p ai_nav < schema.sql
 
