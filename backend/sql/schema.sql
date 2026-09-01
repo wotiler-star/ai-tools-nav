@@ -1,3 +1,4 @@
+SET NAMES utf8mb4;
 -- AI 导航站数据库 schema（MySQL 8）
 -- 执行：mysql -uroot -p ai_nav < schema.sql
 
@@ -93,3 +94,213 @@ INSERT INTO ai_tool (name, logo, description, url, category_id, tags, heat, is_r
 ('Suno','', 'AI 音乐生成', 'https://suno.com', 5, '音乐,生成', 8600, 1, 1),
 ('Runway','', 'AI 视频生成', 'https://runwayml.com', 4, '生成,剪辑', 8300, 1, 1),
 ('Coze','', '字节 AI Bot 搭建平台', 'https://coze.com', 10, 'Bot,字节', 7600, 1, 1);
+-- AI 导航站内容采集种子（utf8mb4）
+-- 新增真实 AI 工具，覆盖全部 11 个分类，补齐写作/办公/设计/学习空分类
+-- 同时填充社区帖子 ai_post 与提示词 ai_prompt
+
+SET NAMES utf8mb4;
+
+-- ============ 分类 1 对话 ============
+INSERT INTO ai_tool (name, url, description, tags, category_id, heat, is_recommended, is_hot) VALUES
+('Kimi', 'https://kimi.moonshot.cn', '月之暗面出品，支持超长上下文对话', '对话,长文本', 1, 9100, 1, 1),
+('文心一言', 'https://yiyan.baidu.com', '百度文心大模型，中文理解强', '中文,百度', 1, 8200, 1, 1),
+('通义千问', 'https://tongyi.aliyun.com', '阿里通义大模型，多模态能力强', '阿里,多模态', 1, 8000, 1, 1),
+('豆包', 'https://www.doubao.com', '字节跳动 AI 助手，免费好用', '字节,助手', 1, 7800, 0, 0),
+('智谱清言', 'https://chatglm.cn', '清华智谱 GLM 大模型', '清华,GLM', 1, 7600, 0, 0),
+('讯飞星火', 'https://xinghuo.xfyun.cn', '科大讯飞认知大模型', '讯飞,语音', 1, 7400, 0, 0),
+('元宝', 'https://yuanbao.tencent.com', '腾讯混元大模型 AI 助手', '腾讯,混元', 1, 7200, 0, 0),
+('Gemini', 'https://gemini.google.com', 'Google 多模态对话模型', '谷歌,多模态', 1, 7000, 0, 0),
+('Copilot', 'https://copilot.microsoft.com', '微软 Windows 内置 AI 助手', '微软,助手', 1, 6900, 0, 0),
+('DeepSeek', 'https://chat.deepseek.com', '深度求索开源大模型，推理强', '开源,推理', 1, 8800, 1, 1),
+('百川智能', 'https://www.baichuan-ai.com', '百川开源大模型', '开源,百川', 1, 6500, 0, 0),
+('Poe', 'https://poe.com', 'Quora 推出的多模型聚合对话', '聚合,Quora', 1, 6300, 0, 0),
+('Character.AI', 'https://character.ai', '角色扮演 AI 聊天', '角色,聊天', 1, 6100, 0, 0),
+('Grok', 'https://x.com/grok', 'xAI 推出的实时联网对话', '马斯克,联网', 1, 6000, 0, 0);
+
+-- ============ 分类 2 绘画 ============
+INSERT INTO ai_tool (name, url, description, tags, category_id, heat, is_recommended, is_hot) VALUES
+('DALL·E 3', 'https://openai.com/dall-e', 'OpenAI 文生图模型，理解提示词强', '文生图,OpenAI', 2, 8700, 1, 1),
+('通义万相', 'https://tongyi.aliyun.com/wanxiang', '阿里通义文生图，国风好看', '阿里,国风', 2, 7900, 1, 1),
+('文心一格', 'https://yige.baidu.com', '百度 AI 艺术绘画平台', '百度,艺术', 2, 7200, 0, 0),
+('Leonardo.AI', 'https://leonardo.ai', '游戏美术与概念图生成', '游戏,美术', 2, 8300, 1, 1),
+('Adobe Firefly', 'https://www.adobe.com/products/firefly.html', 'Adobe 创意生成式 AI', '创意,Adobe', 2, 7400, 0, 0),
+('即梦', 'https://dreamina.capcut.com', '字节剪映旗下 AI 绘画视频', '字节,创作', 2, 7100, 0, 0),
+('Civitai', 'https://civitai.com', '开源绘画模型分享社区', '模型,社区', 2, 6800, 0, 0),
+('Ideogram', 'https://ideogram.ai', '擅长图文排版与海报', '海报,文字', 2, 6600, 0, 0),
+('NightCafe', 'https://nightcafe.studio', '在线 AI 艺术生成', '艺术,在线', 2, 6200, 0, 0),
+('6pen', 'https://6pen.art', '国产免费 AI 绘画', '国产,免费', 2, 6000, 0, 0),
+('SeaArt', 'https://www.seaart.ai', '二次元风格 AI 绘画', '二次元,风格', 2, 5900, 0, 0),
+('NovelAI', 'https://novelai.net', '二次元动漫角色绘制', '动漫,角色', 2, 6400, 0, 0),
+('Recraft', 'https://www.recraft.ai', '矢量图标与品牌素材生成', '矢量,图标', 2, 6300, 0, 0),
+('Fooocus', 'https://github.com/lllyasviel/Fooocus', '本地部署的极简绘画工具', '本地,开源', 2, 5800, 0, 0);
+
+-- ============ 分类 3 写作 ============
+INSERT INTO ai_tool (name, url, description, tags, category_id, heat, is_recommended, is_hot) VALUES
+('Notion AI', 'https://www.notion.so/product/ai', '笔记与文档智能写作', '笔记,文档', 3, 8200, 1, 1),
+('Jasper', 'https://www.jasper.ai', '营销文案批量生成', '营销,文案', 3, 7600, 1, 1),
+('Copy.ai', 'https://www.copy.ai', '社交媒体与广告文案', '广告,社媒', 3, 6500, 0, 0),
+('Grammarly', 'https://www.grammarly.com', '英文语法校对与润色', '语法,英文', 3, 7900, 1, 1),
+('QuillBot', 'https://quillbot.com', '改写与摘要工具', '改写,摘要', 3, 6800, 0, 0),
+('Writesonic', 'https://writesonic.com', '长文与 SEO 内容生成', 'SEO,长文', 3, 6400, 0, 0),
+('秘塔写作猫', 'https://xiezuocat.com', '中文纠错与润色', '中文,纠错', 3, 7300, 1, 1),
+('火山写作', 'https://www.volcengine.com/products/writing', '字节智能写作助手', '字节,助手', 3, 6200, 0, 0),
+('Sudowrite', 'https://www.sudowrite.com', '小说创作辅助', '小说,创作', 3, 6000, 0, 0),
+('Rytr', 'https://rytr.me', '低成本多语言写作', '多语言,便宜', 3, 5800, 0, 0),
+('通义听悟', 'https://tingwu.aliyun.com', '会议录音转写与总结', '会议,转写', 3, 6600, 0, 0),
+('彩云小梦', 'https://iflow.cn', '中文小说 AI 续写', '小说,续写', 3, 6100, 0, 0),
+('笔灵 AI', 'https://ibiling.cn', '公文与简历智能写作', '公文,简历', 3, 6300, 0, 0);
+
+-- ============ 分类 4 视频 ============
+INSERT INTO ai_tool (name, url, description, tags, category_id, heat, is_recommended, is_hot) VALUES
+('Pika', 'https://pika.art', '文本生成趣味短视频', '文本,短视频', 4, 8200, 1, 1),
+('HeyGen', 'https://www.heygen.com', '数字人视频与多语种口播', '数字人,口播', 4, 8000, 1, 1),
+('Synthesia', 'https://www.synthesia.io', '企业级 AI 数字人视频', '企业,数字人', 4, 7000, 0, 0),
+('可灵', 'https://klingai.com', '快手 AI 视频生成，运镜强', '快手,运镜', 4, 8400, 1, 1),
+('Luma AI', 'https://lumalabs.ai', '梦幻视频与 3D 生成', '3D,梦幻', 4, 6900, 0, 0),
+('Sora', 'https://openai.com/sora', 'OpenAI 长时长视频生成', '文生视频,OpenAI', 4, 8600, 1, 1),
+('D-ID', 'https://www.d-id.com', '让照片开口说话', '照片,口播', 4, 6800, 0, 0),
+('剪映', 'https://www.capcut.cn', '字节全能视频剪辑', '剪辑,字节', 4, 7500, 0, 0),
+('智影', 'https://zenvideo.qq.com', '腾讯智能视频创作', '腾讯,创作', 4, 6600, 0, 0),
+('Kaiber', 'https://kaiber.ai', '音乐可视化视频生成', '音乐,可视化', 4, 6200, 0, 0),
+('Pictory', 'https://pictory.ai', '文章转短视频', '文章,短视频', 4, 6000, 0, 0),
+('一帧秒创', 'https://1s2c.com', '图文转视频创作', '图文,创作', 4, 5900, 0, 0),
+('Vidnoz', 'https://vidnoz.com', '免费数字人视频', '免费,数字人', 4, 5800, 0, 0),
+('度加', 'https://aigc.baidu.com', '百度 AI 视频创作', '百度,创作', 4, 5700, 0, 0);
+
+-- ============ 分类 5 音频 ============
+INSERT INTO ai_tool (name, url, description, tags, category_id, heat, is_recommended, is_hot) VALUES
+('Udio', 'https://udio.com', '高质量 AI 音乐生成', '音乐,生成', 5, 8000, 1, 1),
+('ElevenLabs', 'https://elevenlabs.io', '顶级 AI 语音合成', '语音,合成', 5, 8300, 1, 1),
+('讯飞听见', 'https://www.iflyrec.com', '会议录音转写与字幕', '转写,字幕', 5, 7600, 1, 1),
+('Murf', 'https://murf.ai', '配音与有声内容生成', '配音,有声', 5, 6800, 0, 0),
+('魔音工坊', 'https://www.moyin.com', '中文 AI 配音平台', '中文,配音', 5, 7000, 0, 0),
+('Boomy', 'https://boomy.com', '一键生成背景音乐', '背景乐,一键', 5, 6400, 0, 0),
+('Stable Audio', 'https://stableaudio.com', 'Stability 音乐生成', '开源,音乐', 5, 6200, 0, 0),
+('TTSMaker', 'https://ttsmaker.com', '免费文字转语音', '免费,语音', 5, 6600, 0, 0),
+('标贝', 'https://www.data-baker.com', '中文语音合成方案', '中文,方案', 5, 6000, 0, 0),
+('Voicemaker', 'https://voicemaker.in', '多语种语音生成', '多语种,语音', 5, 5900, 0, 0),
+('讯飞智作', 'https://www.xfzhizuo.cn', '讯飞 AI 音频创作', '讯飞,创作', 5, 6300, 0, 0),
+('Resemble', 'https://www.resemble.ai', '克隆声音与语音合成', '克隆,语音', 5, 6100, 0, 0);
+
+-- ============ 分类 6 编程 ============
+INSERT INTO ai_tool (name, url, description, tags, category_id, heat, is_recommended, is_hot) VALUES
+('Codeium', 'https://codeium.com', '免费 AI 代码补全', '补全,免费', 6, 8100, 1, 1),
+('Tabnine', 'https://www.tabnine.com', '隐私优先的代码助手', '隐私,补全', 6, 7000, 0, 0),
+('通义灵码', 'https://tongyi.aliyun.com/lingma', '阿里 IDE 智能编码', '阿里,IDE', 6, 7900, 1, 1),
+('Claude Code', 'https://claude.ai/code', 'Anthropic 终端编程 Agent', '终端,Agent', 6, 8500, 1, 1),
+('v0', 'https://v0.dev', 'Vercel AI 前端界面生成', '前端,UI', 6, 8000, 1, 1),
+('Replit', 'https://replit.com', '云端 AI 编程环境', '云端,环境', 6, 7200, 0, 0),
+('bolt.new', 'https://bolt.new', '浏览器内全栈 AI 开发', '全栈,浏览器', 6, 7700, 0, 0),
+('Cody', 'https://sourcegraph.com/cody', 'Sourcegraph 代码问答', '问答,代码', 6, 6800, 0, 0),
+('文心快码', 'https://comate.baidu.com', '百度 Comate 编码助手', '百度,IDE', 6, 6900, 0, 0),
+('CodeGeeX', 'https://codegeex.cn', '智谱开源代码模型', '开源,智谱', 6, 6700, 0, 0),
+('Devin', 'https://devin.ai', '首个 AI 软件工程师', '工程师,自动', 6, 7300, 0, 0),
+('豆包 MarsCode', 'https://marscode.com', '字节 AI IDE', '字节,IDE', 6, 7100, 0, 0),
+('CodeWhisperer', 'https://aws.amazon.com/codewhisperer', 'AWS 代码补全', '亚马逊,补全', 6, 6600, 0, 0),
+('Augment', 'https://www.augmentcode.com', '面向大型代码库助手', '大型库,助手', 6, 6400, 0, 0);
+
+-- ============ 分类 7 办公 ============
+INSERT INTO ai_tool (name, url, description, tags, category_id, heat, is_recommended, is_hot) VALUES
+('钉钉 AI', 'https://www.dingtalk.com', '阿里智能办公协同', '阿里,协同', 7, 7800, 1, 1),
+('飞书', 'https://www.feishu.cn', '字节一站式办公套件', '字节,套件', 7, 8000, 1, 1),
+('腾讯文档', 'https://docs.qq.com', '在线协作文档 AI', '腾讯,协作', 7, 7000, 0, 0),
+('WPS AI', 'https://www.wps.cn', '金山办公智能助手', '金山,助手', 7, 7900, 1, 1),
+('Microsoft 365 Copilot', 'https://www.microsoft.com/microsoft-365/copilot', '微软全家桶 AI', '微软,全家桶', 7, 8200, 1, 1),
+('Google Workspace', 'https://workspace.google.com', '谷歌办公套件 Gemini', '谷歌,套件', 7, 7100, 0, 0),
+('Gamma', 'https://gamma.app', 'AI 一键生成 PPT', '演示,PPT', 7, 8300, 1, 1),
+('Tome', 'https://tome.app', '叙事型 AI 演示文稿', '叙事,演示', 7, 6900, 0, 0),
+('讯飞智文', 'https://zhiwen.xfyun.cn', '讯飞 AI 生成 PPT', '讯飞,PPT', 7, 6800, 0, 0),
+('Slack AI', 'https://slack.com/features/ai', '团队沟通智能总结', '沟通,总结', 7, 6600, 0, 0),
+('百度文库', 'https://wenku.baidu.com', 'AI 文档搜索与生成', '百度,文档', 7, 6700, 0, 0),
+('印象笔记 AI', 'https://www.yinxiang.com', '智能笔记整理', '笔记,整理', 7, 6300, 0, 0),
+('万兴脑图', 'https://www.edrawmind.cn', 'AI 思维导图', '脑图,思维', 7, 6400, 0, 0),
+('ProcessOn', 'https://www.processon.com', '在线流程图与协作', '流程,协作', 7, 6200, 0, 0);
+
+-- ============ 分类 8 设计 ============
+INSERT INTO ai_tool (name, url, description, tags, category_id, heat, is_recommended, is_hot) VALUES
+('Canva', 'https://www.canva.com', '在线设计海报与素材', '海报,素材', 8, 8400, 1, 1),
+('Figma', 'https://www.figma.com', '协作式 UI 设计', '设计,UI', 8, 8200, 1, 1),
+('稿定设计', 'https://www.gaoding.com', '电商与新媒体制图', '电商,新媒体', 8, 7700, 1, 1),
+('创客贴', 'https://www.chuangkit.com', '极简平面设计工具', '平面,简单', 8, 7200, 0, 0),
+('即时设计', 'https://js.design', '国产协作设计软件', '国产,协作', 8, 7600, 1, 1),
+('MasterGo', 'https://mastergo.com', '团队设计协作平台', '团队,协作', 8, 7100, 0, 0),
+('美图秀秀 AI', 'https://ai.meitu.com', '人像美容与 AI 修图', '人像,修图', 8, 7300, 0, 0),
+('墨刀', 'https://www.modao.cc', '产品原型设计', '原型,产品', 8, 6900, 0, 0),
+('Remove.bg', 'https://www.remove.bg', '一键智能抠图', '抠图,一键', 8, 7500, 0, 0),
+('爱设计', 'https://www.ipaituan.com', '企业营销设计', '企业,营销', 8, 6400, 0, 0),
+('鹿班', 'https://luban.aliyun.com', '阿里智能电商设计', '阿里,电商', 8, 6600, 0, 0),
+('iconfont', 'https://www.iconfont.cn', '阿里矢量图标库', '图标,矢量', 8, 6700, 0, 0),
+('Pixso', 'https://pixso.cn', '国产 Figma 替代品', '国产,替代', 8, 6800, 0, 0),
+('笔魂', 'https://www.bihun.ai', 'AI 商用素材设计', '商用,素材', 8, 6300, 0, 0);
+
+-- ============ 分类 9 搜索 ============
+INSERT INTO ai_tool (name, url, description, tags, category_id, heat, is_recommended, is_hot) VALUES
+('秘塔搜索', 'https://metaso.cn', '无广告 AI 搜索引擎', '搜索,无广告', 9, 8100, 1, 1),
+('360 AI 搜索', 'https://so.360.com', '360 大模型搜索', '360,搜索', 9, 6800, 0, 0),
+('百度 AI 搜索', 'https://chat.baidu.com', '百度对话式搜索', '百度,搜索', 9, 7000, 0, 0),
+('天工 AI', 'https://www.tiangong.cn', '昆仑万维 AI 助手与搜索', '昆仑,助手', 9, 7900, 1, 1),
+('Brave Search', 'https://search.brave.com', '隐私优先独立搜索', '隐私,独立', 9, 6600, 0, 0),
+('You.com', 'https://you.com', '多引擎 AI 聚合搜索', '聚合,搜索', 9, 6700, 0, 0),
+('Phind', 'https://www.phind.com', '开发者专用 AI 搜索', '开发,搜索', 9, 7700, 1, 1),
+('Devv', 'https://devv.ai', '面向程序员 AI 搜索引擎', '编程,搜索', 9, 7000, 0, 0),
+('知乎直答', 'https://zhida.zhihu.com', '知乎 AI 问答搜索', '知乎,问答', 9, 6500, 0, 0),
+('纳米搜索', 'https://nani.so.com', '360 纳米 AI 搜索', '360,纳米', 9, 6200, 0, 0),
+('Genspark', 'https://genspark.ai', '智能体式搜索摘要', '智能体,摘要', 9, 6400, 0, 0),
+('Andi', 'https://andisearch.com', '对话式 AI 搜索', '对话,搜索', 9, 6000, 0, 0),
+('Felo', 'https://felo.ai', '多语种 AI 搜索', '多语种,搜索', 9, 6100, 0, 0);
+
+-- ============ 分类 10 开发平台 ============
+INSERT INTO ai_tool (name, url, description, tags, category_id, heat, is_recommended, is_hot) VALUES
+('OpenAI Platform', 'https://platform.openai.com', 'OpenAI 官方 API 平台', 'API,OpenAI', 10, 8800, 1, 1),
+('Anthropic API', 'https://www.anthropic.com', 'Claude 模型 API 接入', 'API,Claude', 10, 8200, 1, 1),
+('Google AI Studio', 'https://aistudio.google.com', 'Gemini 模型调试平台', 'API,Gemini', 10, 7600, 0, 0),
+('阿里云百炼', 'https://bailian.console.aliyun.com', '阿里大模型一站式平台', '阿里,平台', 10, 7900, 1, 1),
+('百度千帆', 'https://cloud.baidu.com/product/wenxinworkshop', '百度企业大模型平台', '百度,企业', 10, 7400, 0, 0),
+('火山方舟', 'https://www.volcengine.com/product/ark', '字节大模型服务平台', '字节,平台', 10, 7500, 0, 0),
+('智谱 BigModel', 'https://open.bigmodel.cn', '智谱 GLM 开放平台', '智谱,开放', 10, 7700, 1, 1),
+('腾讯云 TI', 'https://cloud.tencent.com/product/ti', '腾讯大模型训练平台', '腾讯,训练', 10, 7100, 0, 0),
+('Hugging Face', 'https://huggingface.co', '开源模型社区与托管', '开源,社区', 10, 8300, 1, 1),
+('Replicate', 'https://replicate.com', '云端运行开源模型', 'API,开源', 10, 7800, 0, 0),
+('硅基流动', 'https://siliconflow.cn', '国内大模型推理平台', '国内,推理', 10, 7200, 0, 0),
+('月之暗面平台', 'https://platform.moonshot.cn', 'Kimi 开放 API 接入', 'API,Kimi', 10, 7300, 0, 0),
+('讯飞开放平台', 'https://www.xfyun.cn', '讯飞语音能力开放', '讯飞,语音', 10, 6900, 0, 0),
+('NVIDIA NGC', 'https://catalog.ngc.nvidia.com', 'GPU 与模型仓库', '英伟达,模型', 10, 7000, 0, 0),
+('Modal', 'https://modal.com', '云端弹性算力平台', '算力,云端', 10, 6800, 0, 0);
+
+-- ============ 分类 11 学习 ============
+INSERT INTO ai_tool (name, url, description, tags, category_id, heat, is_recommended, is_hot) VALUES
+('多邻国', 'https://www.duolingo.com', '游戏化外语学习', '外语,游戏', 11, 8200, 1, 1),
+('网易有道翻译', 'https://fanyi.youdao.com', 'AI 翻译与词典', '翻译,词典', 11, 8000, 1, 1),
+('Khan Academy', 'https://www.khanacademy.org', '免费全科学习平台', '免费,全科', 11, 7100, 0, 0),
+('夸克学习', 'https://www.quark.cn', '阿里智能学习助手', '阿里,助手', 11, 6900, 0, 0),
+('学而思九章', 'https://www.jiuzhang.com', '数学 AI 解题辅导', '数学,解题', 11, 7200, 0, 0),
+('Quizlet', 'https://quizlet.com', '记忆卡片与测验', '记忆,测验', 11, 6600, 0, 0),
+('作业帮', 'https://www.zyb.com', '中小学拍照搜题', '搜题,中小学', 11, 7300, 0, 0),
+('小猿搜题', 'https://www.yuansouti.com', '猿辅导旗下搜题', '搜题,猿', 11, 6800, 0, 0),
+('松鼠 AI', 'https://www.songshuai.com', '自适应智适应学习', '自适应,智适', 11, 6400, 0, 0),
+('Coursera', 'https://www.coursera.org', '名校在线课程', '课程,名校', 11, 7000, 0, 0),
+('Socratic', 'https://socratic.org', '谷歌 AI 作业辅导', '作业,辅导', 11, 6300, 0, 0),
+('智学网', 'https://www.zhixue.com', '学情分析与测评', '学情,测评', 11, 6200, 0, 0),
+('流利说', 'https://www.liulishuo.com', 'AI 英语口语训练', '口语,英语', 11, 6500, 0, 0);
+
+-- ============ 社区提示词 ai_prompt ============
+INSERT INTO ai_prompt (title, content, category_name, use_count) VALUES
+('公文写作助手', '你是一位资深机关公文写作专家，擅长通知、报告、请示、总结等文种。请根据我的要点，输出格式规范、语言严谨、符合公文要求的完整文稿。', '写作', 1240),
+('小红书爆款文案', '你是有 10 年经验的小红书爆款文案写手。请围绕主题生成一篇带有 emoji、强钩子标题和种草口吻的笔记，并附 5 个相关话题标签。', '营销', 2310),
+('代码审查专家', '你是一位资深后端工程师。请审查我给出的代码，指出潜在 Bug、安全隐患、性能与可读性问题，并给出具体修改建议和重构示例。', '编程', 1870),
+('英文邮件润色', '请将我提供的中文内容翻译为专业、地道的英文商务邮件，语气礼貌且简洁，并说明修改理由。', '翻译', 1560),
+('周报生成器', '根据我列出的本周工作要点，生成一份条理清晰、重点突出、适合直接发给领导的周报，使用要点式表达。', '办公', 980),
+('苏格拉底式引导', '你是一位引导型导师，请用苏格拉底式提问帮我拆解问题、厘清概念，而不是直接给答案。每次只提一个关键问题。', '学习', 760),
+('国风插画提示词', '请为我生成一段国风工笔画的中英文 AI 绘画提示词，包含主体、构图、色彩、光影与画质词，并解释其效果。', '绘画', 1120),
+('AI 模拟面试官', '你是一家大厂严格的技术面试官。请针对我应聘的岗位连续追问，考察基础知识与系统设计，并在最后给出点评与建议。', '职场', 830);
+
+-- ============ 社区帖子 ai_post ============
+INSERT INTO ai_post (title, content, author_name, author_avatar, thumb_url, view_num, like_num, comment_num) VALUES
+('我用 AI 一周做了 3 个网站，方法全公开', '最近尝试用 v0、Cursor 和 Claude 组合，把想法快速落地成可上线的小网站。核心心法是：先用对话明确需求，再让 AI 生成骨架，最后人工精修细节。', '鱼皮', 'https://api.dicebear.com/7.x/initials/svg?seed=Yupi', 'https://picsum.photos/seed/aiweb/600/400', 5200, 320, 45),
+('2026 年最值得收藏的 20 个 AI 工具', '整理了对话、绘画、视频、编程各赛道的神器，按使用频率和性价比排序，建议先码后看。', '星河', 'https://api.dicebear.com/7.x/initials/svg?seed=Xinghe', 'https://picsum.photos/seed/aitools/600/400', 8800, 510, 88),
+('从零搭建你的 AI 绘画工作流', '分享我如何用 Midjourney 出图、Stable Diffusion 精修、ComfyUI 串联节点，效率提升 3 倍。', '阿木', 'https://api.dicebear.com/7.x/initials/svg?seed=Amu', 'https://picsum.photos/seed/aiart/600/400', 4100, 260, 33),
+('Prompt 工程的 7 个实用技巧', '好的提示词决定了一半的产出质量。本文总结角色设定、少样本、链式思考等可立即上手的技巧。', '墨笔', 'https://api.dicebear.com/7.x/initials/svg?seed=Mobi', 'https://picsum.photos/seed/prompt/600/400', 6700, 410, 67),
+('普通人如何用 AI 做副业', '不需要代码基础，用 Copilot、剪映、即梦就能跑通内容变现闭环，附具体赛道与避坑指南。', '小满', 'https://api.dicebear.com/7.x/initials/svg?seed=Xiaoman', 'https://picsum.photos/seed/sidehustle/600/400', 9300, 620, 102),
+('我把公司周报交给 AI 后发生了什么', '用 Gamma 和通义听悟搭了一套自动化工位，会议纪要与周报全自动生成，领导还夸我汇报清晰。', '老张', 'https://api.dicebear.com/7.x/initials/svg?seed=Zhang', 'https://picsum.photos/seed/report/600/400', 3600, 210, 29),
+('开发者必看的 10 个大模型平台', '从 OpenAI 到硅基流动、月之暗面，横向对比价格、延迟、中文能力与 SDK 体验。', '码农小李', 'https://api.dicebear.com/7.x/initials/svg?seed=Lilei', 'https://picsum.photos/seed/platform/600/400', 5400, 300, 51),
+('AI 学习外语的亲测有效的方法', '用多邻国打卡、DeepSeek 陪练口语、有道查词，三个月从哑巴英语到能开会。', '果果', 'https://api.dicebear.com/7.x/initials/svg?seed=Guoguo', 'https://picsum.photos/seed/learn/600/400', 4800, 270, 40);
