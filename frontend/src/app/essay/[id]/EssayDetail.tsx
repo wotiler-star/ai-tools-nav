@@ -13,7 +13,6 @@ import {
 import { useToast, Toast } from "@/components/Toast";
 import Markdown from "@/components/Markdown";
 import { EssayPost } from "@/types";
-import { ESSAY_POSTS } from "@/lib/mockData";
 import { SITE } from "@/config/site";
 
 /** 由 summary + 标签合成 markdown 正文（mock 数据无正文时演示用，真实数据优先用 post.content） */
@@ -35,11 +34,17 @@ function buildMarkdown(post: EssayPost): string {
   ].join("\n");
 }
 
-export default function EssayDetail({ post }: { post: EssayPost }) {
+export default function EssayDetail({
+  post,
+  relatedPosts = []
+}: {
+  post: EssayPost;
+  relatedPosts?: EssayPost[];
+}) {
   const { msg, show } = useToast();
   const [liked, setLiked] = useState(false);
 
-  const related = ESSAY_POSTS.filter((p) => p.topic === post.topic && p.id !== post.id).slice(0, 3);
+  const related = relatedPosts.filter((p) => p.id !== post.id).slice(0, 3);
   const mdSource = buildMarkdown(post);
 
   const jsonLd = {

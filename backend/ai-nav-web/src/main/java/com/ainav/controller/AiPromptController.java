@@ -28,4 +28,10 @@ public class AiPromptController {
             @RequestParam(defaultValue = "20") long pageSize) {
         return ResultUtils.success(aiPromptService.listPromptByPage(current, pageSize));
     }
+
+    @Operation(summary = "提示词详情")
+    @GetMapping("/get")
+    public BaseResponse<AiPrompt> get(@RequestParam long id) {
+        return ResultUtils.success(aiPromptService.getById(id));
+    }
 }
