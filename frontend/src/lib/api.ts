@@ -43,6 +43,12 @@ export const api = {
       params: { current: 1, pageSize: 20, ...params }
     }),
 
+  getPost: (id: number | string) =>
+    request<BaseResponse<AiPost>>("/ai_post/get", { params: { id } }),
+
+  getPrompt: (id: number | string) =>
+    request<BaseResponse<AiPrompt>>("/ai_prompt/get", { params: { id } }),
+
   // ===== 用户鉴权（Sa-Token SESSION，无第三方 OAuth）=====
   login: (userAccount: string, userPassword: string) =>
     request<BaseResponse<UserVO>>("/user/login", {

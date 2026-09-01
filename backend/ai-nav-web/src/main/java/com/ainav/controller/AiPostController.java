@@ -28,4 +28,10 @@ public class AiPostController {
             @RequestParam(defaultValue = "12") long pageSize) {
         return ResultUtils.success(aiPostService.listPostByPage(current, pageSize));
     }
+
+    @Operation(summary = "社区帖子详情")
+    @GetMapping("/get")
+    public BaseResponse<AiPost> get(@RequestParam long id) {
+        return ResultUtils.success(aiPostService.getById(id));
+    }
 }
