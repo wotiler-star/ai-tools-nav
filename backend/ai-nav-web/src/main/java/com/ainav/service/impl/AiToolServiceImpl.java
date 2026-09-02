@@ -24,11 +24,15 @@ public class AiToolServiceImpl extends ServiceImpl<AiToolMapper, AiTool> impleme
     public PageResult<AiTool> listToolByPage(ToolQueryRequest req) {
         QueryWrapper<AiTool> qw = new QueryWrapper<>();
         if (req.getCategoryId() != null && req.getCategoryId() > 0) {
-            qw.eq("categoryId", req.getCategoryId());
+            qw.eq("category_id", req.getCategoryId());
         }
         String kw = req.getKeyword();
         if (StringUtils.hasText(kw)) {
             qw.and(w -> w.like("name", kw).or().like("description", kw).or().like("tags", kw));
+        }
+        String tag = req.getTag();
+        if (StringUtils.hasText(tag)) {
+            qw.like("tags", tag);
         }
         qw.orderByDesc("heat");
         Page<AiTool> page = page(new Page<>(req.getCurrent(), req.getPageSize()), qw);

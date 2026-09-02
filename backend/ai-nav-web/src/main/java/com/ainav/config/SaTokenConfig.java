@@ -16,7 +16,18 @@ public class SaTokenConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new SaInterceptor(handle -> StpUtil.checkLogin()))
-                .addPathPatterns("/admin/**", "/user/logout", "/ai_post/add", "/ai_prompt/add")
+                .addPathPatterns(
+                        "/admin/**",
+                        "/user/logout",
+                        "/ai_post/add",
+                        "/ai_prompt/add",
+                        // ===== 用户中心：需登录 =====
+                        "/user/update",
+                        "/user/update/password",
+                        "/user/mypost",
+                        "/user/myprompt",
+                        "/user/member",
+                        "/user/favorite/**")
                 .excludePathPatterns("/doc.html", "/swagger-resources/**", "/v3/api-docs/**");
     }
 }

@@ -6,6 +6,8 @@ import {
   BaseResponse,
   BaseResponsePage,
   Category,
+  MemberVO,
+  UserFavorite,
   UserVO
 } from "@/types";
 
@@ -65,6 +67,47 @@ export const api = {
   getLoginUser: () => request<BaseResponse<UserVO>>("/user/get/login"),
 
   logout: () => request<BaseResponse<boolean>>("/user/logout", { method: "POST" }),
+
+  // ===== 用户中心（需登录，后端 SaTokenConfig 已拦截）=====
+  updateProfile: (data: {
+    userName?: string;
+    userAvatar?: string;
+    userProfile?: string;
+    email?: string;
+    phone?: string;
+  }) => request<BaseResponse<UserVO>>("/user/update", { method: "POST", body: data }),
+
+  updatePassword: (oldPassword: string, newPassword: string, checkPassword: string) =>
+    request<BaseResponse<boolean>>("/user/update/password", {
+      method: "POST",
+      body: { oldPassword, newPassword, checkPassword }
+    }),
+
+  getMemberInfo: () => request<BaseResponse<MemberVO>>("/user/member"),
+
+  getMyPosts: (params: { current?: number; pageSize?: number }) =>
+    request<BaseResponsePage<AiPost>>("/user/mypost", {
+      params: { current: 1, pageSize: 10, ...params }
+    }),
+
+  getMyPrompts: (params: { current?: number; pageSize?: number }) =>
+    request<BaseResponsePage<AiPrompt>>("/user/myprompt", {
+      params: { current: 1, pageSize: 10, ...params }
+    }),
+
+  getFavorites: () => request<BaseResponse<UserFavorite[]>>("/user/favorite/list"),
+
+  addFavorite: (targetType: string, targetId: number) =>
+    request<BaseResponse<boolean>>("/user/favorite/add", {
+      method: "POST",
+      body: { targetType, targetId }
+    }),
+
+  removeFavorite: (targetType: string, targetId: number) =>
+    request<BaseResponse<boolean>>("/user/favorite/delete", {
+      method: "DELETE",
+      params: { targetType, targetId }
+    }),
 
   // ===== 后台管理（对齐后端 AdminController /admin/**，@SaCheckRole("admin")）=====
   admin: {

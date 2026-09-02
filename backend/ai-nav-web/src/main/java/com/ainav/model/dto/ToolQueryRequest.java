@@ -17,4 +17,7 @@ public class ToolQueryRequest implements Serializable {
     private Long categoryId;
 
     private String keyword;
+
+    /** 二级子标签过滤（复刻目标站『分类→子标签』导航），LIKE 匹配 ai_tool.tags */
+    private String tag;
 }

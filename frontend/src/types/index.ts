@@ -6,6 +6,8 @@ export interface Category {
   name: string;
   icon: string;
   sort: number;
+  /** 二级子标签（复刻目标站『分类→子标签』导航） */
+  tags?: string[];
 }
 
 /** AI 工具 */
@@ -144,6 +146,41 @@ export interface UserVO {
   userName: string;
   userAvatar: string;
   userRole: string; // user / admin
+  userProfile?: string;
+  email?: string;
+  phone?: string;
+  /** 积分 */
+  points?: number;
+  /** 成长等级 */
+  level?: number;
+  /** 会员类型：0 普通 / 1 月度 / 2 年度 / 3 永久 */
+  vipType?: number;
+  /** 会员过期时间 */
+  vipExpireTime?: string;
+  createTime?: string;
+}
+
+/** 会员中心信息（对齐后端 MemberVO） */
+export interface MemberVO {
+  points: number;
+  level: number;
+  vipType: number;
+  vipTypeName: string;
+  vipExpireTime?: string;
+  isVip: boolean;
+  benefits: string[];
+}
+
+/** 用户收藏（对齐后端 UserFavorite，含目标快照） */
+export interface UserFavorite {
+  id: number;
+  userId: number;
+  targetType: string; // tool / post / prompt
+  targetId: number;
+  targetTitle?: string;
+  targetCover?: string;
+  targetDesc?: string;
+  targetUrl?: string;
   createTime?: string;
 }
 

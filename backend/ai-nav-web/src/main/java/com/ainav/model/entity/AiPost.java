@@ -43,4 +43,8 @@ public class AiPost implements Serializable {
 
     @TableField("comment_num")
     private Long commentNum;
+
+    /** 发布用户 id（关联 user.id），用于「我的帖子」 */
+    @TableField("user_id")
+    private Long userId;
 }

@@ -6,7 +6,8 @@ CREATE TABLE category (
     id    BIGINT PRIMARY KEY AUTO_INCREMENT,
     name  VARCHAR(64)  NOT NULL,
     icon  VARCHAR(32)  DEFAULT '',
-    sort  INT          DEFAULT 0
+    sort  INT          DEFAULT 0,
+    tags  VARCHAR(512) DEFAULT ''
 );
 
 DROP TABLE IF EXISTS ai_tool;
@@ -64,21 +65,21 @@ CREATE TABLE "user" (
     CONSTRAINT uk_user_account UNIQUE (user_account)
 );
 
-INSERT INTO category (id, name, icon, sort) VALUES
-(1, 'AI写作', '✍️', 1),
-(2, 'AI图像', '🎨', 2),
-(3, 'AI视频创作', '🎬', 3),
-(4, 'AI办公', '📊', 4),
-(5, 'AI开发平台', '💻', 5),
-(6, 'AI智能体', '🤖', 6),
-(7, 'AI聊天对话', '💬', 7),
-(8, 'AI音频音乐', '🔊', 8),
-(9, 'AI商业设计', '🖌️', 9),
-(10, 'AI大模型', '🧠', 10),
-(11, 'AI学习平台', '📚', 11),
-(12, 'AI搜索引擎', '🔍', 12),
-(13, 'AI内容检测', '🛡️', 13),
-(14, 'AI应用', '🧩', 14);
+INSERT INTO category (id, name, icon, sort, tags) VALUES
+(1, 'AI写作', '✍️', 1, 'AI写作工具,AI小红书文案,AI小说,AI论文写作,AI总结摘要,AI提示词,AIGC检测,AI公文,AI标书写作,AI论文查重,AI阅读,降AIGC率'),
+(2, 'AI图像', '🎨', 2, '常用AI图像工具,AI图片优化修复,AI图片背景移除,AI图片无损放大,AI 3D模型生成,AI商品图生成,AI图片插画生成,AI图片物体抹除'),
+(3, 'AI视频创作', '🎬', 3, ''),
+(4, 'AI办公', '📊', 4, 'AI PPT,AI文档工具,AI思维导图,AI表格数据处理,AI语言翻译,AI会议工具,AI招聘求职,AI效率提升,AI法律助手'),
+(5, 'AI开发平台', '💻', 5, 'AI编程工具,AI开源项目,AI开发框架,AI开放平台,AI训练模型,AI-SQL数据库,AI低(无)代码编程,AI国际导航,AI开发课堂'),
+(6, 'AI智能体', '🤖', 6, ''),
+(7, 'AI聊天对话', '💬', 7, ''),
+(8, 'AI音频音乐', '🔊', 8, ''),
+(9, 'AI商业设计', '🖌️', 9, ''),
+(10, 'AI大模型', '🧠', 10, 'AI大语言模型,AI视觉大模型,AI视频大模型,AI语音大模型,AI多模态大模型,AI大模型评测,AI海外大模型,AI行业大模型'),
+(11, 'AI学习平台', '📚', 11, ''),
+(12, 'AI搜索引擎', '🔍', 12, ''),
+(13, 'AI内容检测', '🛡️', 13, ''),
+(14, 'AI应用', '🧩', 14, '');
 
 INSERT INTO ai_tool (id, name, logo, description, url, category_id, tags, heat, is_recommended, is_hot) VALUES
 (13, 'Notion AI', '', '笔记与文档中的 AI 写作助手。', 'https://notion.so', 1, '笔记,效率', 8200, 1, 1),

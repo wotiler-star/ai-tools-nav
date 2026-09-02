@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { KB_COLUMNS } from "@/lib/mockData";
+import { SITE } from "@/config/site";
 
 export function generateMetadata({
   params
@@ -10,7 +11,7 @@ export function generateMetadata({
   if (!col) {
     return {
       title: "知识库专栏",
-      description: "AI 知识库专栏——鱼皮AI导航。"
+      description: `AI 知识库专栏——${SITE.name}。`
     };
   }
   return {
@@ -18,7 +19,7 @@ export function generateMetadata({
     description: `${col.title}——${col.description}`,
     alternates: { canonical: `/library/${col.id}` },
     openGraph: {
-      title: `${col.title}｜鱼皮AI导航`,
+      title: `${col.title}｜${SITE.name}`,
       description: col.description,
       url: `/library/${col.id}`,
       type: "article"

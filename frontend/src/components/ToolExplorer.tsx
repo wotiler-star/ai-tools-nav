@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import { EmptyState } from "@/components/EmptyState";
@@ -24,6 +24,9 @@ export default function ToolExplorer({
   const urlKw = searchParams.get("keyword") || "";
   const keyword = urlKw || storeKw;
 
+  // 二级子标签过滤态（复刻目标站『分类→子标签』导航）
+  const [activeTag, setActiveTag] = useState<string | null>(null);
+
   useEffect(() => {
     if (urlKw) setKeyword(urlKw);
   }, [urlKw, setKeyword]);
@@ -39,10 +42,10 @@ export default function ToolExplorer({
   );
   const categories = catRes?.data || [];
 
-  // 工具列表（按分类 + 关键字过滤，与后端分页结构一致）
-  const toolKey = `/ai_tool/list/page?categoryId=${activeCategoryId}&keyword=${encodeURIComponent(
-    keyword
-  )}`;
+  // 工具列表（按分类 + 二级子标签 + 关键字过滤，与后端分页结构一致）
+  const toolKey = `/ai_tool/list/page?categoryId=${activeCategoryId}&tag=${encodeURIComponent(
+    activeTag || ""
+  )}&keyword=${encodeURIComponent(keyword)}`;
   const { data: toolRes, isLoading } = useSWR<BaseResponsePage<AiTool>>(
     toolKey,
     swrFetcher
@@ -52,9 +55,11 @@ export default function ToolExplorer({
   const activeCat = categories.find((c) => c.id === activeCategoryId);
   const title = keyword
     ? `“${keyword}” 的搜索结果`
-    : activeCat
-      ? activeCat.name
-      : "全部 AI 工具";
+    : activeTag
+      ? `${activeCat?.name ?? ""} / ${activeTag}`
+      : activeCat
+        ? activeCat.name
+        : "全部 AI 工具";
 
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: "20px", display: "flex", gap: 20 }}>
@@ -63,7 +68,9 @@ export default function ToolExplorer({
           <CategoryNav
             categories={categories}
             activeId={activeCategoryId}
+            activeTag={activeTag}
             onChange={setActiveCategory}
+            onTagChange={setActiveTag}
           />
         </div>
       </aside>

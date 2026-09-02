@@ -83,7 +83,7 @@ export default function RootLayout({
         logo: `https://${SITE.domain}/icon.svg`,
         description: SITE.description,
         founder: { "@type": "Person", name: SITE.owner },
-        sameAs: ["https://github.com/liyupi/ai-guide"]
+        sameAs: ["https://github.com/wotiler-star/ai-tools-nav"]
       }
     ]
   };

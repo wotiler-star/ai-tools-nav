@@ -22,6 +22,7 @@ export default function ToolCatalog() {
 
   const [keyword, setKeyword] = useState(urlKw);
   const [activeCat, setActiveCat] = useState<number>(0);
+  const [activeTag, setActiveTag] = useState<string | null>(null);
 
   useEffect(() => {
     setKeyword(urlKw);
@@ -44,6 +45,15 @@ export default function ToolCatalog() {
   );
   const allTools = useMemo(() => toolRes?.data?.records || [], [toolRes]);
 
+  // 全局混合标签云：聚合并去重所有分类的二级子标签（复刻目标站搜索框下方的标签云）
+  const allTags = useMemo(() => {
+    const set = new Set<string>();
+    categories.forEach((c) => (c.tags || []).forEach((t) => set.add(t)));
+    return Array.from(set);
+  }, [categories]);
+
+  const isFiltered = activeCat > 0 || !!activeTag;
+
   // 搜索结果（跨全部工具）
   const kw = keyword.trim().toLowerCase();
   const searchResults = useMemo(() => {
@@ -56,7 +66,15 @@ export default function ToolCatalog() {
     );
   }, [kw, allTools]);
 
-  // 按分类分组
+  // 按分类 + 二级标签过滤后的工具（复刻目标站『分类→子标签』筛选）
+  const filteredTools = useMemo(() => {
+    let list = allTools;
+    if (activeCat > 0) list = list.filter((t) => t.categoryId === activeCat);
+    if (activeTag) list = list.filter((t) => t.tags.includes(activeTag));
+    return list;
+  }, [allTools, activeCat, activeTag]);
+
+  // 按分类分组（全部视图）
   const grouped = useMemo(() => {
     return categories.map((c) => ({
       cat: c,
@@ -64,23 +82,30 @@ export default function ToolCatalog() {
     }));
   }, [categories, allTools]);
 
-  // 滚动定位到分类区块
-  const scrollToCat = (id: number) => {
+  // 交互：分类 / 子标签 筛选
+  const selectCat = (id: number) => {
     setActiveCat(id);
-    if (id === 0) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
-    }
-    const el = document.getElementById(`cat-${id}`);
-    if (el) {
-      const y = el.getBoundingClientRect().top + window.scrollY - 130;
-      window.scrollTo({ top: y, behavior: "smooth" });
-    }
+    setActiveTag(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  const selectTag = (catId: number, tag: string) => {
+    setActiveCat(catId);
+    setActiveTag(tag);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  const selectGlobalTag = (tag: string) => {
+    setActiveCat(0);
+    setActiveTag(tag);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  const clearFilter = () => {
+    setActiveCat(0);
+    setActiveTag(null);
   };
 
-  // 滚动监听：当前浏览到的分类区块自动高亮（对齐真站左侧导航选中态）
+  // 滚动监听：当前浏览到的分类区块自动高亮（仅在『全部』目录视图生效）
   useEffect(() => {
-    if (kw) return;
+    if (kw || isFiltered) return;
     const onScroll = () => {
       let cur = 0;
       for (const c of categories) {
@@ -92,7 +117,7 @@ export default function ToolCatalog() {
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
-  }, [categories, kw]);
+  }, [categories, kw, isFiltered]);
 
   const onSearch = (v: string) => {
     setKeyword(v);
@@ -100,9 +125,14 @@ export default function ToolCatalog() {
     router.replace(q ? `/tool?keyword=${encodeURIComponent(q)}` : "/tool");
   };
 
+  const activeCatName = categories.find((c) => c.id === activeCat)?.name || "";
+  const filteredTitle = activeTag
+    ? `${activeCatName} / ${activeTag}`
+    : activeCatName || "全部 AI 工具";
+
   return (
     <div style={{ background: "#f9fafb", minHeight: "100vh" }}>
-      {/* 左侧固定分类导航（对齐真站：fixed 左缘垂直居中 + 圆角阴影 + 竖向菜单，宽屏显示） */}
+      {/* 左侧固定分类导航（宽屏显示，点击即筛选该分类） */}
       {!kw && categories.length > 0 && (
         <div className="fixed left-0 top-1/2 z-10 -translate-y-1/2">
           <div
@@ -118,13 +148,13 @@ export default function ToolCatalog() {
                 key: String(c.id),
                 label: c.name
               }))}
-              onClick={({ key }) => scrollToCat(Number(key))}
+              onClick={({ key }) => selectCat(Number(key))}
             />
           </div>
         </div>
       )}
 
-      {/* 顶部：分类锚点 + 搜索（sticky） */}
+      {/* 顶部：分类锚点 + 搜索 + 全局标签云（sticky） */}
       <div
         style={{
           position: "sticky",
@@ -136,7 +166,7 @@ export default function ToolCatalog() {
         }}
       >
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "12px 20px" }}>
-          {/* 分类横向锚点 */}
+          {/* 分类横向锚点（带 ▾ 下拉子标签，hover 展开竖向子标签菜单） */}
           <div
             style={{
               display: "flex",
@@ -146,21 +176,52 @@ export default function ToolCatalog() {
             }}
           >
             <button
-              onClick={() => scrollToCat(0)}
-              style={chipStyle(activeCat === 0)}
+              onClick={clearFilter}
+              style={chipStyle(activeCat === 0 && !activeTag)}
             >
               全部
             </button>
-            {categories.map((c) => (
-              <button
-                key={c.id}
-                onClick={() => scrollToCat(c.id)}
-                style={chipStyle(activeCat === c.id)}
-              >
-                <span style={{ marginRight: 4 }}>{c.icon}</span>
-                {c.name}
-              </button>
-            ))}
+            {categories.map((c) => {
+              const hasTags = (c.tags || []).length > 0;
+              const catActive = activeCat === c.id && !activeTag;
+              return (
+                <div key={c.id} className="relative group">
+                  <button onClick={() => selectCat(c.id)} style={chipStyle(catActive)}>
+                    <span style={{ marginRight: 4 }}>{c.icon}</span>
+                    {c.name}
+                    {hasTags && (
+                      <span style={{ marginLeft: 3, fontSize: 10, opacity: 0.7 }}>
+                        ▾
+                      </span>
+                    )}
+                  </button>
+                  {hasTags && (
+                    <div
+                      className="absolute left-0 top-full z-30 hidden w-44 rounded-lg bg-white p-1 shadow-lg group-hover:block"
+                      style={{ maxHeight: 288, overflowY: "auto" }}
+                    >
+                      {c.tags!.map((t) => {
+                        const at = activeTag === t && activeCat === c.id;
+                        return (
+                          <div
+                            key={t}
+                            onClick={() => selectTag(c.id, t)}
+                            title={t}
+                            className={`cursor-pointer truncate rounded px-2.5 py-1.5 text-[13px] ${
+                              at
+                                ? "bg-blue-50 font-medium text-[#3874F7]"
+                                : "text-gray-600 hover:bg-gray-50"
+                            }`}
+                          >
+                            {t}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           {/* 搜索框 */}
@@ -176,21 +237,43 @@ export default function ToolCatalog() {
             }
             style={{ borderRadius: 999, maxWidth: 560 }}
           />
+
+          {/* 全局混合标签云（复刻目标站：搜索框下方聚合所有分类子标签，点击即跨分类筛选） */}
+          {allTags.length > 0 && (
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 6,
+                marginTop: 12
+              }}
+            >
+              <button onClick={clearFilter} style={tagCloudStyle(activeCat === 0 && !activeTag)}>
+                全部
+              </button>
+              {allTags.map((t) => (
+                <button
+                  key={t}
+                  onClick={() => selectGlobalTag(t)}
+                  style={tagCloudStyle(activeTag === t && activeCat === 0)}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       {/* 内容区 */}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "20px 20px 60px" }}>
-        <RecentTools />
         {isLoading ? (
           <SkeletonGrid count={12} />
         ) : kw ? (
           // 搜索结果：扁平网格
           <section>
             <div style={sectionHeaderStyle}>
-              <h2 style={sectionTitleStyle}>
-                “{keyword}” 的搜索结果
-              </h2>
+              <h2 style={sectionTitleStyle}>“{keyword}” 的搜索结果</h2>
               <span style={{ color: "#9ca3af", fontSize: 13 }}>
                 共 {searchResults.length} 个工具
               </span>
@@ -205,55 +288,91 @@ export default function ToolCatalog() {
               </div>
             )}
           </section>
-        ) : (
-          // 全部分类区块平铺
-          grouped.map(({ cat, tools }) => (
-            <section
-              key={cat.id}
-              id={`cat-${cat.id}`}
-              style={{ marginBottom: 36, scrollMarginTop: 130 }}
-            >
-              <div style={sectionHeaderStyle}>
-                <h2 style={sectionTitleStyle}>
-                  <span style={{ marginRight: 8 }}>{cat.icon}</span>
-                  {cat.name}
-                  <span
-                    style={{
-                      marginLeft: 10,
-                      fontSize: 13,
-                      fontWeight: 400,
-                      color: "#9ca3af"
-                    }}
-                  >
-                    {tools.length}
-                  </span>
-                </h2>
-                <Link
-                  href={`/tool?keyword=${encodeURIComponent(cat.name)}`}
+        ) : isFiltered ? (
+          // 分类 / 子标签筛选结果
+          <section>
+            <div style={sectionHeaderStyle}>
+              <h2 style={sectionTitleStyle}>{filteredTitle}</h2>
+              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                <span style={{ color: "#9ca3af", fontSize: 13 }}>
+                  共 {filteredTools.length} 个工具
+                </span>
+                <button
+                  onClick={clearFilter}
                   style={{
+                    border: "none",
+                    background: "transparent",
                     color: BRAND,
-                    fontSize: 13,
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 2
+                    cursor: "pointer",
+                    fontSize: 13
                   }}
                 >
-                  查看全部 <RightOutlined style={{ fontSize: 11 }} />
-                </Link>
+                  清除筛选
+                </button>
               </div>
-              {tools.length === 0 ? (
-                <div style={{ color: "#9ca3af", fontSize: 13, padding: "8px 0" }}>
-                  暂无工具
+            </div>
+            {filteredTools.length === 0 ? (
+              <EmptyState description="该分类下暂无此标签的工具" style={{ padding: 80 }} />
+            ) : (
+              <div style={gridStyle}>
+                {filteredTools.map((tool) => (
+                  <ToolCard key={tool.id} tool={tool} />
+                ))}
+              </div>
+            )}
+          </section>
+        ) : (
+          // 全部分类区块平铺
+          <>
+            <RecentTools />
+            {grouped.map(({ cat, tools }) => (
+              <section
+                key={cat.id}
+                id={`cat-${cat.id}`}
+                style={{ marginBottom: 36, scrollMarginTop: 130 }}
+              >
+                <div style={sectionHeaderStyle}>
+                  <h2 style={sectionTitleStyle}>
+                    <span style={{ marginRight: 8 }}>{cat.icon}</span>
+                    {cat.name}
+                    <span
+                      style={{
+                        marginLeft: 10,
+                        fontSize: 13,
+                        fontWeight: 400,
+                        color: "#9ca3af"
+                      }}
+                    >
+                      {tools.length}
+                    </span>
+                  </h2>
+                  <Link
+                    href={`/tool?keyword=${encodeURIComponent(cat.name)}`}
+                    style={{
+                      color: BRAND,
+                      fontSize: 13,
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 2
+                    }}
+                  >
+                    查看全部 <RightOutlined style={{ fontSize: 11 }} />
+                  </Link>
                 </div>
-              ) : (
-                <div style={gridStyle}>
-                  {tools.map((tool) => (
-                    <ToolCard key={tool.id} tool={tool} />
-                  ))}
-                </div>
-              )}
-            </section>
-          ))
+                {tools.length === 0 ? (
+                  <div style={{ color: "#9ca3af", fontSize: 13, padding: "8px 0" }}>
+                    暂无工具
+                  </div>
+                ) : (
+                  <div style={gridStyle}>
+                    {tools.map((tool) => (
+                      <ToolCard key={tool.id} tool={tool} />
+                    ))}
+                  </div>
+                )}
+              </section>
+            ))}
+          </>
         )}
       </div>
     </div>
@@ -272,6 +391,20 @@ function chipStyle(active: boolean): React.CSSProperties {
     cursor: "pointer",
     transition: "all .15s",
     lineHeight: 1.5
+  };
+}
+
+function tagCloudStyle(active: boolean): React.CSSProperties {
+  return {
+    padding: "3px 10px",
+    borderRadius: 999,
+    border: active ? `1px solid ${BRAND}` : "1px solid #e5e7eb",
+    background: active ? "#eaf1fe" : "#fff",
+    color: active ? BRAND : "#6b7280",
+    fontSize: 12,
+    cursor: "pointer",
+    lineHeight: 1.6,
+    transition: "all .15s"
   };
 }
 

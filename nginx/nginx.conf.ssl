@@ -6,7 +6,7 @@ upstream ainav_api   { server backend:8123; }
 # HTTP 80：仅用于 Let's Encrypt ACME 校验 + 全站 301 跳转 HTTPS
 server {
     listen 80;
-    server_name www.startoday.cc startoday.cc;
+    server_name www.toolly.cc toolly.cc;
 
     location /.well-known/acme-challenge/ {
         root /var/www/certbot;
@@ -20,10 +20,10 @@ server {
 # HTTPS 443
 server {
     listen 443 ssl;
-    server_name www.startoday.cc startoday.cc;
+    server_name www.toolly.cc toolly.cc;
 
-    ssl_certificate     /etc/letsencrypt/live/www.startoday.cc/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/www.startoday.cc/privkey.pem;
+    ssl_certificate     /etc/letsencrypt/live/www.toolly.cc/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/www.toolly.cc/privkey.pem;
 
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!MD5;

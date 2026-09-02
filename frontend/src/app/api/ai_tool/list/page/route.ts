@@ -6,6 +6,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const categoryId = searchParams.get("categoryId");
   const keyword = (searchParams.get("keyword") || "").trim().toLowerCase();
+  const tag = (searchParams.get("tag") || "").trim();
   const current = Number(searchParams.get("current") || "1");
   const pageSize = Number(searchParams.get("pageSize") || "60");
 
@@ -13,12 +14,15 @@ export async function GET(req: NextRequest) {
   if (categoryId && categoryId !== "0") {
     list = list.filter((t) => t.categoryId === Number(categoryId));
   }
+  if (tag) {
+    list = list.filter((t) => t.tags.some((x) => x === tag));
+  }
   if (keyword) {
     list = list.filter(
       (t) =>
         t.name.toLowerCase().includes(keyword) ||
         t.description.toLowerCase().includes(keyword) ||
-        t.tags.some((tag) => tag.toLowerCase().includes(keyword))
+        t.tags.some((x) => x.toLowerCase().includes(keyword))
     );
   }
 

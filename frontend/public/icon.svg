@@ -1,10 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 32 32" fill="none">
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="toollyMarkGrad" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#3874F7"/>
-      <stop offset="1" stop-color="#5b9bff"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="14" fill="url(#g)"/>
-  <text x="32" y="43" font-family="Inter,Arial,sans-serif" font-size="30" font-weight="700" fill="#fff" text-anchor="middle">AI</text>
+  <rect x="1.5" y="1.5" width="29" height="29" rx="8" fill="url(#toollyMarkGrad)"/>
+  <path d="M16 4.5C17.4 11.4 20.6 14.6 27.5 16C20.6 17.4 17.4 20.6 16 27.5C14.6 20.6 11.4 17.4 4.5 16C11.4 14.6 14.6 11.4 16 4.5Z" fill="#ffffff"/>
 </svg>

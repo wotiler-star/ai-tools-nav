@@ -13,6 +13,7 @@ import {
   UserOutlined,
   LogoutOutlined,
   SettingOutlined,
+  IdcardOutlined,
   GithubOutlined,
   MoonOutlined,
   BulbOutlined,
@@ -20,19 +21,33 @@ import {
 } from "@ant-design/icons";
 import { useAppStore } from "@/store/useAppStore";
 import { api } from "@/lib/api";
+import { ToollyLogo } from "@/components/Logo";
 import { useTheme } from "@/app/theme-context";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
-/** 顶部主导航：与 ai.codefather.cn 实测顺序完全一致 */
-const NAV: { label: string; href: string; external?: boolean }[] = [
+/** 顶部主导航：与 ai.codefather.cn 实测顺序/子菜单 100% 一致 */
+const NAV: {
+  label: string;
+  href: string;
+  external?: boolean;
+  children?: { label: string; href: string }[];
+}[] = [
   { label: "主页", href: "/" },
   { label: "社区", href: "/essay" },
   { label: "AI工具", href: "/tool" },
-  { label: "AI知识库", href: "/library" },
+  { label: "AI知识库", href: "/library/1874183520257" },
   { label: "AI提示词", href: "/painting" },
   { label: "MCP", href: "/mcp" },
   { label: "Skills", href: "/skills" },
-  { label: "AI学习资源", href: "/resource/learn" },
+  {
+    label: "AI学习资源",
+    href: "/resource/learn",
+    children: [
+      { label: "AI学习教程", href: "/resource/learn" },
+      { label: "AI项目课程", href: "/resource/course" },
+      { label: "AI知识百科", href: "/resource/encyclopedia" }
+    ]
+  },
   { label: "AI资讯", href: "/news" },
   {
     label: "GitHub开源",
@@ -47,6 +62,7 @@ export default function Header() {
   const { theme, toggle } = useTheme();
   const isMobile = useMediaQuery("(max-width: 767px)");
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [navHover, setNavHover] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -80,6 +96,16 @@ export default function Header() {
     setToast("已退出登录");
     window.setTimeout(() => setToast(null), 2000);
   };
+
+  /** 会员类型文案（0 普通用户不展示） */
+  const userVipLabel =
+    loginUser?.vipType === 3
+      ? "永久会员"
+      : loginUser?.vipType === 2
+      ? "年度会员"
+      : loginUser?.vipType === 1
+      ? "月度会员"
+      : "";
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -146,6 +172,22 @@ export default function Header() {
                 zIndex: 200
               }}
             >
+              {/* 会员信息：等级 / 积分 / 会员类型 */}
+              <div
+                style={{
+                  padding: "10px 12px",
+                  borderBottom: "1px solid var(--border)",
+                  marginBottom: 4
+                }}
+              >
+                <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-1)" }}>
+                  {loginUser.userName}
+                </div>
+                <div style={{ fontSize: 12, color: "var(--text-3)", marginTop: 3 }}>
+                  Lv{loginUser.level ?? 1} · 积分 {loginUser.points ?? 0}
+                  {userVipLabel ? ` · ${userVipLabel}` : ""}
+                </div>
+              </div>
               {loginUser.userRole === "admin" && (
                 <Link
                   href="/admin"
@@ -155,6 +197,13 @@ export default function Header() {
                   <SettingOutlined /> 后台管理
                 </Link>
               )}
+              <Link
+                href="/user/center"
+                onClick={() => setMenuOpen(false)}
+                style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 12px", borderRadius: 8, fontSize: 14, color: "var(--text-1)" }}
+              >
+                <IdcardOutlined /> 个人中心
+              </Link>
               <div
                 onClick={() => {
                   setMenuOpen(false);
@@ -180,79 +229,73 @@ export default function Header() {
   );
 
   const logo = (
-    <Link
-      href="/"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        flexShrink: 0
-      }}
-    >
-      <span
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: 32,
-          height: 32,
-          borderRadius: 8,
-          background: "linear-gradient(135deg,#3874F7,#69b1ff)",
-          color: "#fff",
-          fontWeight: 800,
-          fontSize: 16
-        }}
-      >
-        鱼
-      </span>
-      <span style={{ fontSize: 18, fontWeight: 700, whiteSpace: "nowrap" }}>
-        鱼皮AI导航
-      </span>
+    <Link href="/" aria-label="toolly 首页" style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+      <ToollyLogo size={30} />
     </Link>
   );
 
   const drawerNav = (
     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      {NAV.map((n) =>
-        n.external ? (
-          <a
-            key={n.href}
-            href={n.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => setDrawerOpen(false)}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "12px 10px",
-              borderRadius: 8,
-              fontSize: 15,
-              color: "#4e5969",
-              fontWeight: 500
-            }}
-          >
-            <GithubOutlined />
-            {n.label}
-          </a>
-        ) : (
-          <Link
-            key={n.href}
-            href={n.href}
-            onClick={() => setDrawerOpen(false)}
-            style={{
-              padding: "12px 10px",
-              borderRadius: 8,
-              fontSize: 15,
-              color: isActive(n.href) ? "#3874F7" : "#1f2329",
-              fontWeight: isActive(n.href) ? 700 : 500,
-              background: isActive(n.href) ? "#eaf1fe" : "transparent"
-            }}
-          >
-            {n.label}
-          </Link>
-        )
-      )}
+      {NAV.map((n) => (
+        <div key={n.href}>
+          {n.external ? (
+            <a
+              href={n.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setDrawerOpen(false)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "12px 10px",
+                borderRadius: 8,
+                fontSize: 15,
+                color: "#4e5969",
+                fontWeight: 500
+              }}
+            >
+              <GithubOutlined />
+              {n.label}
+            </a>
+          ) : (
+            <Link
+              href={n.href}
+              onClick={() => setDrawerOpen(false)}
+              style={{
+                display: "block",
+                padding: "12px 10px",
+                borderRadius: 8,
+                fontSize: 15,
+                color: isActive(n.href) ? "#3874F7" : "#1f2329",
+                fontWeight: isActive(n.href) ? 700 : 500,
+                background: isActive(n.href) ? "#eaf1fe" : "transparent"
+              }}
+            >
+              {n.label}
+            </Link>
+          )}
+          {n.children && (
+            <div style={{ display: "flex", flexDirection: "column", paddingLeft: 16 }}>
+              {n.children.map((c) => (
+                <Link
+                  key={c.href}
+                  href={c.href}
+                  onClick={() => setDrawerOpen(false)}
+                  style={{
+                    padding: "9px 10px",
+                    borderRadius: 8,
+                    fontSize: 14,
+                    color: isActive(c.href) ? "#3874F7" : "#86909c"
+                  }}
+                >
+                  {c.label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 
@@ -344,6 +387,65 @@ export default function Header() {
                   <GithubOutlined />
                   {n.label}
                 </a>
+              ) : n.children ? (
+                <div
+                  key={n.href}
+                  style={{ position: "relative" }}
+                  onMouseEnter={() => setNavHover(n.label)}
+                  onMouseLeave={() => setNavHover(null)}
+                >
+                  <Link
+                    href={n.href}
+                    style={{
+                      fontSize: 14,
+                      color: isActive(n.href) ? "#3874F7" : "#4e5969",
+                      fontWeight: isActive(n.href) ? 700 : 500,
+                      padding: "6px 10px",
+                      borderRadius: 8,
+                      background: isActive(n.href) ? "#eaf1fe" : "transparent",
+                      whiteSpace: "nowrap",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 2
+                    }}
+                  >
+                    {n.label}
+                    <span style={{ fontSize: 10, lineHeight: 1 }}>▾</span>
+                  </Link>
+                  {navHover === n.label && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "100%",
+                        left: 0,
+                        minWidth: 160,
+                        background: "#fff",
+                        border: "1px solid #eaecef",
+                        borderRadius: 10,
+                        boxShadow: "0 12px 32px rgba(0,0,0,0.12)",
+                        padding: 6,
+                        zIndex: 200
+                      }}
+                    >
+                      {n.children!.map((c) => (
+                        <Link
+                          key={c.href}
+                          href={c.href}
+                          style={{
+                            display: "block",
+                            padding: "8px 12px",
+                            borderRadius: 8,
+                            fontSize: 14,
+                            color: "#1f2329",
+                            whiteSpace: "nowrap"
+                          }}
+                        >
+                          {c.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ) : (
                 <Link
                   key={n.href}

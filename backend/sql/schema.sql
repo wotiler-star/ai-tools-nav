@@ -11,7 +11,8 @@ CREATE TABLE category (
     id    BIGINT PRIMARY KEY AUTO_INCREMENT,
     name  VARCHAR(64)  NOT NULL,
     icon  VARCHAR(32)  DEFAULT '',
-    sort  INT          DEFAULT 0
+    sort  INT          DEFAULT 0,
+    tags  VARCHAR(512) DEFAULT '' COMMENT '二级子标签，逗号分隔（复刻目标站『分类→子标签』导航）'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- AI 工具
@@ -43,7 +44,8 @@ CREATE TABLE ai_post (
     create_time  DATETIME DEFAULT CURRENT_TIMESTAMP,
     view_num     BIGINT DEFAULT 0,
     like_num     BIGINT DEFAULT 0,
-    comment_num  BIGINT DEFAULT 0
+    comment_num  BIGINT DEFAULT 0,
+    user_id      BIGINT DEFAULT NULL COMMENT '发布用户 id'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- AI 提示词
@@ -53,7 +55,8 @@ CREATE TABLE ai_prompt (
     title        VARCHAR(256) NOT NULL,
     content      TEXT,
     category_name VARCHAR(64) DEFAULT '',
-    use_count    BIGINT DEFAULT 0
+    use_count    BIGINT DEFAULT 0,
+    user_id      BIGINT DEFAULT NULL COMMENT '发布用户 id'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 用户
@@ -68,6 +71,10 @@ CREATE TABLE `user` (
     phone         VARCHAR(32)  DEFAULT '',
     email         VARCHAR(128) DEFAULT '',
     role          VARCHAR(32)  DEFAULT 'user',
+    points        BIGINT        DEFAULT 0 COMMENT '积分',
+    level         INT           DEFAULT 1 COMMENT '成长等级',
+    vip_type      TINYINT       DEFAULT 0 COMMENT '会员类型 0普通/1月度/2年度/3永久',
+    vip_expire_time DATETIME     DEFAULT NULL COMMENT '会员过期时间',
     create_time   DATETIME DEFAULT CURRENT_TIMESTAMP,
     update_time   DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY uk_user_account (user_account)
@@ -77,23 +84,51 @@ CREATE TABLE `user` (
 INSERT INTO `user` (user_account, user_password, user_name, role) VALUES
 ('admin', MD5(CONCAT('ai_nav','12345678')), '管理员', 'admin');
 
--- ===== 初始分类数据（11 大类） =====
-INSERT INTO category (name, icon, sort) VALUES
-('对话','💬',1),('绘画','🎨',2),('写作','✍️',3),('视频','🎬',4),('音频','🔊',5),
-('编程','💻',6),('办公','📊',7),('设计','🖌️',8),('搜索','🔍',9),('开发平台','🧩',10),('学习','📚',11);
+-- 用户收藏（工具 / 帖子 / 提示词）
+DROP TABLE IF EXISTS user_favorite;
+CREATE TABLE user_favorite (
+    id            BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id       BIGINT      NOT NULL,
+    target_type   VARCHAR(32) NOT NULL COMMENT 'tool / post / prompt',
+    target_id     BIGINT      NOT NULL,
+    target_title  VARCHAR(256) DEFAULT '',
+    target_cover  VARCHAR(512) DEFAULT '',
+    target_desc   VARCHAR(512) DEFAULT '',
+    target_url    VARCHAR(512) DEFAULT '',
+    create_time   DATETIME    DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_user_target (user_id, target_type, target_id),
+    KEY idx_user (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ===== 初始分类数据（14 大类，名称/图标/顺序/二级 tags 1:1 对齐 ai.codefather.cn /tool） =====
+INSERT INTO category (id, name, icon, sort, tags) VALUES
+(1,'AI写作','✍️',1,'AI写作工具,AI小红书文案,AI小说,AI论文写作,AI总结摘要,AI提示词,AIGC检测,AI公文,AI标书写作,AI论文查重,AI阅读,降AIGC率'),
+(2,'AI图像','🎨',2,'常用AI图像工具,AI图片优化修复,AI图片背景移除,AI图片无损放大,AI 3D模型生成,AI商品图生成,AI图片插画生成,AI图片物体抹除'),
+(3,'AI视频创作','🎬',3,''),
+(4,'AI办公','📊',4,'AI PPT,AI文档工具,AI思维导图,AI表格数据处理,AI语言翻译,AI会议工具,AI招聘求职,AI效率提升,AI法律助手'),
+(5,'AI开发平台','💻',5,'AI编程工具,AI开源项目,AI开发框架,AI开放平台,AI训练模型,AI-SQL数据库,AI低(无)代码编程,AI国际导航,AI开发课堂'),
+(6,'AI智能体','🤖',6,''),
+(7,'AI聊天对话','💬',7,''),
+(8,'AI音频音乐','🔊',8,''),
+(9,'AI商业设计','🖌️',9,''),
+(10,'AI大模型','🧠',10,'AI大语言模型,AI视觉大模型,AI视频大模型,AI语音大模型,AI多模态大模型,AI大模型评测,AI海外大模型,AI行业大模型'),
+(11,'AI学习平台','📚',11,''),
+(12,'AI搜索引擎','🔍',12,''),
+(13,'AI内容检测','🛡️',13,''),
+(14,'AI应用','🧩',14,'');
 
 -- ===== 示例工具数据 =====
 INSERT INTO ai_tool (name, logo, description, url, category_id, tags, heat, is_recommended, is_hot) VALUES
-('ChatGPT','', 'OpenAI 出品，最强通用对话 AI', 'https://chat.openai.com', 1, '聊天,GPT-4', 9999, 1, 1),
-('Claude','', 'Anthropic 出品，长文本理解强', 'https://claude.ai', 1, '长文本,写作', 8800, 1, 1),
+('ChatGPT','', 'OpenAI 出品，最强通用对话 AI', 'https://chat.openai.com', 7, '聊天,GPT-4', 9999, 1, 1),
+('Claude','', 'Anthropic 出品，长文本理解强', 'https://claude.ai', 7, '长文本,写作', 8800, 1, 1),
 ('Midjourney','', '最强 AI 绘画', 'https://midjourney.com', 2, '绘画,艺术', 9500, 1, 1),
 ('Stable Diffusion','', '开源绘画模型', 'https://stability.ai', 2, '开源,本地', 8700, 1, 1),
-('GitHub Copilot','', 'VS Code AI 结对编程', 'https://github.com/features/copilot', 6, '补全,IDE', 9400, 1, 1),
-('Cursor','', 'AI 原生编辑器', 'https://cursor.com', 6, '编辑器,Agent', 9000, 1, 1),
-('Perplexity','', 'AI 搜索引擎', 'https://perplexity.ai', 9, '搜索,引用', 8800, 1, 1),
-('Suno','', 'AI 音乐生成', 'https://suno.com', 5, '音乐,生成', 8600, 1, 1),
-('Runway','', 'AI 视频生成', 'https://runwayml.com', 4, '生成,剪辑', 8300, 1, 1),
-('Coze','', '字节 AI Bot 搭建平台', 'https://coze.com', 10, 'Bot,字节', 7600, 1, 1);
+('GitHub Copilot','', 'VS Code AI 结对编程', 'https://github.com/features/copilot', 5, '补全,IDE', 9400, 1, 1),
+('Cursor','', 'AI 原生编辑器', 'https://cursor.com', 5, '编辑器,Agent', 9000, 1, 1),
+('Perplexity','', 'AI 搜索引擎', 'https://perplexity.ai', 12, '搜索,引用', 8800, 1, 1),
+('Suno','', 'AI 音乐生成', 'https://suno.com', 8, '音乐,生成', 8600, 1, 1),
+('Runway','', 'AI 视频生成', 'https://runwayml.com', 3, '生成,剪辑', 8300, 1, 1),
+('Coze','', '字节 AI Bot 搭建平台', 'https://coze.com', 6, 'Bot,字节', 7600, 1, 1);
 -- AI 导航站内容采集种子（utf8mb4）
 -- 新增真实 AI 工具，覆盖全部 11 个分类，补齐写作/办公/设计/学习空分类
 -- 同时填充社区帖子 ai_post 与提示词 ai_prompt
@@ -304,3 +339,7 @@ INSERT INTO ai_post (title, content, author_name, author_avatar, thumb_url, view
 ('我把公司周报交给 AI 后发生了什么', '用 Gamma 和通义听悟搭了一套自动化工位，会议纪要与周报全自动生成，领导还夸我汇报清晰。', '老张', 'https://api.dicebear.com/7.x/initials/svg?seed=Zhang', 'https://picsum.photos/seed/report/600/400', 3600, 210, 29),
 ('开发者必看的 10 个大模型平台', '从 OpenAI 到硅基流动、月之暗面，横向对比价格、延迟、中文能力与 SDK 体验。', '码农小李', 'https://api.dicebear.com/7.x/initials/svg?seed=Lilei', 'https://picsum.photos/seed/platform/600/400', 5400, 300, 51),
 ('AI 学习外语的亲测有效的方法', '用多邻国打卡、DeepSeek 陪练口语、有道查词，三个月从哑巴英语到能开会。', '果果', 'https://api.dicebear.com/7.x/initials/svg?seed=Guoguo', 'https://picsum.photos/seed/learn/600/400', 4800, 270, 40);
+
+-- 给前几条帖子/提示词归属到 admin（id=1），便于演示「我的帖子 / 我的提示词」
+UPDATE ai_post SET user_id = 1 WHERE id <= 3;
+UPDATE ai_prompt SET user_id = 1 WHERE id <= 3;

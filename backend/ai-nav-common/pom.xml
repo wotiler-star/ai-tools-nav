@@ -27,18 +27,29 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
         </dependency>
+        <!-- spring-web 将 jakarta.servlet-api 标记为 optional，不会传递；Common 模块需自行声明（编译期用，运行期由 Web 模块的 Tomcat 提供） -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
+        <!-- spring-web 依赖链不携带 slf4j-api（Spring 自带 spring-jcl），日志接口需显式声明 -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
+        <!-- MethodArgumentNotValidException 的父类 BindException 在 spring-context，编译期需声明 -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
+        </dependency>
+        <!-- Sa-Token 异常（NotLoginException / SaException）需转换为 401，而非落进通用 500。
+             运行期由 Web 模块提供，此处仅编译期可见 -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-core</artifactId>
+            <version>${sa-token.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
