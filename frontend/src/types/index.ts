@@ -6,6 +6,8 @@ export interface Category {
   name: string;
   icon: string;
   sort: number;
+  /** 二级子标签（复刻目标站『分类→子标签』导航） */
+  tags?: string[];
 }
 
 /** AI 工具 */

@@ -15,22 +15,22 @@ import {
   KbColumn
 } from "@/types";
 
-// ===== 14 大类分类（名称与顺序 1:1 对齐 ai.codefather.cn /tool） =====
+// ===== 14 大类分类（名称/图标/顺序/二级 tags 1:1 对齐 ai.codefather.cn /tool） =====
 export const CATEGORIES: Category[] = [
-  { id: 1, name: "AI写作", icon: "✍️", sort: 1 },
-  { id: 2, name: "AI图像", icon: "🎨", sort: 2 },
-  { id: 3, name: "AI视频创作", icon: "🎬", sort: 3 },
-  { id: 4, name: "AI办公", icon: "📊", sort: 4 },
-  { id: 5, name: "AI开发平台", icon: "💻", sort: 5 },
-  { id: 6, name: "AI智能体", icon: "🤖", sort: 6 },
-  { id: 7, name: "AI聊天对话", icon: "💬", sort: 7 },
-  { id: 8, name: "AI音频音乐", icon: "🔊", sort: 8 },
-  { id: 9, name: "AI商业设计", icon: "🖌️", sort: 9 },
-  { id: 10, name: "AI大模型", icon: "🧠", sort: 10 },
-  { id: 11, name: "AI学习平台", icon: "📚", sort: 11 },
-  { id: 12, name: "AI搜索引擎", icon: "🔍", sort: 12 },
-  { id: 13, name: "AI内容检测", icon: "🛡️", sort: 13 },
-  { id: 14, name: "AI应用", icon: "🧩", sort: 14 }
+  { id: 1, name: "AI写作", icon: "✍️", sort: 1, tags: ["AI写作工具","AI小红书文案","AI小说","AI论文写作","AI总结摘要","AI提示词","AIGC检测","AI公文","AI标书写作","AI论文查重","AI阅读","降AIGC率"] },
+  { id: 2, name: "AI图像", icon: "🎨", sort: 2, tags: ["常用AI图像工具","AI图片优化修复","AI图片背景移除","AI图片无损放大","AI 3D模型生成","AI商品图生成","AI图片插画生成","AI图片物体抹除"] },
+  { id: 3, name: "AI视频创作", icon: "🎬", sort: 3, tags: [] },
+  { id: 4, name: "AI办公", icon: "📊", sort: 4, tags: ["AI PPT","AI文档工具","AI思维导图","AI表格数据处理","AI语言翻译","AI会议工具","AI招聘求职","AI效率提升","AI法律助手"] },
+  { id: 5, name: "AI开发平台", icon: "💻", sort: 5, tags: ["AI编程工具","AI开源项目","AI开发框架","AI开放平台","AI训练模型","AI-SQL数据库","AI低(无)代码编程","AI国际导航","AI开发课堂"] },
+  { id: 6, name: "AI智能体", icon: "🤖", sort: 6, tags: [] },
+  { id: 7, name: "AI聊天对话", icon: "💬", sort: 7, tags: [] },
+  { id: 8, name: "AI音频音乐", icon: "🔊", sort: 8, tags: [] },
+  { id: 9, name: "AI商业设计", icon: "🖌️", sort: 9, tags: [] },
+  { id: 10, name: "AI大模型", icon: "🧠", sort: 10, tags: ["AI大语言模型","AI视觉大模型","AI视频大模型","AI语音大模型","AI多模态大模型","AI大模型评测","AI海外大模型","AI行业大模型"] },
+  { id: 11, name: "AI学习平台", icon: "📚", sort: 11, tags: [] },
+  { id: 12, name: "AI搜索引擎", icon: "🔍", sort: 12, tags: [] },
+  { id: 13, name: "AI内容检测", icon: "🛡️", sort: 13, tags: [] },
+  { id: 14, name: "AI应用", icon: "🧩", sort: 14, tags: [] }
 ];
 
 const CAT = (id: number) => CATEGORIES.find((c) => c.id === id)!.name;

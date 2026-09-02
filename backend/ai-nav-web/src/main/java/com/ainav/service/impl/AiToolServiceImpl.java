@@ -30,6 +30,10 @@ public class AiToolServiceImpl extends ServiceImpl<AiToolMapper, AiTool> impleme
         if (StringUtils.hasText(kw)) {
             qw.and(w -> w.like("name", kw).or().like("description", kw).or().like("tags", kw));
         }
+        String tag = req.getTag();
+        if (StringUtils.hasText(tag)) {
+            qw.like("tags", tag);
+        }
         qw.orderByDesc("heat");
         Page<AiTool> page = page(new Page<>(req.getCurrent(), req.getPageSize()), qw);
         return new PageResult<>(page.getRecords(), page.getTotal(), page.getSize(), page.getCurrent(), page.getPages());

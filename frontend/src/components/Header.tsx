@@ -25,20 +25,33 @@ import { ToollyLogo } from "@/components/Logo";
 import { useTheme } from "@/app/theme-context";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
-/** 顶部主导航：与 ai.codefather.cn 实测顺序完全一致 */
-const NAV: { label: string; href: string; external?: boolean }[] = [
+/** 顶部主导航：与 ai.codefather.cn 实测顺序/子菜单 100% 一致 */
+const NAV: {
+  label: string;
+  href: string;
+  external?: boolean;
+  children?: { label: string; href: string }[];
+}[] = [
   { label: "主页", href: "/" },
   { label: "社区", href: "/essay" },
   { label: "AI工具", href: "/tool" },
-  { label: "AI知识库", href: "/library" },
+  { label: "AI知识库", href: "/library/1874183520257" },
   { label: "AI提示词", href: "/painting" },
   { label: "MCP", href: "/mcp" },
   { label: "Skills", href: "/skills" },
-  { label: "AI学习资源", href: "/resource/learn" },
+  {
+    label: "AI学习资源",
+    href: "/resource/learn",
+    children: [
+      { label: "AI学习教程", href: "/resource/learn" },
+      { label: "AI项目课程", href: "/resource/course" },
+      { label: "AI知识百科", href: "/resource/encyclopedia" }
+    ]
+  },
   { label: "AI资讯", href: "/news" },
   {
     label: "GitHub开源",
-    href: "https://github.com/wotiler-star/ai-tools-nav",
+    href: "https://github.com/liyupi/ai-guide",
     external: true
   }
 ];
@@ -49,6 +62,7 @@ export default function Header() {
   const { theme, toggle } = useTheme();
   const isMobile = useMediaQuery("(max-width: 767px)");
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [navHover, setNavHover] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -222,46 +236,66 @@ export default function Header() {
 
   const drawerNav = (
     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      {NAV.map((n) =>
-        n.external ? (
-          <a
-            key={n.href}
-            href={n.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => setDrawerOpen(false)}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "12px 10px",
-              borderRadius: 8,
-              fontSize: 15,
-              color: "#4e5969",
-              fontWeight: 500
-            }}
-          >
-            <GithubOutlined />
-            {n.label}
-          </a>
-        ) : (
-          <Link
-            key={n.href}
-            href={n.href}
-            onClick={() => setDrawerOpen(false)}
-            style={{
-              padding: "12px 10px",
-              borderRadius: 8,
-              fontSize: 15,
-              color: isActive(n.href) ? "#3874F7" : "#1f2329",
-              fontWeight: isActive(n.href) ? 700 : 500,
-              background: isActive(n.href) ? "#eaf1fe" : "transparent"
-            }}
-          >
-            {n.label}
-          </Link>
-        )
-      )}
+      {NAV.map((n) => (
+        <div key={n.href}>
+          {n.external ? (
+            <a
+              href={n.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setDrawerOpen(false)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "12px 10px",
+                borderRadius: 8,
+                fontSize: 15,
+                color: "#4e5969",
+                fontWeight: 500
+              }}
+            >
+              <GithubOutlined />
+              {n.label}
+            </a>
+          ) : (
+            <Link
+              href={n.href}
+              onClick={() => setDrawerOpen(false)}
+              style={{
+                display: "block",
+                padding: "12px 10px",
+                borderRadius: 8,
+                fontSize: 15,
+                color: isActive(n.href) ? "#3874F7" : "#1f2329",
+                fontWeight: isActive(n.href) ? 700 : 500,
+                background: isActive(n.href) ? "#eaf1fe" : "transparent"
+              }}
+            >
+              {n.label}
+            </Link>
+          )}
+          {n.children && (
+            <div style={{ display: "flex", flexDirection: "column", paddingLeft: 16 }}>
+              {n.children.map((c) => (
+                <Link
+                  key={c.href}
+                  href={c.href}
+                  onClick={() => setDrawerOpen(false)}
+                  style={{
+                    padding: "9px 10px",
+                    borderRadius: 8,
+                    fontSize: 14,
+                    color: isActive(c.href) ? "#3874F7" : "#86909c"
+                  }}
+                >
+                  {c.label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 
@@ -353,6 +387,65 @@ export default function Header() {
                   <GithubOutlined />
                   {n.label}
                 </a>
+              ) : n.children ? (
+                <div
+                  key={n.href}
+                  style={{ position: "relative" }}
+                  onMouseEnter={() => setNavHover(n.label)}
+                  onMouseLeave={() => setNavHover(null)}
+                >
+                  <Link
+                    href={n.href}
+                    style={{
+                      fontSize: 14,
+                      color: isActive(n.href) ? "#3874F7" : "#4e5969",
+                      fontWeight: isActive(n.href) ? 700 : 500,
+                      padding: "6px 10px",
+                      borderRadius: 8,
+                      background: isActive(n.href) ? "#eaf1fe" : "transparent",
+                      whiteSpace: "nowrap",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 2
+                    }}
+                  >
+                    {n.label}
+                    <span style={{ fontSize: 10, lineHeight: 1 }}>▾</span>
+                  </Link>
+                  {navHover === n.label && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "100%",
+                        left: 0,
+                        minWidth: 160,
+                        background: "#fff",
+                        border: "1px solid #eaecef",
+                        borderRadius: 10,
+                        boxShadow: "0 12px 32px rgba(0,0,0,0.12)",
+                        padding: 6,
+                        zIndex: 200
+                      }}
+                    >
+                      {n.children!.map((c) => (
+                        <Link
+                          key={c.href}
+                          href={c.href}
+                          style={{
+                            display: "block",
+                            padding: "8px 12px",
+                            borderRadius: 8,
+                            fontSize: 14,
+                            color: "#1f2329",
+                            whiteSpace: "nowrap"
+                          }}
+                        >
+                          {c.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ) : (
                 <Link
                   key={n.href}
