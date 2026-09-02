@@ -6,6 +6,7 @@ import { Input, Tag, App, Spin } from "antd";
 import { SearchOutlined, FireOutlined, CopyOutlined } from "@ant-design/icons";
 import { AiPrompt, BaseResponsePage } from "@/types";
 import { swrFetcher } from "@/lib/api";
+import FavoriteButton from "@/components/FavoriteButton";
 
 const BRAND = "#3874F7";
 
@@ -162,8 +163,19 @@ export default function PaintingPage() {
                 >
                   {p.content}
                 </div>
-                <div style={{ fontSize: 12, color: "#9ca3af" }}>
-                  <FireOutlined style={{ color: "#ff7a45" }} /> 使用 {p.useCount}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    fontSize: 12,
+                    color: "#9ca3af"
+                  }}
+                >
+                  <span>
+                    <FireOutlined style={{ color: "#ff7a45" }} /> 使用 {p.useCount}
+                  </span>
+                  <FavoriteButton targetType="prompt" targetId={p.id} style={{ fontSize: 12 }} size={12} />
                 </div>
               </div>
             </div>

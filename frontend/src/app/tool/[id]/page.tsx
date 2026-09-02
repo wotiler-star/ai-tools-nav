@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import Link from "next/link";
@@ -8,8 +8,6 @@ import useSWR from "swr";
 import {
   ArrowLeftOutlined,
   LinkOutlined,
-  HeartOutlined,
-  HeartFilled,
   ShareAltOutlined,
   CheckCircleFilled
 } from "@ant-design/icons";
@@ -17,7 +15,8 @@ import { swrFetcher } from "@/lib/api";
 import { DetailSkeleton } from "@/components/Loading";
 import { useToast, Toast } from "@/components/Toast";
 import ToolCard from "@/components/ToolCard";
-import { addRecent, getFavorites, toggleFavorite } from "@/lib/recentTools";
+import FavoriteButton from "@/components/FavoriteButton";
+import { addRecent } from "@/lib/recentTools";
 import { CATEGORIES } from "@/lib/mockData";
 import { SITE } from "@/config/site";
 import { AiTool, BaseResponse } from "@/types";
@@ -40,11 +39,6 @@ export default function ToolDetailPage() {
   // 记录最近浏览（客户端，避免水合不一致）
   useEffect(() => {
     if (id) addRecent(id);
-  }, [id]);
-
-  const [faved, setFaved] = useState(false);
-  useEffect(() => {
-    if (id) setFaved(getFavorites().includes(id));
   }, [id]);
 
   if (isLoading) {
@@ -194,15 +188,11 @@ export default function ToolDetailPage() {
               flexShrink: 0
             }}
           >
-            <button
-              type="button"
-              className="brand-btn-ghost"
+            <FavoriteButton
+              targetType="tool"
+              targetId={tool.id}
               style={isMobile ? { flex: "1 1 0", minWidth: 0 } : undefined}
-              onClick={() => setFaved(toggleFavorite(tool.id))}
-            >
-              {faved ? <HeartFilled style={{ color: "#ff4d4f" }} /> : <HeartOutlined />}
-              {faved ? "已收藏" : "收藏"}
-            </button>
+            />
             <button
               type="button"
               className="brand-btn-ghost"
