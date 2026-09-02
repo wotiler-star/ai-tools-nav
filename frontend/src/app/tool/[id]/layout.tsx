@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AI_TOOLS } from "@/lib/mockData";
+import { SITE } from "@/config/site";
 
 export function generateMetadata({
   params
@@ -10,7 +11,7 @@ export function generateMetadata({
   if (!tool) {
     return {
       title: "工具详情",
-      description: "AI 工具详情——鱼皮AI导航。"
+      description: `AI 工具详情——${SITE.name}。`
     };
   }
   const desc = `${tool.name}——${tool.description}`;
@@ -20,7 +21,7 @@ export function generateMetadata({
     keywords: [tool.name, ...tool.tags, "AI工具"],
     alternates: { canonical: `/tool/${tool.id}` },
     openGraph: {
-      title: `${tool.name}｜鱼皮AI导航`,
+      title: `${tool.name}｜${SITE.name}`,
       description: desc,
       url: `/tool/${tool.id}`,
       type: "article"

@@ -13,6 +13,7 @@ import {
   UserOutlined,
   LogoutOutlined,
   SettingOutlined,
+  IdcardOutlined,
   GithubOutlined,
   MoonOutlined,
   BulbOutlined,
@@ -20,6 +21,7 @@ import {
 } from "@ant-design/icons";
 import { useAppStore } from "@/store/useAppStore";
 import { api } from "@/lib/api";
+import { ToollyLogo } from "@/components/Logo";
 import { useTheme } from "@/app/theme-context";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
@@ -36,7 +38,7 @@ const NAV: { label: string; href: string; external?: boolean }[] = [
   { label: "AI资讯", href: "/news" },
   {
     label: "GitHub开源",
-    href: "https://github.com/liyupi/ai-guide",
+    href: "https://github.com/wotiler-star/ai-tools-nav",
     external: true
   }
 ];
@@ -80,6 +82,16 @@ export default function Header() {
     setToast("已退出登录");
     window.setTimeout(() => setToast(null), 2000);
   };
+
+  /** 会员类型文案（0 普通用户不展示） */
+  const userVipLabel =
+    loginUser?.vipType === 3
+      ? "永久会员"
+      : loginUser?.vipType === 2
+      ? "年度会员"
+      : loginUser?.vipType === 1
+      ? "月度会员"
+      : "";
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -146,6 +158,22 @@ export default function Header() {
                 zIndex: 200
               }}
             >
+              {/* 会员信息：等级 / 积分 / 会员类型 */}
+              <div
+                style={{
+                  padding: "10px 12px",
+                  borderBottom: "1px solid var(--border)",
+                  marginBottom: 4
+                }}
+              >
+                <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-1)" }}>
+                  {loginUser.userName}
+                </div>
+                <div style={{ fontSize: 12, color: "var(--text-3)", marginTop: 3 }}>
+                  Lv{loginUser.level ?? 1} · 积分 {loginUser.points ?? 0}
+                  {userVipLabel ? ` · ${userVipLabel}` : ""}
+                </div>
+              </div>
               {loginUser.userRole === "admin" && (
                 <Link
                   href="/admin"
@@ -155,6 +183,13 @@ export default function Header() {
                   <SettingOutlined /> 后台管理
                 </Link>
               )}
+              <Link
+                href="/user/center"
+                onClick={() => setMenuOpen(false)}
+                style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 12px", borderRadius: 8, fontSize: 14, color: "var(--text-1)" }}
+              >
+                <IdcardOutlined /> 个人中心
+              </Link>
               <div
                 onClick={() => {
                   setMenuOpen(false);
@@ -180,34 +215,8 @@ export default function Header() {
   );
 
   const logo = (
-    <Link
-      href="/"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        flexShrink: 0
-      }}
-    >
-      <span
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: 32,
-          height: 32,
-          borderRadius: 8,
-          background: "linear-gradient(135deg,#3874F7,#69b1ff)",
-          color: "#fff",
-          fontWeight: 800,
-          fontSize: 16
-        }}
-      >
-        鱼
-      </span>
-      <span style={{ fontSize: 18, fontWeight: 700, whiteSpace: "nowrap" }}>
-        鱼皮AI导航
-      </span>
+    <Link href="/" aria-label="toolly 首页" style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+      <ToollyLogo size={30} />
     </Link>
   );
 

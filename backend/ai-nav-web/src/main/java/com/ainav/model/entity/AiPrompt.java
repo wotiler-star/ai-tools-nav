@@ -27,4 +27,8 @@ public class AiPrompt implements Serializable {
 
     @TableField("use_count")
     private Long useCount;
+
+    /** 发布用户 id（关联 user.id），用于「我的提示词」 */
+    @TableField("user_id")
+    private Long userId;
 }

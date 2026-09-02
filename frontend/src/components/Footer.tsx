@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { SITE } from "@/config/site";
+import { ToollyMark } from "@/components/Logo";
 
 const LINKS = [
-  { label: "老鱼简历", href: "#" },
+  { label: "关于本站", href: "#" },
   { label: "商务合作", href: "#" },
   { label: "增值电信业务经营许可证", href: "#" }
 ];
@@ -18,12 +19,7 @@ export default function Footer() {
           {/* 品牌 */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-2">
-              <span
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-white"
-                style={{ background: "#3874F7" }}
-              >
-                鱼
-              </span>
+              <ToollyMark size={32} />
               <span className="text-lg font-bold text-gray-900">
                 {SITE.name}
               </span>
@@ -85,15 +81,20 @@ export default function Footer() {
         </div>
 
         <div className="mt-8 border-t border-gray-100 pt-5 text-center text-xs text-gray-400">
-          © {year} {SITE.name} ·{" "}
-          <a
-            href="https://beian.miit.gov.cn"
-            target="_blank"
-            rel="noreferrer"
-            className="hover:text-[#3874F7]"
-          >
-            {SITE.icp}
-          </a>
+          © {year} {SITE.name}
+          {SITE.icp ? (
+            <>
+              {" · "}
+              <a
+                href="https://beian.miit.gov.cn"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-[#3874F7]"
+              >
+                {SITE.icp}
+              </a>
+            </>
+          ) : null}
         </div>
       </div>
     </footer>

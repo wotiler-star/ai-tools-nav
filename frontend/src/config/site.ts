@@ -1,15 +1,15 @@
 // 站点全局配置
 
-/** 站点信息（1:1 对齐 ai.codefather.cn） */
+/** 站点信息 */
 export const SITE = {
-  name: "鱼皮AI导航",
-  title: "鱼皮AI导航｜AI工具提示词大全 - 专业学习资源资讯知识库",
+  name: "toolly",
+  title: "toolly - AI工具导航与提示词大全",
   description:
     "分享最新最有趣的 AI 工具、资源、信息，打造最强 AI 社区。汇集 AI 工具、AI 知识库、AI 提示词、MCP、Skills、学习资源与资讯。",
   slogan: "分享最新最有趣的 AI 工具、资源、信息，打造最强 AI 社区",
-  owner: "程序员鱼皮",
-  domain: "ai.codefather.cn",
-  icp: "沪ICP备19026706号-6"
+  owner: "toolly",
+  domain: "www.toolly.cc",
+  icp: ""
 };
 
 /**

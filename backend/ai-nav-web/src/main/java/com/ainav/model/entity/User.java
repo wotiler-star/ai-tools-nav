@@ -43,6 +43,22 @@ public class User implements Serializable {
     /** 角色：user / admin */
     private String role;
 
+    /** 积分（经验值），用于成长等级与会员权益 */
+    @TableField("points")
+    private Long points;
+
+    /** 成长等级（1 起） */
+    @TableField("level")
+    private Integer level;
+
+    /** 会员类型：0 普通用户 / 1 月度会员 / 2 年度会员 / 3 永久会员 */
+    @TableField("vip_type")
+    private Integer vipType;
+
+    /** 会员过期时间（NULL 表示未开通） */
+    @TableField("vip_expire_time")
+    private LocalDateTime vipExpireTime;
+
     @TableField("create_time")
     private LocalDateTime createTime;
 

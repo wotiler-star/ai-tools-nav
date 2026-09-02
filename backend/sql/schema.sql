@@ -43,7 +43,8 @@ CREATE TABLE ai_post (
     create_time  DATETIME DEFAULT CURRENT_TIMESTAMP,
     view_num     BIGINT DEFAULT 0,
     like_num     BIGINT DEFAULT 0,
-    comment_num  BIGINT DEFAULT 0
+    comment_num  BIGINT DEFAULT 0,
+    user_id      BIGINT DEFAULT NULL COMMENT '发布用户 id'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- AI 提示词
@@ -53,7 +54,8 @@ CREATE TABLE ai_prompt (
     title        VARCHAR(256) NOT NULL,
     content      TEXT,
     category_name VARCHAR(64) DEFAULT '',
-    use_count    BIGINT DEFAULT 0
+    use_count    BIGINT DEFAULT 0,
+    user_id      BIGINT DEFAULT NULL COMMENT '发布用户 id'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 用户
@@ -68,6 +70,10 @@ CREATE TABLE `user` (
     phone         VARCHAR(32)  DEFAULT '',
     email         VARCHAR(128) DEFAULT '',
     role          VARCHAR(32)  DEFAULT 'user',
+    points        BIGINT        DEFAULT 0 COMMENT '积分',
+    level         INT           DEFAULT 1 COMMENT '成长等级',
+    vip_type      TINYINT       DEFAULT 0 COMMENT '会员类型 0普通/1月度/2年度/3永久',
+    vip_expire_time DATETIME     DEFAULT NULL COMMENT '会员过期时间',
     create_time   DATETIME DEFAULT CURRENT_TIMESTAMP,
     update_time   DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY uk_user_account (user_account)
@@ -76,6 +82,22 @@ CREATE TABLE `user` (
 -- 初始管理员账号：admin / 12345678（密码为加盐 MD5，salt=ai_nav）
 INSERT INTO `user` (user_account, user_password, user_name, role) VALUES
 ('admin', MD5(CONCAT('ai_nav','12345678')), '管理员', 'admin');
+
+-- 用户收藏（工具 / 帖子 / 提示词）
+DROP TABLE IF EXISTS user_favorite;
+CREATE TABLE user_favorite (
+    id            BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id       BIGINT      NOT NULL,
+    target_type   VARCHAR(32) NOT NULL COMMENT 'tool / post / prompt',
+    target_id     BIGINT      NOT NULL,
+    target_title  VARCHAR(256) DEFAULT '',
+    target_cover  VARCHAR(512) DEFAULT '',
+    target_desc   VARCHAR(512) DEFAULT '',
+    target_url    VARCHAR(512) DEFAULT '',
+    create_time   DATETIME    DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_user_target (user_id, target_type, target_id),
+    KEY idx_user (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ===== 初始分类数据（11 大类） =====
 INSERT INTO category (name, icon, sort) VALUES
@@ -304,3 +326,7 @@ INSERT INTO ai_post (title, content, author_name, author_avatar, thumb_url, view
 ('我把公司周报交给 AI 后发生了什么', '用 Gamma 和通义听悟搭了一套自动化工位，会议纪要与周报全自动生成，领导还夸我汇报清晰。', '老张', 'https://api.dicebear.com/7.x/initials/svg?seed=Zhang', 'https://picsum.photos/seed/report/600/400', 3600, 210, 29),
 ('开发者必看的 10 个大模型平台', '从 OpenAI 到硅基流动、月之暗面，横向对比价格、延迟、中文能力与 SDK 体验。', '码农小李', 'https://api.dicebear.com/7.x/initials/svg?seed=Lilei', 'https://picsum.photos/seed/platform/600/400', 5400, 300, 51),
 ('AI 学习外语的亲测有效的方法', '用多邻国打卡、DeepSeek 陪练口语、有道查词，三个月从哑巴英语到能开会。', '果果', 'https://api.dicebear.com/7.x/initials/svg?seed=Guoguo', 'https://picsum.photos/seed/learn/600/400', 4800, 270, 40);
+
+-- 给前几条帖子/提示词归属到 admin（id=1），便于演示「我的帖子 / 我的提示词」
+UPDATE ai_post SET user_id = 1 WHERE id <= 3;
+UPDATE ai_prompt SET user_id = 1 WHERE id <= 3;

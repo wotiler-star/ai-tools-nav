@@ -1,17 +1,13 @@
 import { create } from "zustand";
+import { UserVO } from "@/types";
 
 /**
  * 全局轻量状态：搜索关键字、当前激活分类、登录态、登录弹窗。
  * 与文档一致：Zustand 负责轻量 UI/客户端状态，SWR 负责服务端数据请求。
  */
 
-/** 登录用户（对齐后端 UserVO，无第三方 OAuth 字段） */
-export interface LoginUser {
-  id: number;
-  userName: string;
-  userAvatar: string;
-  userRole: string; // user / admin
-}
+/** 登录用户（直接对齐后端 UserVO：含会员/积分字段，无第三方 OAuth） */
+export type LoginUser = UserVO;
 
 interface AppState {
   keyword: string;

@@ -43,5 +43,13 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
         </dependency>
+        <!-- Sa-Token 异常（NotLoginException / SaException）需转换为 401，而非落进通用 500。
+             运行期由 Web 模块提供，此处仅编译期可见 -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-core</artifactId>
+            <version>${sa-token.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>
