@@ -34,7 +34,12 @@ public class SaTokenConfig implements WebMvcConfigurer {
                         "/user/mypost",
                         "/user/myprompt",
                         "/user/member",
-                        "/user/favorite/**")
+                        "/user/favorite/**",
+                        // ===== 站内消息：需登录 =====
+                        "/ai_message/list/page",
+                        "/ai_message/unread/count",
+                        "/ai_message/read",
+                        "/ai_message/delete")
                 .excludePathPatterns("/doc.html", "/swagger-resources/**", "/v3/api-docs/**");
     }
 }

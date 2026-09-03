@@ -271,3 +271,21 @@ export interface AddCommentReq {
   content: string;
   parentId?: number;
 }
+
+/** 站内消息，对齐后端 ai_message */
+export interface AiMessage {
+  id: number;
+  userId?: number;
+  /** comment 评论 / reply 回复 / system 系统 */
+  type?: string;
+  targetType?: string;
+  targetId?: number;
+  targetTitle?: string;
+  fromUserId?: number;
+  fromUserName?: string;
+  fromUserAvatar?: string;
+  content?: string;
+  /** 0 未读 / 1 已读 */
+  isRead?: number;
+  createTime?: string;
+}

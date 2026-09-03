@@ -5,6 +5,7 @@ import {
   AiColumnCategory,
   AiComment,
   AddCommentReq,
+  AiMessage,
   AiPost,
   AiPrompt,
   AiTool,
@@ -198,6 +199,30 @@ export const api = {
     request<BaseResponse<boolean>>("/user/favorite/delete", {
       method: "DELETE",
       params: { targetType, targetId }
+    }),
+
+  // ===== 站内消息（需登录，后端 SaTokenConfig 已拦截 /ai_message/*）=====
+  getMessages: (params: { current?: number; pageSize?: number }) =>
+    request<BaseResponsePage<AiMessage>>("/ai_message/list/page", {
+      params: { current: 1, pageSize: 10, ...params }
+    }),
+
+  /** 未读消息数（红点） */
+  getUnreadCount: () =>
+    request<BaseResponse<number>>("/ai_message/unread/count"),
+
+  /** 标记已读；id 为空则把全部未读标记为已读 */
+  markMessagesRead: (id?: number) =>
+    request<BaseResponse<boolean>>("/ai_message/read", {
+      method: "POST",
+      body: { id: id ?? null }
+    }),
+
+  /** 删除自己的一条消息 */
+  deleteMessage: (id: number) =>
+    request<BaseResponse<boolean>>("/ai_message/delete", {
+      method: "POST",
+      params: { id }
     }),
 
   // ===== 后台管理（对齐后端 AdminController /admin/**，@SaCheckRole("admin")）=====

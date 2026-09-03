@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { App, Button, Spin } from "antd";
 import {
   IdcardOutlined,
+  BellOutlined,
   FileTextOutlined,
   BulbOutlined,
   StarOutlined,
@@ -11,11 +12,14 @@ import {
   SettingOutlined,
   UserOutlined
 } from "@ant-design/icons";
+import useSWR from "swr";
 import { useAppStore } from "@/store/useAppStore";
 import { api } from "@/lib/api";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { BaseResponse } from "@/types";
 import {
   ProfileTab,
+  MessagesTab,
   MyPostsTab,
   MyPromptsTab,
   FavoritesTab,
@@ -25,6 +29,7 @@ import {
 
 type TabKey =
   | "profile"
+  | "messages"
   | "posts"
   | "prompts"
   | "favorites"
@@ -33,6 +38,7 @@ type TabKey =
 
 const MENU: { key: TabKey; label: string; icon: React.ReactNode }[] = [
   { key: "profile", label: "个人资料", icon: <IdcardOutlined /> },
+  { key: "messages", label: "消息中心", icon: <BellOutlined /> },
   { key: "posts", label: "我的帖子", icon: <FileTextOutlined /> },
   { key: "prompts", label: "我的提示词", icon: <BulbOutlined /> },
   { key: "favorites", label: "我的收藏", icon: <StarOutlined /> },
@@ -56,6 +62,12 @@ export default function UserCenterPage() {
   const [tab, setTab] = useState<TabKey>("profile");
   const [ready, setReady] = useState(false);
   const isMobile = useMediaQuery("(max-width: 900px)");
+
+  // 消息中心未读数（侧栏红点）
+  const { data: unreadRes } = useSWR<BaseResponse<number>>(
+    "/ai_message/unread/count"
+  );
+  const unreadCount = unreadRes?.data ?? 0;
 
   // 主动确认登录态，避免首帧误判导致闪一下「未登录」
   useEffect(() => {
@@ -272,7 +284,25 @@ export default function UserCenterPage() {
               }}
             >
               <span style={{ fontSize: 15 }}>{m.icon}</span>
-              {m.label}
+              <span style={{ flex: 1 }}>{m.label}</span>
+              {m.key === "messages" && unreadCount > 0 ? (
+                <span
+                  style={{
+                    minWidth: 18,
+                    height: 18,
+                    padding: "0 5px",
+                    borderRadius: 9,
+                    background: "#ff4d4f",
+                    color: "#fff",
+                    fontSize: 11,
+                    lineHeight: "18px",
+                    textAlign: "center",
+                    fontWeight: 600
+                  }}
+                >
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              ) : null}
             </button>
           );
         })}
@@ -296,6 +326,7 @@ export default function UserCenterPage() {
         {sidebar}
         <section style={{ flex: 1, minWidth: 0 }}>
           {tab === "profile" && <ProfileTab />}
+          {tab === "messages" && <MessagesTab />}
           {tab === "posts" && <MyPostsTab />}
           {tab === "prompts" && <MyPromptsTab />}
           {tab === "favorites" && <FavoritesTab />}

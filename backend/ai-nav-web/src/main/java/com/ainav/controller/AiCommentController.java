@@ -6,8 +6,12 @@ import com.ainav.common.BusinessException;
 import com.ainav.common.ErrorCode;
 import com.ainav.common.ResultUtils;
 import com.ainav.model.entity.AiComment;
+import com.ainav.model.entity.AiMessage;
+import com.ainav.model.entity.AiPost;
 import com.ainav.model.entity.User;
 import com.ainav.service.AiCommentService;
+import com.ainav.service.AiMessageService;
+import com.ainav.service.AiPostService;
 import com.ainav.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,6 +39,12 @@ public class AiCommentController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private AiPostService aiPostService;
+
+    @Resource
+    private AiMessageService aiMessageService;
 
     /** 发评论请求体 */
     @Data
@@ -83,7 +93,70 @@ public class AiCommentController {
         c.setLikeNum(0L);
         c.setStatus(1);
         aiCommentService.save(c);
+        notifyOwner(c, userId);
         return ResultUtils.success(c.getId());
+    }
+
+    /**
+     * 站内消息：评论通知内容作者、回复通知父评论作者。
+     * 注意：文章（article）无归属用户字段，故不发送通知；给自己评论不通知。
+     */
+    private void notifyOwner(AiComment c, long fromUserId) {
+        try {
+            Long receiverId = null;
+            String type = "comment";
+
+            // 目标标题（帖子才有）
+            String targetTitle = "";
+            if ("post".equals(c.getTargetType())) {
+                AiPost target = aiPostService.getById(c.getTargetId());
+                if (target != null) {
+                    targetTitle = target.getTitle() == null ? "" : target.getTitle();
+                }
+            }
+
+            // 回复：优先通知被回复的那条评论的作者
+            if (c.getParentId() != null && c.getParentId() > 0) {
+                AiComment parent = aiCommentService.getById(c.getParentId());
+                if (parent != null && parent.getUserId() != null) {
+                    receiverId = parent.getUserId();
+                    type = "reply";
+                }
+            }
+            // 顶级评论：通知帖子作者
+            if (receiverId == null && "post".equals(c.getTargetType())) {
+                AiPost target = aiPostService.getById(c.getTargetId());
+                if (target != null) {
+                    receiverId = target.getUserId();
+                }
+            }
+
+            if (receiverId == null || Objects.equals(receiverId, fromUserId)) {
+                return;
+            }
+
+            AiMessage msg = new AiMessage();
+            msg.setUserId(receiverId);
+            msg.setType(type);
+            msg.setTargetType(c.getTargetType());
+            msg.setTargetId(c.getTargetId());
+            msg.setTargetTitle(targetTitle);
+            msg.setFromUserId(fromUserId);
+            msg.setFromUserName(c.getUserName());
+            msg.setFromUserAvatar(c.getUserAvatar());
+            msg.setContent(abbreviate(c.getContent(), 120));
+            aiMessageService.send(msg);
+        } catch (Exception ignore) {
+            // 通知失败不影响评论本身已入库
+        }
+    }
+
+    private static String abbreviate(String s, int max) {
+        if (s == null) {
+            return "";
+        }
+        String t = s.trim();
+        return t.length() <= max ? t : t.substring(0, max) + "…";
     }
 
     @Operation(summary = "删除评论（本人或管理员）")

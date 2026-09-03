@@ -8,6 +8,7 @@ import useSWR from "swr";
 import { api } from "@/lib/api";
 import { useAppStore } from "@/store/useAppStore";
 import {
+  AiMessage,
   AiPost,
   AiPrompt,
   BaseResponse,
@@ -576,7 +577,172 @@ export function MyPromptsTab() {
   );
 }
 
-/* ==================== 4. 我的收藏 ==================== */
+/* ==================== 4. 消息中心 ==================== */
+
+/** 消息类型 → 文案 */
+const MSG_TYPE_LABEL: Record<string, string> = {
+  comment: "评论了你的帖子",
+  reply: "回复了你的评论",
+  system: "系统通知"
+};
+
+const MSG_ICON: Record<string, string> = {
+  comment: "📝",
+  reply: "💬",
+  system: "🔔"
+};
+
+export function MessagesTab() {
+  const { message } = App.useApp();
+  const { data, isLoading, mutate } = useSWR<BaseResponsePage<AiMessage>>(
+    "/ai_message/list/page?current=1&pageSize=50"
+  );
+  const list = data?.data?.records ?? [];
+  const unread = list.filter((m) => m.isRead === 0).length;
+
+  const onRead = async (m: AiMessage) => {
+    try {
+      await api.markMessagesRead(m.id);
+      mutate();
+    } catch (e: any) {
+      message.error(e?.message || "操作失败");
+    }
+  };
+
+  const onReadAll = async () => {
+    try {
+      await api.markMessagesRead();
+      message.success("已全部标记为已读");
+      mutate();
+    } catch (e: any) {
+      message.error(e?.message || "操作失败");
+    }
+  };
+
+  const onDelete = async (m: AiMessage) => {
+    try {
+      await api.deleteMessage(m.id);
+      message.success("已删除");
+      mutate();
+    } catch (e: any) {
+      message.error(e?.message || "删除失败");
+    }
+  };
+
+  return (
+    <Panel
+      title="消息中心"
+      desc={
+        list.length === 0
+          ? "暂无消息"
+          : `共 ${list.length} 条消息，其中 ${unread} 条未读`
+      }
+    >
+      <div style={{ marginBottom: 16 }}>
+        <Button onClick={onReadAll} disabled={unread === 0}>
+          全部标记为已读
+        </Button>
+      </div>
+      {isLoading ? (
+        <Loading />
+      ) : list.length === 0 ? (
+        <EmptyBox text="还没有收到任何消息" />
+      ) : (
+        <div>
+          {list.map((m) => {
+            const isUnread = m.isRead === 0;
+            return (
+              <div
+                key={m.id}
+                style={{
+                  padding: "14px 12px",
+                  borderBottom: "1px solid var(--border)",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: 12,
+                  background: isUnread ? "var(--brand-tint)" : undefined
+                }}
+              >
+                <span style={{ fontSize: 18, flexShrink: 0, lineHeight: 1.4 }}>
+                  {MSG_ICON[m.type ?? "system"] ?? "🔔"}
+                </span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div
+                    style={{
+                      fontSize: 14,
+                      color: "var(--text-1)",
+                      marginBottom: 4
+                    }}
+                  >
+                    <b>{m.fromUserName || "某位用户"}</b>{" "}
+                    {MSG_TYPE_LABEL[m.type ?? "system"] ?? "给你发来消息"}
+                    {isUnread ? (
+                      <span
+                        style={{
+                          marginLeft: 8,
+                          fontSize: 12,
+                          color: "#3874F7"
+                        }}
+                      >
+                        未读
+                      </span>
+                    ) : null}
+                  </div>
+                  {m.targetTitle ? (
+                    <div
+                      style={{
+                        fontSize: 13,
+                        color: "var(--text-2)",
+                        marginBottom: 4
+                      }}
+                    >
+                      《{m.targetTitle}》
+                    </div>
+                  ) : null}
+                  <div
+                    style={{
+                      fontSize: 13,
+                      color: "var(--text-3)",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap"
+                    }}
+                  >
+                    {m.content || "（无内容）"}
+                  </div>
+                  <div
+                    style={{ fontSize: 12, color: "var(--text-3)", marginTop: 6 }}
+                  >
+                    {(m.createTime || "").toString().slice(0, 16)}
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                  {isUnread ? (
+                    <Button size="small" onClick={() => onRead(m)}>
+                      标记已读
+                    </Button>
+                  ) : null}
+                  <Popconfirm
+                    title="确认删除这条消息？"
+                    okText="删除"
+                    cancelText="取消"
+                    onConfirm={() => onDelete(m)}
+                  >
+                    <Button size="small" danger>
+                      删除
+                    </Button>
+                  </Popconfirm>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </Panel>
+  );
+}
+
+/* ==================== 5. 我的收藏 ==================== */
 
 const TYPE_LABEL: Record<string, string> = {
   tool: "AI 工具",
@@ -673,7 +839,7 @@ export function FavoritesTab() {
   );
 }
 
-/* ==================== 5. 会员中心 ==================== */
+/* ==================== 6. 会员中心 ==================== */
 
 /** 成长等级体系（对齐目标站：等级 + 等级名 + 升级所需成长值阈值） */
 const GROWTH_LEVELS = [
@@ -905,7 +1071,7 @@ export function MemberTab() {
   );
 }
 
-/* ==================== 6. 账号设置 ==================== */
+/* ==================== 7. 账号设置 ==================== */
 
 export function SettingsTab() {
   const { message } = App.useApp();
