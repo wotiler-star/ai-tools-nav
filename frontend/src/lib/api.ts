@@ -110,6 +110,17 @@ export const api = {
       body: data
     }),
 
+  /** 编辑社区帖子（作者本人或管理员，后端校验归属） */
+  updatePost: (data: { id: number; title?: string; content?: string }) =>
+    request<BaseResponse<boolean>>("/ai_post/update", {
+      method: "POST",
+      body: data
+    }),
+
+  /** 删除社区帖子（作者本人或管理员，后端校验归属） */
+  deletePost: (id: number) =>
+    request<BaseResponse<boolean>>(`/ai_post/delete`, { method: "POST", params: { id } }),
+
   getPrompt: (id: number | string) =>
     request<BaseResponse<AiPrompt>>("/ai_prompt/get", { params: { id } }),
 

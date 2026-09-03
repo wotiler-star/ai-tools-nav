@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { App, Button, Input, Spin } from "antd";
+import { App, Button, Input, Modal, Popconfirm, Spin } from "antd";
 import { CopyOutlined, DeleteOutlined } from "@ant-design/icons";
 import useSWR from "swr";
 import { api } from "@/lib/api";
@@ -176,13 +176,58 @@ export function ProfileTab() {
 /* ==================== 2. 我的帖子 ==================== */
 
 export function MyPostsTab() {
-  const { data, isLoading } = useSWR<BaseResponsePage<AiPost>>(
+  const { message } = App.useApp();
+  const { data, isLoading, mutate } = useSWR<BaseResponsePage<AiPost>>(
     "/user/mypost?current=1&pageSize=50"
   );
   const posts = data?.data?.records ?? [];
 
+  const [editing, setEditing] = useState<AiPost | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editContent, setEditContent] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const openEdit = (p: AiPost) => {
+    setEditing(p);
+    setEditTitle(p.title ?? "");
+    setEditContent(p.content ?? "");
+  };
+
+  const onSaveEdit = async () => {
+    if (!editing) return;
+    if (!editTitle.trim()) {
+      message.warning("标题不能为空");
+      return;
+    }
+    setSaving(true);
+    try {
+      await api.updatePost({
+        id: editing.id as number,
+        title: editTitle.trim(),
+        content: editContent
+      });
+      message.success("已保存");
+      setEditing(null);
+      mutate();
+    } catch (e: any) {
+      message.error(e?.message || "保存失败");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const onDelete = async (p: AiPost) => {
+    try {
+      await api.deletePost(p.id as number);
+      message.success("已删除");
+      mutate();
+    } catch (e: any) {
+      message.error(e?.message || "删除失败");
+    }
+  };
+
   return (
-    <Panel title="我的帖子" desc="你发布过的社区帖子">
+    <Panel title="我的帖子" desc="你发布过的社区帖子，可编辑或删除">
       {isLoading ? (
         <Loading />
       ) : posts.length === 0 ? (
@@ -190,47 +235,101 @@ export function MyPostsTab() {
       ) : (
         <div>
           {posts.map((p) => (
-            <Link
+            <div
               key={p.id}
-              href={`/essay/${p.id}`}
               style={{
-                display: "block",
+                display: "flex",
+                alignItems: "flex-start",
+                gap: 12,
                 padding: "14px 12px",
-                borderRadius: 10,
-                borderBottom: "1px solid var(--border)",
-                textDecoration: "none"
+                borderBottom: "1px solid var(--border)"
               }}
             >
+              <Link
+                href={`/essay/${p.id}`}
+                style={{ flex: 1, minWidth: 0, textDecoration: "none" }}
+              >
+                <div
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 600,
+                    color: "var(--text-1)",
+                    marginBottom: 6
+                  }}
+                >
+                  {p.title}
+                </div>
+                <div
+                  style={{
+                    fontSize: 13,
+                    color: "var(--text-3)",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    marginBottom: 8
+                  }}
+                >
+                  {p.content?.replace(/\s+/g, " ").slice(0, 90) || "（无正文）"}
+                </div>
+                <div style={{ fontSize: 12, color: "var(--text-3)" }}>
+                  {(p.createTime || "").toString().slice(0, 10)} · 👍 {p.likeNum ?? 0} · 💬{" "}
+                  {p.commentNum ?? 0}
+                </div>
+              </Link>
               <div
                 style={{
-                  fontSize: 15,
-                  fontWeight: 600,
-                  color: "var(--text-1)",
-                  marginBottom: 6
+                  display: "flex",
+                  gap: 8,
+                  flexShrink: 0,
+                  paddingTop: 4
                 }}
               >
-                {p.title}
+                <Button size="small" onClick={() => openEdit(p)}>
+                  编辑
+                </Button>
+                <Popconfirm
+                  title="确认删除这篇帖子？"
+                  okText="删除"
+                  cancelText="取消"
+                  onConfirm={() => onDelete(p)}
+                >
+                  <Button size="small" danger>
+                    删除
+                  </Button>
+                </Popconfirm>
               </div>
-              <div
-                style={{
-                  fontSize: 13,
-                  color: "var(--text-3)",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                  marginBottom: 8
-                }}
-              >
-                {p.content?.replace(/\s+/g, " ").slice(0, 90) || "（无正文）"}
-              </div>
-              <div style={{ fontSize: 12, color: "var(--text-3)" }}>
-                {(p.createTime || "").toString().slice(0, 10)} · 👍 {p.likeNum ?? 0} · 💬{" "}
-                {p.commentNum ?? 0}
-              </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}
+
+      <Modal
+        title="编辑帖子"
+        open={!!editing}
+        onCancel={() => !saving && setEditing(null)}
+        onOk={onSaveEdit}
+        okText="保存"
+        cancelText="取消"
+        confirmLoading={saving}
+        destroyOnClose
+      >
+        <div
+          style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 12 }}
+        >
+          <Input
+            placeholder="标题"
+            value={editTitle}
+            maxLength={80}
+            onChange={(e) => setEditTitle(e.target.value)}
+          />
+          <Input.TextArea
+            placeholder="正文内容"
+            rows={8}
+            value={editContent}
+            onChange={(e) => setEditContent(e.target.value)}
+          />
+        </div>
+      </Modal>
     </Panel>
   );
 }

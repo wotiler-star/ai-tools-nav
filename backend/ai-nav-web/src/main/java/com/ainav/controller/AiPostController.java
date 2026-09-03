@@ -2,6 +2,8 @@ package com.ainav.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.ainav.common.BaseResponse;
+import com.ainav.common.BusinessException;
+import com.ainav.common.ErrorCode;
 import com.ainav.common.PageResult;
 import com.ainav.common.ResultUtils;
 import com.ainav.model.entity.AiPost;
@@ -77,5 +79,56 @@ public class AiPostController {
         post.setCommentNum(0L);
         aiPostService.save(post);
         return ResultUtils.success(post.getId());
+    }
+
+    /** 编辑帖子请求体 */
+    @Data
+    public static class UpdatePostReq {
+        private Long id;
+        private String title;
+        private String content;
+    }
+
+    @Operation(summary = "编辑社区帖子（作者本人或管理员）")
+    @PostMapping("/update")
+    public BaseResponse<Boolean> update(@RequestBody UpdatePostReq req) {
+        if (req == null || req.getId() == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "缺少帖子 id");
+        }
+        StpUtil.checkLogin();
+        long userId = StpUtil.getLoginIdAsLong();
+        AiPost post = aiPostService.getById(req.getId());
+        if (post == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "帖子不存在");
+        }
+        boolean isAdmin = StpUtil.hasRole("admin");
+        if (!isAdmin && (post.getUserId() == null || post.getUserId() != userId)) {
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "只能编辑自己的帖子");
+        }
+        if (req.getTitle() != null) {
+            post.setTitle(req.getTitle().trim());
+        }
+        if (req.getContent() != null) {
+            post.setContent(req.getContent());
+        }
+        aiPostService.updateById(post);
+        return ResultUtils.success(true);
+    }
+
+    @Operation(summary = "删除社区帖子（作者本人或管理员）")
+    @PostMapping("/delete")
+    public BaseResponse<Boolean> delete(@RequestParam long id) {
+        StpUtil.checkLogin();
+        long userId = StpUtil.getLoginIdAsLong();
+        AiPost post = aiPostService.getById(id);
+        if (post == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "帖子不存在");
+        }
+        boolean isAdmin = StpUtil.hasRole("admin");
+        if (!isAdmin && (post.getUserId() == null || post.getUserId() != userId)) {
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "只能删除自己的帖子");
+        }
+        aiPostService.removeById(id);
+        return ResultUtils.success(true);
     }
 }
