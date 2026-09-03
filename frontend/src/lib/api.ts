@@ -124,6 +124,24 @@ export const api = {
   getPrompt: (id: number | string) =>
     request<BaseResponse<AiPrompt>>("/ai_prompt/get", { params: { id } }),
 
+  /** 发布提示词（需登录，后端 SaTokenConfig 已拦截 /ai_prompt/add） */
+  addPrompt: (data: { title: string; content?: string; categoryName?: string }) =>
+    request<BaseResponse<number>>("/ai_prompt/add", {
+      method: "POST",
+      body: data
+    }),
+
+  /** 编辑提示词（作者本人或管理员，后端校验归属） */
+  updatePrompt: (data: { id: number; title?: string; content?: string; categoryName?: string }) =>
+    request<BaseResponse<boolean>>("/ai_prompt/update", {
+      method: "POST",
+      body: data
+    }),
+
+  /** 删除提示词（作者本人或管理员，后端校验归属） */
+  deletePrompt: (id: number) =>
+    request<BaseResponse<boolean>>("/ai_prompt/delete", { method: "POST", params: { id } }),
+
   // ===== 用户鉴权（Sa-Token SESSION，无第三方 OAuth）=====
   login: (userAccount: string, userPassword: string) =>
     request<BaseResponse<UserVO>>("/user/login", {

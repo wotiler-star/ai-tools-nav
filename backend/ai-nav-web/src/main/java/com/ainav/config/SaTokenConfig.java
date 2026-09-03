@@ -23,6 +23,8 @@ public class SaTokenConfig implements WebMvcConfigurer {
                         "/ai_post/update",
                         "/ai_post/delete",
                         "/ai_prompt/add",
+                        "/ai_prompt/update",
+                        "/ai_prompt/delete",
                         // ===== 评论：列表公开，发/删需登录 =====
                         "/ai_comment/add",
                         "/ai_comment/delete/**",

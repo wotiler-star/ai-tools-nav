@@ -338,10 +338,90 @@ export function MyPostsTab() {
 
 export function MyPromptsTab() {
   const { message } = App.useApp();
-  const { data, isLoading } = useSWR<BaseResponsePage<AiPrompt>>(
+  const { data, isLoading, mutate } = useSWR<BaseResponsePage<AiPrompt>>(
     "/user/myprompt?current=1&pageSize=50"
   );
   const prompts = data?.data?.records ?? [];
+
+  const [saving, setSaving] = useState(false);
+
+  // ===== 发布 =====
+  const [publishing, setPublishing] = useState(false);
+  const [pubTitle, setPubTitle] = useState("");
+  const [pubCategory, setPubCategory] = useState("");
+  const [pubContent, setPubContent] = useState("");
+
+  const onPublish = async () => {
+    if (!pubTitle.trim()) {
+      message.warning("标题不能为空");
+      return;
+    }
+    setSaving(true);
+    try {
+      await api.addPrompt({
+        title: pubTitle.trim(),
+        content: pubContent,
+        categoryName: pubCategory.trim() || undefined
+      });
+      message.success("已发布");
+      setPublishing(false);
+      setPubTitle("");
+      setPubCategory("");
+      setPubContent("");
+      mutate();
+    } catch (e: any) {
+      message.error(e?.message || "发布失败");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // ===== 编辑 =====
+  const [editing, setEditing] = useState<AiPrompt | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editCategory, setEditCategory] = useState("");
+  const [editContent, setEditContent] = useState("");
+
+  const openEdit = (p: AiPrompt) => {
+    setEditing(p);
+    setEditTitle(p.title ?? "");
+    setEditCategory(p.categoryName ?? "");
+    setEditContent(p.content ?? "");
+  };
+
+  const onSaveEdit = async () => {
+    if (!editing) return;
+    if (!editTitle.trim()) {
+      message.warning("标题不能为空");
+      return;
+    }
+    setSaving(true);
+    try {
+      await api.updatePrompt({
+        id: editing.id as number,
+        title: editTitle.trim(),
+        content: editContent,
+        categoryName: editCategory.trim() || undefined
+      });
+      message.success("已保存");
+      setEditing(null);
+      mutate();
+    } catch (e: any) {
+      message.error(e?.message || "保存失败");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const onDelete = async (p: AiPrompt) => {
+    try {
+      await api.deletePrompt(p.id as number);
+      message.success("已删除");
+      mutate();
+    } catch (e: any) {
+      message.error(e?.message || "删除失败");
+    }
+  };
 
   const onCopy = async (p: AiPrompt) => {
     try {
@@ -353,7 +433,12 @@ export function MyPromptsTab() {
   };
 
   return (
-    <Panel title="我的提示词" desc="你发布过的 AI 提示词模板">
+    <Panel title="我的提示词" desc="你发布过的 AI 提示词模板，可发布、编辑或删除">
+      <div style={{ marginBottom: 16 }}>
+        <Button type="primary" onClick={() => setPublishing(true)}>
+          发布提示词
+        </Button>
+      </div>
       {isLoading ? (
         <Loading />
       ) : prompts.length === 0 ? (
@@ -401,13 +486,92 @@ export function MyPromptsTab() {
                   {p.categoryName}
                 </span>
               )}
-              <Button size="small" icon={<CopyOutlined />} onClick={() => onCopy(p)}>
-                复制
-              </Button>
+              <div style={{ display: "flex", gap: 8, flexShrink: 0, paddingTop: 2 }}>
+                <Button size="small" onClick={() => openEdit(p)}>
+                  编辑
+                </Button>
+                <Popconfirm
+                  title="确认删除这条提示词？"
+                  okText="删除"
+                  cancelText="取消"
+                  onConfirm={() => onDelete(p)}
+                >
+                  <Button size="small" danger>
+                    删除
+                  </Button>
+                </Popconfirm>
+                <Button size="small" icon={<CopyOutlined />} onClick={() => onCopy(p)}>
+                  复制
+                </Button>
+              </div>
             </div>
           ))}
         </div>
       )}
+
+      <Modal
+        title="发布提示词"
+        open={publishing}
+        onCancel={() => !saving && setPublishing(false)}
+        onOk={onPublish}
+        okText="发布"
+        cancelText="取消"
+        confirmLoading={saving}
+        destroyOnClose
+      >
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 12 }}>
+          <Input
+            placeholder="提示词标题"
+            value={pubTitle}
+            maxLength={80}
+            onChange={(e) => setPubTitle(e.target.value)}
+          />
+          <Input
+            placeholder="分类（选填，如 写作 / 绘画 / 编程）"
+            value={pubCategory}
+            maxLength={20}
+            onChange={(e) => setPubCategory(e.target.value)}
+          />
+          <Input.TextArea
+            placeholder="提示词内容"
+            rows={8}
+            value={pubContent}
+            onChange={(e) => setPubContent(e.target.value)}
+          />
+        </div>
+      </Modal>
+
+      <Modal
+        title="编辑提示词"
+        open={!!editing}
+        onCancel={() => !saving && setEditing(null)}
+        onOk={onSaveEdit}
+        okText="保存"
+        cancelText="取消"
+        confirmLoading={saving}
+        destroyOnClose
+      >
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 12 }}>
+          <Input
+            placeholder="提示词标题"
+            value={editTitle}
+            maxLength={80}
+            onChange={(e) => setEditTitle(e.target.value)}
+          />
+          <Input
+            placeholder="分类（选填）"
+            value={editCategory}
+            maxLength={20}
+            onChange={(e) => setEditCategory(e.target.value)}
+          />
+          <Input.TextArea
+            placeholder="提示词内容"
+            rows={8}
+            value={editContent}
+            onChange={(e) => setEditContent(e.target.value)}
+          />
+        </div>
+      </Modal>
     </Panel>
   );
 }
