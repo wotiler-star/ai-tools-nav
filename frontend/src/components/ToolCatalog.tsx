@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import useSWR from "swr";
-import { Input, Menu } from "antd";
+import { Input } from "antd";
 import { EmptyState } from "@/components/EmptyState";
 import { SkeletonGrid } from "@/components/Loading";
 import { SearchOutlined, RightOutlined } from "@ant-design/icons";
@@ -45,11 +45,17 @@ export default function ToolCatalog() {
   );
   const allTools = useMemo(() => toolRes?.data?.records || [], [toolRes]);
 
-  // 全局混合标签云：聚合并去重所有分类的二级子标签（复刻目标站搜索框下方的标签云）
+  // 全局混合标签云：每个分类按 cloudCount 配额从 tags 数组前 N 个取（对齐目标红框第 3 行约 20 个精选）
   const allTags = useMemo(() => {
-    const set = new Set<string>();
-    categories.forEach((c) => (c.tags || []).forEach((t) => set.add(t)));
-    return Array.from(set);
+    const result: string[] = [];
+    for (const c of categories) {
+      const quota = c.cloudCount ?? 0;
+      if (!c.tags || quota <= 0) continue;
+      for (let i = 0; i < Math.min(quota, c.tags.length); i++) {
+        result.push(c.tags[i]);
+      }
+    }
+    return result;
   }, [categories]);
 
   const isFiltered = activeCat > 0 || !!activeTag;
@@ -66,7 +72,7 @@ export default function ToolCatalog() {
     );
   }, [kw, allTools]);
 
-  // 按分类 + 二级标签过滤后的工具（复刻目标站『分类→子标签』筛选）
+  // 按分类 + 二级标签过滤
   const filteredTools = useMemo(() => {
     let list = allTools;
     if (activeCat > 0) list = list.filter((t) => t.categoryId === activeCat);
@@ -74,7 +80,7 @@ export default function ToolCatalog() {
     return list;
   }, [allTools, activeCat, activeTag]);
 
-  // 按分类分组（全部视图）
+  // 按分类分组
   const grouped = useMemo(() => {
     return categories.map((c) => ({
       cat: c,
@@ -82,7 +88,7 @@ export default function ToolCatalog() {
     }));
   }, [categories, allTools]);
 
-  // 交互：分类 / 子标签 筛选
+  // 交互
   const selectCat = (id: number) => {
     setActiveCat(id);
     setActiveTag(null);
@@ -103,7 +109,7 @@ export default function ToolCatalog() {
     setActiveTag(null);
   };
 
-  // 滚动监听：当前浏览到的分类区块自动高亮（仅在『全部』目录视图生效）
+  // 滚动监听：当前浏览到的分类区块自动高亮
   useEffect(() => {
     if (kw || isFiltered) return;
     const onScroll = () => {
@@ -131,63 +137,43 @@ export default function ToolCatalog() {
     : activeCatName || "全部 AI 工具";
 
   return (
-    <div style={{ background: "#f9fafb", minHeight: "100vh" }}>
-      {/* 左侧固定分类导航（宽屏显示，点击即筛选该分类） */}
-      {!kw && categories.length > 0 && (
-        <div className="fixed left-0 top-1/2 z-10 -translate-y-1/2">
-          <div
-            role="navigation"
-            aria-label="工具分类导航"
-            className="hidden overflow-hidden rounded-lg bg-white shadow min-[1460px]:block"
-          >
-            <Menu
-              mode="vertical"
-              selectedKeys={activeCat ? [String(activeCat)] : []}
-              style={{ border: "none", width: 132 }}
-              items={categories.map((c) => ({
-                key: String(c.id),
-                label: c.name
-              }))}
-              onClick={({ key }) => selectCat(Number(key))}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* 顶部：分类锚点 + 搜索 + 全局标签云（sticky） */}
+    <div style={{ background: "#f5f6f8", minHeight: "100vh" }}>
+      {/* 顶部导航区：分类行 + 搜索框 + 全局标签云（sticky，对齐目标红框） */}
       <div
         style={{
           position: "sticky",
           top: 64,
           zIndex: 20,
-          background: "rgba(249,250,251,0.92)",
+          background: "rgba(245,246,248,0.92)",
           backdropFilter: "blur(8px)",
           borderBottom: "1px solid #eef0f2"
         }}
       >
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "12px 20px" }}>
-          {/* 分类横向锚点（带 ▾ 下拉子标签，hover 展开竖向子标签菜单） */}
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "14px 20px 0" }}>
+          {/* 红框第 1 行：分类横向 tab（纯文字 + 蓝色下划线 active，▾ 标注有子标签的分类） */}
           <div
             style={{
               display: "flex",
               flexWrap: "wrap",
-              gap: 8,
-              marginBottom: 12
+              gap: 4,
+              marginBottom: 14,
+              alignItems: "center"
             }}
           >
-            <button
+            <NavTab
+              label="全部"
+              active={activeCat === 0 && !activeTag}
               onClick={clearFilter}
-              style={chipStyle(activeCat === 0 && !activeTag)}
-            >
-              全部
-            </button>
+            />
             {categories.map((c) => {
               const hasTags = (c.tags || []).length > 0;
               const catActive = activeCat === c.id && !activeTag;
               return (
                 <div key={c.id} className="relative group">
-                  <button onClick={() => selectCat(c.id)} style={chipStyle(catActive)}>
-                    <span style={{ marginRight: 4 }}>{c.icon}</span>
+                  <button
+                    onClick={() => selectCat(c.id)}
+                    style={navTabStyle(catActive)}
+                  >
                     {c.name}
                     {hasTags && (
                       <span style={{ marginLeft: 3, fontSize: 10, opacity: 0.7 }}>
@@ -200,23 +186,16 @@ export default function ToolCatalog() {
                       className="absolute left-0 top-full z-30 hidden w-44 rounded-lg bg-white p-1 shadow-lg group-hover:block"
                       style={{ maxHeight: 288, overflowY: "auto" }}
                     >
-                      {c.tags!.map((t) => {
-                        const at = activeTag === t && activeCat === c.id;
-                        return (
-                          <div
-                            key={t}
-                            onClick={() => selectTag(c.id, t)}
-                            title={t}
-                            className={`cursor-pointer truncate rounded px-2.5 py-1.5 text-[13px] ${
-                              at
-                                ? "bg-blue-50 font-medium text-[#3874F7]"
-                                : "text-gray-600 hover:bg-gray-50"
-                            }`}
-                          >
-                            {t}
-                          </div>
-                        );
-                      })}
+                      {c.tags!.map((t) => (
+                        <div
+                          key={t}
+                          onClick={() => selectTag(c.id, t)}
+                          title={t}
+                          className="cursor-pointer truncate rounded px-2.5 py-1.5 text-[13px] text-gray-600 hover:bg-blue-50 hover:text-[#3874F7]"
+                        >
+                          {t}
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
@@ -224,41 +203,62 @@ export default function ToolCatalog() {
             })}
           </div>
 
-          {/* 搜索框 */}
-          <Input
-            size="large"
-            allowClear
-            value={keyword}
-            prefix={<SearchOutlined style={{ color: "#9ca3af" }} />}
-            placeholder="搜索 AI 工具，如 ChatGPT、绘画、编程…"
-            onChange={(e) => setKeyword(e.target.value)}
-            onPressEnter={(e) =>
-              onSearch((e.target as HTMLInputElement).value)
-            }
-            style={{ borderRadius: 999, maxWidth: 560 }}
-          />
+          {/* 红框第 2 行：搜索框（占位"在「AI工具」中搜索" + 独立蓝底"搜索"按钮） */}
+          <div style={{ display: "flex", maxWidth: 560, marginBottom: 14 }}>
+            <Input
+              size="large"
+              allowClear
+              value={keyword}
+              prefix={<SearchOutlined style={{ color: "#9ca3af" }} />}
+              placeholder="在「AI工具」中搜索"
+              onChange={(e) => setKeyword(e.target.value)}
+              onPressEnter={(e) =>
+                onSearch((e.target as HTMLInputElement).value)
+              }
+              style={{ borderRadius: "999px 0 0 999px", borderRight: 0 }}
+            />
+            <button
+              onClick={() => onSearch(keyword)}
+              style={{
+                padding: "0 22px",
+                background: BRAND,
+                color: "#fff",
+                border: `1px solid ${BRAND}`,
+                borderLeft: "none",
+                borderRadius: "0 999px 999px 0",
+                fontSize: 14,
+                cursor: "pointer",
+                whiteSpace: "nowrap"
+              }}
+            >
+              搜索
+            </button>
+          </div>
 
-          {/* 全局混合标签云（复刻目标站：搜索框下方聚合所有分类子标签，点击即跨分类筛选） */}
+          {/* 红框第 3 行：全局混合标签云（直角 chip，跨分类子标签聚合） */}
           {allTags.length > 0 && (
             <div
               style={{
                 display: "flex",
                 flexWrap: "wrap",
-                gap: 6,
-                marginTop: 12
+                gap: 8,
+                padding: "10px 0 14px",
+                borderTop: "1px dashed #e5e7eb",
+                alignItems: "center"
               }}
             >
-              <button onClick={clearFilter} style={tagCloudStyle(activeCat === 0 && !activeTag)}>
-                全部
-              </button>
+              <CloudChip
+                label="全部"
+                active={activeCat === 0 && !activeTag}
+                onClick={clearFilter}
+              />
               {allTags.map((t) => (
-                <button
+                <CloudChip
                   key={t}
+                  label={t}
+                  active={activeTag === t && activeCat === 0}
                   onClick={() => selectGlobalTag(t)}
-                  style={tagCloudStyle(activeTag === t && activeCat === 0)}
-                >
-                  {t}
-                </button>
+                />
               ))}
             </div>
           )}
@@ -270,7 +270,7 @@ export default function ToolCatalog() {
         {isLoading ? (
           <SkeletonGrid count={12} />
         ) : kw ? (
-          // 搜索结果：扁平网格
+          // 搜索结果
           <section>
             <div style={sectionHeaderStyle}>
               <h2 style={sectionTitleStyle}>“{keyword}” 的搜索结果</h2>
@@ -289,30 +289,25 @@ export default function ToolCatalog() {
             )}
           </section>
         ) : isFiltered ? (
-          // 分类 / 子标签筛选结果
+          // 分类 / 子标签筛选
           <section>
             <div style={sectionHeaderStyle}>
               <h2 style={sectionTitleStyle}>{filteredTitle}</h2>
-              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                <span style={{ color: "#9ca3af", fontSize: 13 }}>
-                  共 {filteredTools.length} 个工具
-                </span>
-                <button
-                  onClick={clearFilter}
-                  style={{
-                    border: "none",
-                    background: "transparent",
-                    color: BRAND,
-                    cursor: "pointer",
-                    fontSize: 13
-                  }}
-                >
-                  清除筛选
-                </button>
-              </div>
+              <button
+                onClick={clearFilter}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  color: BRAND,
+                  cursor: "pointer",
+                  fontSize: 13
+                }}
+              >
+                清除筛选
+              </button>
             </div>
             {filteredTools.length === 0 ? (
-              <EmptyState description="该分类下暂无此标签的工具" style={{ padding: 80 }} />
+              <EmptyState description="该筛选下暂无工具" style={{ padding: 80 }} />
             ) : (
               <div style={gridStyle}>
                 {filteredTools.map((tool) => (
@@ -322,7 +317,7 @@ export default function ToolCatalog() {
             )}
           </section>
         ) : (
-          // 全部分类区块平铺
+          // 全部分类区块（每个分类带子标签行 + 工具网格 + 全部>，对齐目标样式）
           <>
             <RecentTools />
             {grouped.map(({ cat, tools }) => (
@@ -333,7 +328,6 @@ export default function ToolCatalog() {
               >
                 <div style={sectionHeaderStyle}>
                   <h2 style={sectionTitleStyle}>
-                    <span style={{ marginRight: 8 }}>{cat.icon}</span>
                     {cat.name}
                     <span
                       style={{
@@ -356,11 +350,42 @@ export default function ToolCatalog() {
                       gap: 2
                     }}
                   >
-                    查看全部 <RightOutlined style={{ fontSize: 11 }} />
+                    全部 <RightOutlined style={{ fontSize: 11 }} />
                   </Link>
                 </div>
+                {/* 该分类的二级子标签行（目标红框里"AI写作"区块下面那行 chip） */}
+                {(cat.tags || []).length > 0 && (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: 4,
+                      marginBottom: 14,
+                      alignItems: "center"
+                    }}
+                  >
+                    {cat.tags!.map((t) => {
+                      const active = activeTag === t && activeCat === cat.id;
+                      return (
+                        <button
+                          key={t}
+                          onClick={() => selectTag(cat.id, t)}
+                          style={sectionTagStyle(active)}
+                        >
+                          {t}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
                 {tools.length === 0 ? (
-                  <div style={{ color: "#9ca3af", fontSize: 13, padding: "8px 0" }}>
+                  <div
+                    style={{
+                      color: "#9ca3af",
+                      fontSize: 13,
+                      padding: "20px 0"
+                    }}
+                  >
                     暂无工具
                   </div>
                 ) : (
@@ -379,32 +404,85 @@ export default function ToolCatalog() {
   );
 }
 
-function chipStyle(active: boolean): React.CSSProperties {
+/* ========== 子组件：导航 tab（纯文字 + 蓝下划线 active） ========== */
+function NavTab({
+  label,
+  active,
+  onClick
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button onClick={onClick} style={navTabStyle(active)}>
+      {label}
+    </button>
+  );
+}
+
+/* ========== 子组件：全局标签云 chip（直角小 chip） ========== */
+function CloudChip({
+  label,
+  active,
+  onClick
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button onClick={onClick} style={cloudChipStyle(active)}>
+      {label}
+    </button>
+  );
+}
+
+/* ========== 样式 ========== */
+function navTabStyle(active: boolean): React.CSSProperties {
   return {
-    padding: "5px 14px",
-    borderRadius: 999,
-    border: active ? `1px solid ${BRAND}` : "1px solid #e5e7eb",
-    background: active ? "#eaf1fe" : "#fff",
+    padding: "6px 12px",
+    border: "none",
+    background: "transparent",
     color: active ? BRAND : "#4b5563",
-    fontSize: 13,
-    fontWeight: active ? 600 : 400,
+    fontSize: 14,
+    fontWeight: active ? 600 : 500,
     cursor: "pointer",
+    borderBottom: active ? `2px solid ${BRAND}` : "2px solid transparent",
     transition: "all .15s",
-    lineHeight: 1.5
+    lineHeight: 1.4,
+    borderRadius: 0,
+    whiteSpace: "nowrap"
   };
 }
 
-function tagCloudStyle(active: boolean): React.CSSProperties {
+function cloudChipStyle(active: boolean): React.CSSProperties {
   return {
-    padding: "3px 10px",
-    borderRadius: 999,
+    padding: "2px 10px",
+    borderRadius: 4,
     border: active ? `1px solid ${BRAND}` : "1px solid #e5e7eb",
     background: active ? "#eaf1fe" : "#fff",
     color: active ? BRAND : "#6b7280",
     fontSize: 12,
     cursor: "pointer",
-    lineHeight: 1.6,
-    transition: "all .15s"
+    lineHeight: 1.7,
+    transition: "all .15s",
+    whiteSpace: "nowrap"
+  };
+}
+
+function sectionTagStyle(active: boolean): React.CSSProperties {
+  return {
+    padding: "2px 8px",
+    borderRadius: 4,
+    border: "none",
+    background: active ? "#eaf1fe" : "transparent",
+    color: active ? BRAND : "#6b7280",
+    fontSize: 13,
+    cursor: "pointer",
+    lineHeight: 1.7,
+    transition: "all .15s",
+    whiteSpace: "nowrap"
   };
 }
 
@@ -412,7 +490,7 @@ const sectionHeaderStyle: React.CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  marginBottom: 14
+  marginBottom: 12
 };
 
 const sectionTitleStyle: React.CSSProperties = {

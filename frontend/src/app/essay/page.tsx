@@ -15,7 +15,7 @@ import {
 } from "@ant-design/icons";
 import { useAppStore } from "@/store/useAppStore";
 import { EssayPost, AiPost, BaseResponsePage } from "@/types";
-import { swrFetcher } from "@/lib/api";
+import { api, swrFetcher } from "@/lib/api";
 import RichTextEditor from "@/components/RichTextEditor";
 
 const BRAND = "#3874F7";
@@ -58,7 +58,7 @@ export default function EssayPage() {
   const [newTags, setNewTags] = useState("");
   const [editorText, setEditorText] = useState("");
 
-  const { data, isLoading } = useSWR<BaseResponsePage<AiPost>>(
+  const { data, isLoading, mutate } = useSWR<BaseResponsePage<AiPost>>(
     "/ai_post/list/page?current=1&pageSize=50",
     swrFetcher
   );
@@ -90,7 +90,9 @@ export default function EssayPage() {
     return list;
   }, [allPosts, kw, tab]);
 
-  const publish = (
+  const [publishing, setPublishing] = useState(false);
+
+  const publish = async (
     title: string,
     summary: string,
     tags: string[],
@@ -104,26 +106,47 @@ export default function EssayPage() {
       message.warning("请填写标题");
       return;
     }
-    const post: EssayPost = {
-      id: -Date.now(),
+    // 乐观更新：先把乐观记录加到列表顶部，体感零延迟
+    const tempId = -Date.now();
+    const optimistic: EssayPost = {
+      id: tempId,
       authorName: loginUser.userName || "我",
       authorAvatar: loginUser.userAvatar || "",
       authorTag: "我",
       topic: "AI编程",
       createTime: new Date().toISOString().slice(0, 10),
       title: title.trim(),
-      summary: summary.trim() || (content ? content.slice(0, 60) : "（无简介）"),
+      summary:
+        summary.trim() || (content ? content.slice(0, 60) : "（无简介）"),
       tags,
       likeNum: 0,
       commentNum: 0,
       content
     };
-    setLocalPosts((prev) => [post, ...prev]);
+    setLocalPosts((prev) => [optimistic, ...prev]);
     setWriteOpen(false);
     setNewTitle("");
     setNewTags("");
     setEditorText("");
-    message.success("已发布（演示）");
+
+    // 真发后端：失败则回滚乐观更新并提示
+    setPublishing(true);
+    try {
+      await api.addPost({
+        title: title.trim(),
+        content,
+        authorName: loginUser.userName || "我",
+        authorAvatar: loginUser.userAvatar || ""
+      });
+      // 重新拉一次列表，把后端真实记录（含真实 id/authorName）覆盖上来
+      mutate();
+      message.success("发布成功");
+    } catch (e: any) {
+      setLocalPosts((prev) => prev.filter((p) => p.id !== tempId));
+      message.error(e?.message || "发布失败，请稍后再试");
+    } finally {
+      setPublishing(false);
+    }
   };
 
   return (
@@ -320,7 +343,7 @@ export default function EssayPage() {
       <Modal
         title="写文章"
         open={writeOpen}
-        onCancel={() => setWriteOpen(false)}
+        onCancel={() => !publishing && setWriteOpen(false)}
         onOk={() =>
           publish(
             newTitle,
@@ -334,6 +357,7 @@ export default function EssayPage() {
         }
         okText="发布"
         cancelText="取消"
+        confirmLoading={publishing}
         width={680}
         destroyOnClose
       >

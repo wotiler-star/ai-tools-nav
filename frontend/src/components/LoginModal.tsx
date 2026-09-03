@@ -40,8 +40,11 @@ export default function LoginModal() {
     setLoading(true);
     try {
       await api.register(v.userAccount, v.userPassword, v.checkPassword);
-      message.success("注册成功，请登录");
-      setTab("login");
+      // 注册成功后自动登录，贴合「注册 → 登录」连贯流程
+      const loginRes = await api.login(v.userAccount, v.userPassword);
+      setLoginUser(loginRes.data);
+      message.success("注册成功，已自动登录");
+      closeLoginModal();
       regForm.resetFields();
     } catch (e: any) {
       message.error(e?.message || "注册失败");
