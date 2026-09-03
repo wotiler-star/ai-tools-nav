@@ -1,5 +1,10 @@
 import { request } from "@/lib/request";
 import {
+  AiArticle,
+  AiColumn,
+  AiColumnCategory,
+  AiComment,
+  AddCommentReq,
   AiPost,
   AiPrompt,
   AiTool,
@@ -47,6 +52,63 @@ export const api = {
 
   getPost: (id: number | string) =>
     request<BaseResponse<AiPost>>("/ai_post/get", { params: { id } }),
+
+  // ===== AI 知识库（对齐后端 AiColumnController）=====
+  /** 知识库分类（4 大主题） */
+  listColumnCategories: () =>
+    request<BaseResponse<AiColumnCategory[]>>("/ai_column/category/list"),
+
+  /** 专栏分页列表：支持分类过滤 + 排序 hot/new */
+  listColumns: (params: { current?: number; pageSize?: number; categoryId?: number; sort?: string }) =>
+    request<BaseResponsePage<AiColumn>>("/ai_column/list", {
+      params: { current: 1, pageSize: 20, ...params }
+    }),
+
+  /** 专栏详情 */
+  getColumn: (id: number | string) =>
+    request<BaseResponse<AiColumn>>(`/ai_column/get/${id}`),
+
+  /** 文章分页列表：按专栏过滤 + 排序 hot/new */
+  listArticles: (params: { current?: number; pageSize?: number; columnId?: number; sort?: string }) =>
+    request<BaseResponsePage<AiArticle>>("/ai_column/article/list", {
+      params: { current: 1, pageSize: 30, ...params }
+    }),
+
+  /** 文章详情 */
+  getArticle: (id: number | string) =>
+    request<BaseResponse<AiArticle>>(`/ai_column/article/get/${id}`),
+
+  /** 文章阅读量 +1（详情页进入时调一次，后端公开接口） */
+  viewArticle: (id: number | string) =>
+    request<BaseResponse<number>>(`/ai_column/article/view/${id}`, { method: "POST" }),
+
+  /** 专栏阅读量 +1 */
+  viewColumn: (id: number | string) =>
+    request<BaseResponse<number>>(`/ai_column/view/${id}`, { method: "POST" }),
+
+  // ===== 评论（通用：文章 / 帖子）=====
+  listComments: (targetType: string, targetId: number) =>
+    request<BaseResponse<AiComment[]>>("/ai_comment/list", {
+      params: { targetType, targetId }
+    }),
+
+  /** 发布评论（需登录，后端 SaTokenConfig 已拦截 /ai_comment/add） */
+  addComment: (data: AddCommentReq) =>
+    request<BaseResponse<number>>("/ai_comment/add", {
+      method: "POST",
+      body: data
+    }),
+
+  /** 删除评论（本人或管理员，后端已校验） */
+  deleteComment: (id: number) =>
+    request<BaseResponse<boolean>>(`/ai_comment/delete/${id}`, { method: "DELETE" }),
+
+  /** 发布社区帖子（需登录，后端 SaTokenConfig 已拦截 /ai_post/add） */
+  addPost: (data: { title: string; content?: string; authorName?: string; authorAvatar?: string }) =>
+    request<BaseResponse<number>>("/ai_post/add", {
+      method: "POST",
+      body: data
+    }),
 
   getPrompt: (id: number | string) =>
     request<BaseResponse<AiPrompt>>("/ai_prompt/get", { params: { id } }),
@@ -137,7 +199,41 @@ export const api = {
     deleteCategory: (id: number) =>
       request<BaseResponse<boolean>>(`/admin/category/${id}`, {
         method: "DELETE"
-      })
+      }),
+
+    // ===== 知识库：专栏 + 文章管理 =====
+    listColumns: () =>
+      request<BaseResponse<AiColumn[]>>("/admin/column/list"),
+
+    addColumn: (col: Partial<AiColumn>) =>
+      request<BaseResponse<number>>("/admin/column/add", {
+        method: "POST",
+        body: col
+      }),
+    updateColumn: (col: Partial<AiColumn>) =>
+      request<BaseResponse<boolean>>("/admin/column/update", {
+        method: "PUT",
+        body: col
+      }),
+    deleteColumn: (id: number) =>
+      request<BaseResponse<boolean>>(`/admin/column/${id}`, { method: "DELETE" }),
+
+    listArticles: (columnId?: number) =>
+      request<BaseResponse<AiArticle[]>>("/admin/article/list", {
+        params: columnId ? { columnId } : {}
+      }),
+    addArticle: (art: Partial<AiArticle>) =>
+      request<BaseResponse<number>>("/admin/article/add", {
+        method: "POST",
+        body: art
+      }),
+    updateArticle: (art: Partial<AiArticle>) =>
+      request<BaseResponse<boolean>>("/admin/article/update", {
+        method: "PUT",
+        body: art
+      }),
+    deleteArticle: (id: number) =>
+      request<BaseResponse<boolean>>(`/admin/article/${id}`, { method: "DELETE" })
   }
 };
 

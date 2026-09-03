@@ -412,6 +412,23 @@ export function FavoritesTab() {
 
 /* ==================== 5. 会员中心 ==================== */
 
+/** 成长等级体系（对齐目标站：等级 + 等级名 + 升级所需成长值阈值） */
+const GROWTH_LEVELS = [
+  { lv: 1, name: "初出茅庐", min: 0 },
+  { lv: 2, name: "小有名气", min: 100 },
+  { lv: 3, name: "崭露头角", min: 300 },
+  { lv: 4, name: "独当一面", min: 600 },
+  { lv: 5, name: "行业精英", min: 1000 },
+  { lv: 6, name: "鱼皮之友", min: 2000 }
+];
+
+/** 会员套餐（对齐目标站 会员中心 开通会员区） */
+const VIP_PLANS = [
+  { type: 1, name: "月度会员", price: "¥19", unit: "/月", desc: "连续包月，随时可取消", tag: "" },
+  { type: 2, name: "年度会员", price: "¥198", unit: "/年", desc: "立省 ¥130，超值推荐", tag: "推荐" },
+  { type: 3, name: "永久会员", price: "¥998", unit: "一次性", desc: "一次开通，终身畅享", tag: "" }
+];
+
 export function MemberTab() {
   const { message } = App.useApp();
   const { data, isLoading } = useSWR<BaseResponse<MemberVO>>("/user/member");
@@ -419,71 +436,209 @@ export function MemberTab() {
 
   if (isLoading) return <Panel title="会员中心"><Loading /></Panel>;
 
+  const isVip = !!m?.isVip;
+  const level = m?.level ?? 1;
+  const growth = m?.points ?? 0;
+  const curLevel = GROWTH_LEVELS.find((l) => l.lv === level) ?? GROWTH_LEVELS[0];
+  const nextLevel = GROWTH_LEVELS.find((l) => l.lv === level + 1);
+  const curMin = curLevel.min;
+  const nextMin = nextLevel?.min ?? curMin;
+  const progress = nextLevel
+    ? Math.max(2, Math.min(100, Math.round(((growth - curMin) / (nextMin - curMin)) * 100)))
+    : 100;
+
   return (
-    <Panel title="会员中心" desc="查看你的成长等级与会员权益">
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       {/* 会员卡片 */}
       <div
         style={{
           borderRadius: 14,
-          padding: 22,
-          background: m?.isVip
-            ? "linear-gradient(135deg,#ffd76a,#ffb020)"
-            : "linear-gradient(135deg,#e3ecff,#ece9ff)",
-          color: m?.isVip ? "#7a4a00" : "#1f2937",
-          marginBottom: 20
+          padding: 24,
+          background: isVip
+            ? "linear-gradient(135deg,#ffd76a,#ff9d2e)"
+            : "linear-gradient(135deg,#3b6ff5,#7a5cff)",
+          color: "#fff",
+          position: "relative",
+          overflow: "hidden"
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-          <span style={{ fontSize: 20 }}>{m?.isVip ? "👑" : "🎖️"}</span>
-          <span style={{ fontSize: 18, fontWeight: 700 }}>
-            {m?.vipTypeName ?? "普通用户"}
-          </span>
-          {m?.isVip && m?.vipExpireTime && (
-            <span style={{ fontSize: 13, opacity: 0.85 }}>
-              · 到期 {String(m.vipExpireTime).slice(0, 10)}
-            </span>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
+          <span style={{ fontSize: 26 }}>{isVip ? "👑" : "🎖️"}</span>
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 800, lineHeight: 1.2 }}>
+              {m?.vipTypeName ?? "普通用户"}
+            </div>
+            {isVip && m?.vipExpireTime ? (
+              <div style={{ fontSize: 13, opacity: 0.9, marginTop: 2 }}>
+                有效期至 {String(m.vipExpireTime).slice(0, 10)}
+              </div>
+            ) : (
+              <div style={{ fontSize: 13, opacity: 0.9, marginTop: 2 }}>
+                开通会员解锁全部专属权益
+              </div>
+            )}
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 36, flexWrap: "wrap" }}>
+          <div>
+            <div style={{ fontSize: 12, opacity: 0.85 }}>成长等级</div>
+            <div style={{ fontSize: 24, fontWeight: 800, marginTop: 2 }}>Lv{level}</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 12, opacity: 0.85 }}>成长值</div>
+            <div style={{ fontSize: 24, fontWeight: 800, marginTop: 2 }}>{growth}</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 12, opacity: 0.85 }}>当前头衔</div>
+            <div style={{ fontSize: 24, fontWeight: 800, marginTop: 2 }}>{curLevel.name}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* 成长体系 */}
+      <Panel title="成长体系" desc="通过每日签到、发布内容、收藏点赞获取成长值，解锁更高等级与头衔">
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 10 }}>
+          <div style={{ fontSize: 14, color: "var(--text-2)" }}>
+            当前 <b style={{ color: "var(--text-1)" }}>Lv{level} {curLevel.name}</b>
+          </div>
+          <div style={{ fontSize: 13, color: "var(--text-3)" }}>
+            {nextLevel ? (
+              <>距 Lv{nextLevel.lv} {nextLevel.name} 还需 <b style={{ color: "#3874F7" }}>{Math.max(0, nextMin - growth)}</b> 成长值</>
+            ) : (
+              <>已达最高等级 🎉</>
+            )}
+          </div>
+        </div>
+        <div
+          style={{
+            height: 12,
+            borderRadius: 999,
+            background: "var(--surface-2)",
+            overflow: "hidden",
+            marginBottom: 14
+          }}
+        >
+          <div
+            style={{
+              width: `${progress}%`,
+              height: "100%",
+              borderRadius: 999,
+              background: "linear-gradient(90deg,#3874F7,#69b1ff)",
+              transition: "width .4s ease"
+            }}
+          />
+        </div>
+        {/* 等级节点 */}
+        <div style={{ display: "flex", justifyContent: "space-between", gap: 6, flexWrap: "wrap" }}>
+          {GROWTH_LEVELS.map((l) => {
+            const reached = level >= l.lv;
+            return (
+              <div
+                key={l.lv}
+                style={{
+                  flex: "1 1 0",
+                  minWidth: 78,
+                  textAlign: "center",
+                  padding: "8px 4px",
+                  borderRadius: 10,
+                  background: reached ? "var(--brand-tint)" : "var(--surface-2)",
+                  border: reached ? "1px solid #3874F7" : "1px solid transparent"
+                }}
+              >
+                <div style={{ fontSize: 13, fontWeight: 700, color: reached ? "#3874F7" : "var(--text-3)" }}>
+                  Lv{l.lv}
+                </div>
+                <div style={{ fontSize: 12, color: "var(--text-3)", marginTop: 2 }}>{l.name}</div>
+              </div>
+            );
+          })}
+        </div>
+      </Panel>
+
+      {/* 会员权益 */}
+      <Panel title="会员权益" desc="不同身份可享受到的特权">
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+          {(m?.benefits ?? []).length === 0 ? (
+            <span style={{ fontSize: 13, color: "var(--text-3)" }}>暂无权益</span>
+          ) : (
+            (m?.benefits ?? []).map((b) => (
+              <span
+                key={b}
+                style={{
+                  fontSize: 13,
+                  padding: "7px 14px",
+                  borderRadius: 10,
+                  background: "var(--surface-2)",
+                  color: "var(--text-2)",
+                  border: "1px solid var(--border)"
+                }}
+              >
+                ✓ {b}
+              </span>
+            ))
           )}
         </div>
-        <div style={{ display: "flex", gap: 28, flexWrap: "wrap" }}>
-          <div>
-            <div style={{ fontSize: 12, opacity: 0.75, marginBottom: 2 }}>成长等级</div>
-            <div style={{ fontSize: 22, fontWeight: 700 }}>Lv{m?.level ?? 1}</div>
-          </div>
-          <div>
-            <div style={{ fontSize: 12, opacity: 0.75, marginBottom: 2 }}>我的积分</div>
-            <div style={{ fontSize: 22, fontWeight: 700 }}>{m?.points ?? 0}</div>
-          </div>
+      </Panel>
+
+      {/* 开通会员 */}
+      <Panel title="开通会员" desc="升级会员，解锁更多专属特权与成长加速">
+        <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+          {VIP_PLANS.map((p) => {
+            const active = p.type === (m?.vipType ?? 0);
+            return (
+              <div
+                key={p.type}
+                style={{
+                  flex: "1 1 0",
+                  minWidth: 180,
+                  position: "relative",
+                  borderRadius: 14,
+                  padding: "22px 18px",
+                  background: "var(--surface)",
+                  border: active
+                    ? "2px solid #3874F7"
+                    : p.tag
+                    ? "2px solid #ffb020"
+                    : "1px solid var(--border)"
+                }}
+              >
+                {p.tag ? (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: -1,
+                      right: 14,
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: "#7a4a00",
+                      background: "linear-gradient(135deg,#ffd76a,#ffb020)",
+                      padding: "2px 10px",
+                      borderBottomLeftRadius: 8,
+                      borderBottomRightRadius: 8
+                    }}
+                  >
+                    {p.tag}
+                  </span>
+                ) : null}
+                <div style={{ fontSize: 16, fontWeight: 700, color: "var(--text-1)" }}>{p.name}</div>
+                <div style={{ margin: "12px 0 4px", display: "flex", alignItems: "baseline", gap: 4 }}>
+                  <span style={{ fontSize: 28, fontWeight: 800, color: "#3874F7" }}>{p.price}</span>
+                  <span style={{ fontSize: 13, color: "var(--text-3)" }}>{p.unit}</span>
+                </div>
+                <div style={{ fontSize: 12, color: "var(--text-3)", marginBottom: 16 }}>{p.desc}</div>
+                <Button
+                  type={active ? "default" : "primary"}
+                  block
+                  onClick={() => message.info("演示站点暂未接入支付，会员功能仅作展示")}
+                >
+                  {active ? "当前套餐" : isVip ? "升级会员" : "开通会员"}
+                </Button>
+              </div>
+            );
+          })}
         </div>
-      </div>
-
-      {/* 权益列表 */}
-      <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text-1)", marginBottom: 10 }}>
-        当前权益
-      </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 20 }}>
-        {(m?.benefits ?? []).map((b) => (
-          <span
-            key={b}
-            style={{
-              fontSize: 13,
-              padding: "6px 12px",
-              borderRadius: 20,
-              background: "var(--surface-2)",
-              color: "var(--text-2)"
-            }}
-          >
-            ✓ {b}
-          </span>
-        ))}
-      </div>
-
-      <Button
-        type="primary"
-        onClick={() => message.info("演示站点暂未接入支付，会员功能仅作展示")}
-      >
-        {m?.isVip ? "续费会员" : "开通会员"}
-      </Button>
-    </Panel>
+      </Panel>
+    </div>
   );
 }
 

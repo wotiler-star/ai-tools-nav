@@ -21,6 +21,9 @@ public class SaTokenConfig implements WebMvcConfigurer {
                         "/user/logout",
                         "/ai_post/add",
                         "/ai_prompt/add",
+                        // ===== 评论：列表公开，发/删需登录 =====
+                        "/ai_comment/add",
+                        "/ai_comment/delete/**",
                         // ===== 用户中心：需登录 =====
                         "/user/update",
                         "/user/update/password",

@@ -8,6 +8,8 @@ export interface Category {
   sort: number;
   /** 二级子标签（复刻目标站『分类→子标签』导航） */
   tags?: string[];
+  /** 全局标签云配额：该分类在全局云里展示几个标签（对齐目标站红框第 3 行） */
+  cloudCount?: number;
 }
 
 /** AI 工具 */
@@ -201,3 +203,71 @@ export interface BaseResponse<T> {
 }
 
 export type BaseResponsePage<T> = BaseResponse<PageResult<T>>;
+
+/** ===== AI 知识库（对齐后端 AiColumn / AiArticle / AiColumnCategory） ===== */
+export interface AiColumnCategory {
+  id: number;
+  name: string;
+  sort?: number;
+  description?: string;
+}
+
+export interface AiColumn {
+  id: number;
+  title: string;
+  description?: string;
+  /** 封面色值（如 #3874F7），前端生成渐变封面 */
+  coverColor?: string;
+  categoryId?: number;
+  categoryName?: string;
+  /** 逗号分隔标签 */
+  tags?: string;
+  /** 是否会员：0 免费 / 1 会员 */
+  needVip?: number;
+  articleCount?: number;
+  viewNum?: number;
+  likeNum?: number;
+  collectNum?: number;
+  sort?: number;
+  status?: number;
+  createTime?: string;
+}
+
+export interface AiArticle {
+  id: number;
+  columnId?: number;
+  title: string;
+  summary?: string;
+  /** 正文 markdown */
+  content?: string;
+  coverUrl?: string;
+  viewNum?: number;
+  likeNum?: number;
+  collectNum?: number;
+  sort?: number;
+  status?: number;
+  createTime?: string;
+}
+
+/** 评论（通用：文章 / 帖子），对齐后端 ai_comment */
+export interface AiComment {
+  id: number;
+  targetType?: string;
+  targetId?: number;
+  userId?: number;
+  userName?: string;
+  userAvatar?: string;
+  content?: string;
+  parentId?: number;
+  likeNum?: number;
+  status?: number;
+  createTime?: string;
+}
+
+/** 发布评论请求体 */
+export interface AddCommentReq {
+  targetType: string;
+  targetId: number;
+  content: string;
+  parentId?: number;
+}

@@ -35,7 +35,7 @@ const NAV: {
   { label: "主页", href: "/" },
   { label: "社区", href: "/essay" },
   { label: "AI工具", href: "/tool" },
-  { label: "AI知识库", href: "/library/1874183520257" },
+  { label: "AI知识库", href: "/library" },
   { label: "AI提示词", href: "/painting" },
   { label: "MCP", href: "/mcp" },
   { label: "Skills", href: "/skills" },

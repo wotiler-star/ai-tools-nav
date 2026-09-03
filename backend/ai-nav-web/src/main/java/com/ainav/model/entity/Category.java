@@ -31,4 +31,7 @@ public class Category implements Serializable {
     @JsonSerialize(using = TagsSerializer.class)
     @JsonDeserialize(using = TagsDeserializer.class)
     private String tags;
+
+    /** 全局标签云配额：该分类的标签在搜索框下方的全局混合标签云里展示几个（对齐目标站红框第 3 行）；0 = 不展示 */
+    private Integer cloudCount;
 }
