@@ -76,6 +76,9 @@ code-nav/
 coverage/
 .nyc_output/
 
+# ---------- 抓取/解析草稿（本地产物，不入库） ----------
+staging/
+
 # ---------- Java / Maven ----------
 !**/src/main/**/target/
 !**/src/test/**/target/

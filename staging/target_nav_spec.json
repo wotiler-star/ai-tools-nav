@@ -1,0 +1,45 @@
+{
+  "source": "ai.codefather.cn (鱼皮AI导航站) 实测提取",
+  "extractedAt": "2026-09-02",
+  "topNav": [
+    { "name": "主页", "path": "/" },
+    { "name": "社区", "path": "/essay" },
+    { "name": "AI工具", "path": "/tool" },
+    { "name": "AI知识库", "path": "/library/1874183520257" },
+    { "name": "AI提示词", "path": "/painting" },
+    { "name": "MCP", "path": "/mcp" },
+    { "name": "Skills", "path": "/skills" },
+    {
+      "name": "AI学习资源",
+      "path": "/resource/learn",
+      "children": [
+        { "name": "AI学习教程", "path": "/resource/learn" },
+        { "name": "AI项目课程", "path": "/resource/course" },
+        { "name": "AI知识百科", "path": "/resource/encyclopedia" }
+      ]
+    },
+    { "name": "AI资讯", "path": "/news" },
+    { "name": "GitHub开源", "path": "https://github.com/liyupi/ai-guide", "external": true }
+  ],
+  "toolCategories": [
+    { "name": "AI写作", "tags": ["AI写作工具","AI小红书文案","AI小说","AI论文写作","AI总结摘要","AI提示词","AIGC检测","AI公文","AI标书写作","AI论文查重","AI阅读","降AIGC率"] },
+    { "name": "AI图像", "tags": ["常用AI图像工具","AI图片优化修复","AI图片背景移除","AI图片无损放大","AI 3D模型生成","AI商品图生成","AI图片插画生成","AI图片物体抹除"] },
+    { "name": "AI视频创作", "tags": [] },
+    { "name": "AI办公", "tags": ["AI PPT","AI文档工具","AI思维导图","AI表格数据处理","AI语言翻译","AI会议工具","AI招聘求职","AI效率提升","AI法律助手"] },
+    { "name": "AI开发平台", "tags": ["AI编程工具","AI开源项目","AI开发框架","AI开放平台","AI训练模型","AI-SQL数据库","AI低(无)代码编程","AI国际导航","AI开发课堂"] },
+    { "name": "AI智能体", "tags": [] },
+    { "name": "AI聊天对话", "tags": [] },
+    { "name": "AI音频音乐", "tags": [] },
+    { "name": "AI商业设计", "tags": [] },
+    { "name": "AI大模型", "tags": ["AI大语言模型","AI视觉大模型","AI视频大模型","AI语音大模型","AI多模态大模型","AI大模型评测","AI海外大模型","AI行业大模型"] },
+    { "name": "AI学习平台", "tags": [] },
+    { "name": "AI搜索引擎", "tags": [] },
+    { "name": "AI内容检测", "tags": [] },
+    { "name": "AI应用", "tags": [] }
+  ],
+  "notes": {
+    "cloneCurrentToolCategories": ["对话","绘画","写作","视频","音频","编程","办公","设计","搜索","开发平台","学习"],
+    "gap": "克隆站当前 11 个分类与目标站 14 个分类命名/顺序/数量均不同，需整体替换才能 100% 一致",
+    "twoLevelNav": "目标站工具分类为『分类→子标签(tags)』二级结构；克隆站 CategoryNav 当前为扁平列表，需扩展才完全等价"
+  }
+}
