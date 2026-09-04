@@ -52,7 +52,7 @@ export default function AdminUsers() {
     const values = await form.validateFields();
     setSaving(true);
     try {
-      await api.updateUser({
+      await api.admin.updateUser({
         id: editing.id,
         userName: values.userName,
         userAvatar: values.userAvatar,
@@ -73,7 +73,7 @@ export default function AdminUsers() {
 
   const onDelete = async (u: UserVO) => {
     try {
-      await api.deleteUser(u.id);
+      await api.admin.deleteUser(u.id);
       message.success("已删除");
       mutate();
     } catch (e: any) {

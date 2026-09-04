@@ -48,7 +48,7 @@ export default function AdminPrompts() {
     const values = await form.validateFields();
     setSaving(true);
     try {
-      await api.updateAdminPrompt({
+      await api.admin.updateAdminPrompt({
         id: editing.id,
         title: values.title,
         categoryName: values.categoryName,
@@ -66,7 +66,7 @@ export default function AdminPrompts() {
 
   const onDelete = async (p: AiPrompt) => {
     try {
-      await api.deleteAdminPrompt(p.id);
+      await api.admin.deleteAdminPrompt(p.id);
       message.success("已删除");
       mutate();
     } catch (e: any) {

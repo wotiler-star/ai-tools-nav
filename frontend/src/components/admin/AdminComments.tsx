@@ -31,7 +31,7 @@ export default function AdminComments() {
 
   const onDelete = async (c: AiComment) => {
     try {
-      await api.deleteAdminComment(c.id);
+      await api.admin.deleteAdminComment(c.id);
       message.success("已删除");
       mutate();
     } catch (e: any) {

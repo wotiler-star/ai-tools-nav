@@ -47,7 +47,7 @@ export default function AdminPosts() {
     const values = await form.validateFields();
     setSaving(true);
     try {
-      await api.updateAdminPost({
+      await api.admin.updateAdminPost({
         id: editing.id,
         title: values.title,
         content: values.content,
@@ -65,7 +65,7 @@ export default function AdminPosts() {
 
   const onDelete = async (p: AiPost) => {
     try {
-      await api.deleteAdminPost(p.id);
+      await api.admin.deleteAdminPost(p.id);
       message.success("已删除");
       mutate();
     } catch (e: any) {
