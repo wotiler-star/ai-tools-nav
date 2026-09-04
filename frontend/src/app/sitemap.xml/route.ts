@@ -17,8 +17,12 @@ import type { AiArticle, AiColumn, AiTool, BaseResponsePage, Category } from "@/
 /** 容器内网直连后端（同属 ainav-net），不经 nginx 回环 */
 const INTERNAL_API = process.env.SITEMAP_API_BASE || "http://backend:8123/api";
 
-/** 重新生成周期（秒） */
-export const revalidate = 3600;
+/**
+ * 必须强制运行时动态执行：该路由要在容器内网访问 backend 拉真实数据。
+ * 若用 export const revalidate，Next 会在 docker build 阶段预渲染（此时 backend
+ * 在构建网络里不可达）并缓存空 sitemap，导致线上长期只输出静态页。
+ */
+export const dynamic = "force-dynamic";
 
 /** 单个数据源最多翻多少页，防止异常分页把 sitemap 拖垮 */
 const MAX_PAGES = 20;
@@ -66,8 +70,7 @@ async function getJSON<T>(path: string, params: Record<string, unknown>): Promis
   const url = `${INTERNAL_API}${path}?${usp.toString()}`;
   try {
     const res = await fetch(url, {
-      headers: { "Content-Type": "application/json" },
-      next: { revalidate }
+      headers: { "Content-Type": "application/json" }
     });
     if (!res.ok) return null;
     const json = (await res.json()) as { code?: number };
