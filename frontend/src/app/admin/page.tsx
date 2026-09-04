@@ -21,11 +21,27 @@ import {
   Divider,
   message
 } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import {
+  DashboardOutlined,
+  ToolOutlined,
+  AppstoreOutlined,
+  BookOutlined,
+  FileTextOutlined,
+  BulbOutlined,
+  MessageOutlined,
+  TeamOutlined,
+  PlusOutlined
+} from "@ant-design/icons";
+import { ProLayout } from "@ant-design/pro-components";
 import { api, swrFetcher } from "@/lib/api";
 import { useAppStore } from "@/store/useAppStore";
 import SectionTitle from "@/components/SectionTitle";
 import CategoryChart, { CategoryDatum } from "@/components/CategoryChart";
+import AdminOverview from "@/components/admin/AdminOverview";
+import AdminUsers from "@/components/admin/AdminUsers";
+import AdminPosts from "@/components/admin/AdminPosts";
+import AdminPrompts from "@/components/admin/AdminPrompts";
+import AdminComments from "@/components/admin/AdminComments";
 import {
   AiTool,
   AiColumn,

@@ -53,7 +53,13 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true
-  }
+  },
+  // Google Search Console 站点验证：拿到 GSC 提供的 token 后，通过环境变量
+  // NEXT_PUBLIC_GOOGLE_VERIFICATION 注入即可输出 <meta name="google-site-verification">，
+  // 留空则不输出该标签（不影响其他 SEO 配置）。
+  ...(process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION
+    ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION } }
+    : {})
 };
 
 export default function RootLayout({

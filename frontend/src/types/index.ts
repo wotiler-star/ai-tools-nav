@@ -289,3 +289,16 @@ export interface AiMessage {
   isRead?: number;
   createTime?: string;
 }
+
+/** 后台管理：数据概览统计，对齐后端 AdminStatsVO */
+export interface AdminStatsVO {
+  userCount?: number;
+  toolCount?: number;
+  categoryCount?: number;
+  postCount?: number;
+  promptCount?: number;
+  commentCount?: number;
+  columnCount?: number;
+  articleCount?: number;
+  messageCount?: number;
+}

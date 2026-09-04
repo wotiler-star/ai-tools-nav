@@ -8,10 +8,14 @@ import com.ainav.common.PageResult;
 import com.ainav.common.ResultUtils;
 import com.ainav.model.entity.AiPrompt;
 import com.ainav.service.AiPromptService;
+import com.ainav.service.cache.CacheKeys;
+import com.ainav.service.cache.RedisCacheService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,18 +31,57 @@ public class AiPromptController {
     @Resource
     private AiPromptService aiPromptService;
 
-    @Operation(summary = "提示词分页列表")
+    /** Redis 查询缓存：仅 prod profile 启用时存在（ainav.cache.enabled=true） */
+    @Autowired(required = false)
+    private RedisCacheService redisCacheService;
+
+    @Operation(summary = "提示词分页列表（prod profile 下走 Redis 缓存）")
     @GetMapping("/list/page")
     public BaseResponse<PageResult<AiPrompt>> listPage(
             @RequestParam(defaultValue = "1") long current,
             @RequestParam(defaultValue = "20") long pageSize) {
-        return ResultUtils.success(aiPromptService.listPromptByPage(current, pageSize));
+        String key = RedisCacheService.buildKey(CacheKeys.PROMPT_LIST, current, pageSize);
+        if (redisCacheService != null) {
+            PageResult<AiPrompt> cached =
+                    redisCacheService.getGeneric(key, new TypeReference<PageResult<AiPrompt>>() {
+                    });
+            if (cached != null) {
+                return ResultUtils.success(cached);
+            }
+        }
+        PageResult<AiPrompt> data = aiPromptService.listPromptByPage(current, pageSize);
+        if (redisCacheService != null) {
+            redisCacheService.put(key, data, CacheKeys.TTL_LIST);
+        }
+        return ResultUtils.success(data);
     }
 
     @Operation(summary = "提示词详情")
     @GetMapping("/get")
     public BaseResponse<AiPrompt> get(@RequestParam long id) {
-        return ResultUtils.success(aiPromptService.getById(id));
+        String key = RedisCacheService.buildKey(CacheKeys.PROMPT_DETAIL, id);
+        if (redisCacheService != null) {
+            AiPrompt cached = redisCacheService.get(key, AiPrompt.class);
+            if (cached != null) {
+                return ResultUtils.success(cached);
+            }
+        }
+        AiPrompt data = aiPromptService.getById(id);
+        if (redisCacheService != null) {
+            redisCacheService.put(key, data, CacheKeys.TTL_DETAIL);
+        }
+        return ResultUtils.success(data);
+    }
+
+    /** 提示词写操作后失效列表缓存；传了 id 时连详情一起失效 */
+    private void evictPromptCache(Long id) {
+        if (redisCacheService == null) {
+            return;
+        }
+        redisCacheService.deleteByPrefix(CacheKeys.PROMPT_LIST);
+        if (id != null) {
+            redisCacheService.delete(RedisCacheService.buildKey(CacheKeys.PROMPT_DETAIL, id));
+        }
     }
 
     /** 发布提示词请求体 */
@@ -66,6 +109,7 @@ public class AiPromptController {
                 : null);
         prompt.setUseCount(0L);
         aiPromptService.save(prompt);
+        evictPromptCache(null);
         return ResultUtils.success(prompt.getId());
     }
 
@@ -104,6 +148,7 @@ public class AiPromptController {
             prompt.setCategoryName(req.getCategoryName().isBlank() ? null : req.getCategoryName().trim());
         }
         aiPromptService.updateById(prompt);
+        evictPromptCache(prompt.getId());
         return ResultUtils.success(true);
     }
 
@@ -121,6 +166,7 @@ public class AiPromptController {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "只能删除自己的提示词");
         }
         aiPromptService.removeById(id);
+        evictPromptCache(id);
         return ResultUtils.success(true);
     }
 }

@@ -8,7 +8,8 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin", "/api/"]
+        // 后台、登录态个人页、接口与搜索结果页不参与收录
+        disallow: ["/admin", "/user/", "/api/", "/search"]
       }
     ],
     sitemap: `${base}/sitemap.xml`,

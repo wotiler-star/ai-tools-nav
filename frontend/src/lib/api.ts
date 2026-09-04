@@ -6,6 +6,7 @@ import {
   AiComment,
   AddCommentReq,
   AiMessage,
+  AdminStatsVO,
   AiPost,
   AiPrompt,
   AiTool,
@@ -287,7 +288,64 @@ export const api = {
         body: art
       }),
     deleteArticle: (id: number) =>
-      request<BaseResponse<boolean>>(`/admin/article/${id}`, { method: "DELETE" })
+      request<BaseResponse<boolean>>(`/admin/article/${id}`, { method: "DELETE" }),
+
+    // ===== 数据概览 =====
+    getStats: () => request<BaseResponse<AdminStatsVO>>("/admin/stats"),
+
+    // ===== 用户管理 =====
+    listUsers: (params: { current?: number; pageSize?: number; keyword?: string }) =>
+      request<BaseResponsePage<UserVO>>("/admin/user/list", {
+        params: { current: 1, pageSize: 10, ...params }
+      }),
+    updateUser: (data: {
+      id: number;
+      userName?: string;
+      userAvatar?: string;
+      userProfile?: string;
+      email?: string;
+      phone?: string;
+      role?: string;
+    }) => request<BaseResponse<boolean>>("/admin/user/update", {
+      method: "PUT",
+      body: data
+    }),
+    deleteUser: (id: number) =>
+      request<BaseResponse<boolean>>(`/admin/user/${id}`, { method: "DELETE" }),
+
+    // ===== 社区帖子管理 =====
+    listAdminPosts: (params: { current?: number; pageSize?: number; keyword?: string }) =>
+      request<BaseResponsePage<AiPost>>("/admin/post/list", {
+        params: { current: 1, pageSize: 10, ...params }
+      }),
+    updateAdminPost: (post: Partial<AiPost> & { id: number }) =>
+      request<BaseResponse<boolean>>("/admin/post/update", {
+        method: "PUT",
+        body: post
+      }),
+    deleteAdminPost: (id: number) =>
+      request<BaseResponse<boolean>>(`/admin/post/${id}`, { method: "DELETE" }),
+
+    // ===== AI 提示词管理 =====
+    listAdminPrompts: (params: { current?: number; pageSize?: number; keyword?: string }) =>
+      request<BaseResponsePage<AiPrompt>>("/admin/prompt/list", {
+        params: { current: 1, pageSize: 10, ...params }
+      }),
+    updateAdminPrompt: (prompt: Partial<AiPrompt> & { id: number }) =>
+      request<BaseResponse<boolean>>("/admin/prompt/update", {
+        method: "PUT",
+        body: prompt
+      }),
+    deleteAdminPrompt: (id: number) =>
+      request<BaseResponse<boolean>>(`/admin/prompt/${id}`, { method: "DELETE" }),
+
+    // ===== 评论管理 =====
+    listAdminComments: (params: { current?: number; pageSize?: number; keyword?: string }) =>
+      request<BaseResponsePage<AiComment>>("/admin/comment/list", {
+        params: { current: 1, pageSize: 10, ...params }
+      }),
+    deleteAdminComment: (id: number) =>
+      request<BaseResponse<boolean>>(`/admin/comment/${id}`, { method: "DELETE" })
   }
 };
 

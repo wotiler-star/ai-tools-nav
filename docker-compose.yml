@@ -108,6 +108,8 @@ services:
       args:
         NEXT_PUBLIC_API_BASE: "/api"
         NEXT_PUBLIC_USE_MOCK: "false"
+        # Google Search Console 验证 token：在 GSC 添加站点后获取并填入，留空则跳过验证标签
+        NEXT_PUBLIC_GOOGLE_VERIFICATION: ""
     container_name: ai-nav-frontend
     restart: always
     depends_on:
