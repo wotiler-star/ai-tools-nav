@@ -38,6 +38,12 @@ interface Entry {
   priority?: number;
 }
 
+/** 社区帖子最小结构（用于 sitemap，字段对齐 AiPost） */
+interface AiPostLite {
+  id?: string | number;
+  status?: number;
+}
+
 const XML_ESCAPES: Record<string, string> = {
   "&": "&amp;",
   "<": "&lt;",
@@ -182,6 +188,13 @@ export async function GET() {
   const catRes = await getJSON<{ code: number; data: Category[] }>("/category/list", {});
   for (const c of catRes?.data ?? []) {
     const e = toEntry(base, `/category/${c.id}`, { lastmod: today, changefreq: "weekly", priority: 0.5 });
+    if (e) entries.push(e);
+  }
+
+  // 动态：社区帖子（/essay/{id}，仅已发布 status=1）
+  for (const p of await fetchAll<AiPostLite>("/ai_post/list/page")) {
+    if (p.status !== undefined && p.status !== 1) continue;
+    const e = toEntry(base, `/essay/${p.id}`, { lastmod: today, changefreq: "weekly", priority: 0.5 });
     if (e) entries.push(e);
   }
 
