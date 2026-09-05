@@ -115,7 +115,7 @@ export default function Header() {
     loginUser?.userAvatar ? (
       <img
         src={loginUser.userAvatar}
-        alt=""
+        alt={loginUser.userName ? `${loginUser.userName}的头像` : "用户头像"}
         style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover" }}
       />
     ) : (

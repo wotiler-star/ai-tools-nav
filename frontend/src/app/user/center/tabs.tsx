@@ -789,7 +789,7 @@ export function FavoritesTab() {
               {f.targetCover ? (
                 <img
                   src={f.targetCover}
-                  alt=""
+                  alt={f.targetTitle ? `${f.targetTitle}封面` : "收藏封面"}
                   style={{ width: 40, height: 40, borderRadius: 8, objectFit: "cover", flexShrink: 0 }}
                 />
               ) : null}
