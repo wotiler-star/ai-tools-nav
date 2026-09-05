@@ -39,21 +39,6 @@ export default function NewsDetail({ item }: { item: NewsItem }) {
   const mdSource = buildMarkdown(item);
   const heat = 2000 - (item.rank - 1) * 130;
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "NewsArticle",
-    headline: item.title,
-    description: `AI 行业动态：${item.title}`,
-    datePublished: new Date().toISOString().slice(0, 10),
-    author: { "@type": "Organization", name: source },
-    publisher: {
-      "@type": "Organization",
-      name: SITE.name,
-      logo: { "@type": "ImageObject", url: `https://${SITE.domain}/icon.svg` }
-    },
-    mainEntityOfPage: `https://${SITE.domain}/news/${item.id}`
-  };
-
   const related = AI_NEWS.filter((n) => n.id !== item.id).slice(0, 5);
 
   const onShare = async () => {
@@ -68,11 +53,6 @@ export default function NewsDetail({ item }: { item: NewsItem }) {
 
   return (
     <div style={{ maxWidth: 820, margin: "0 auto", padding: "20px 16px" }}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-
       <nav style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--text-3)", marginBottom: 16 }}>
         <Link href="/" style={{ color: "var(--text-3)" }}>首页</Link>
         <span>/</span>

@@ -32,5 +32,28 @@ export function generateMetadata({ params }: Props): Metadata {
 export default function Page({ params }: Props) {
   const item = AI_NEWS.find((n) => n.id === Number(params.id));
   if (!item) notFound();
-  return <NewsDetail item={item} />;
+  const source = SOURCES[(item.rank - 1) % SOURCES.length];
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline: item.title,
+    description: `AI 行业动态：${item.title}`,
+    datePublished: new Date().toISOString().slice(0, 10),
+    author: { "@type": "Organization", name: source },
+    publisher: {
+      "@type": "Organization",
+      name: SITE.name,
+      logo: { "@type": "ImageObject", url: `https://${SITE.domain}/icon.svg` }
+    },
+    mainEntityOfPage: `https://${SITE.domain}/news/${item.id}`
+  };
+  return (
+    <>
+      <NewsDetail item={item} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+    </>
+  );
 }

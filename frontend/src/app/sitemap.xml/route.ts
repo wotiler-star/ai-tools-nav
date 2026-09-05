@@ -1,4 +1,5 @@
 import { SITE } from "@/config/site";
+import { AI_NEWS } from "@/lib/mockData";
 import type { AiArticle, AiColumn, AiTool, BaseResponsePage, Category } from "@/types";
 
 /**
@@ -195,6 +196,12 @@ export async function GET() {
   for (const p of await fetchAll<AiPostLite>("/ai_post/list/page")) {
     if (p.status !== undefined && p.status !== 1) continue;
     const e = toEntry(base, `/essay/${p.id}`, { lastmod: today, changefreq: "weekly", priority: 0.5 });
+    if (e) entries.push(e);
+  }
+
+  // 动态：资讯详情（AI_NEWS 为前端 mock，生产同样稳定，id 固定）
+  for (const n of AI_NEWS) {
+    const e = toEntry(base, `/news/${n.id}`, { lastmod: today, changefreq: "daily", priority: 0.6 });
     if (e) entries.push(e);
   }
 
