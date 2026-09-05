@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { serverGet } from "@/lib/server-api";
 import { SITE } from "@/config/site";
-import EssayClient from "./EssayClient";
+import { EssayClient } from "./EssayClient";
 
 interface PostLite {
   id?: string | number;

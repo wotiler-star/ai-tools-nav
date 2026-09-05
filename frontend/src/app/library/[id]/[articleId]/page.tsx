@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { serverGet } from "@/lib/server-api";
 import { SITE } from "@/config/site";
-import ArticleClient from "./ArticleClient";
+import { ArticleClient } from "./ArticleClient";
 
 interface ArtLite {
   id?: string | number;
