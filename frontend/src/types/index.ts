@@ -56,6 +56,8 @@ export interface NewsItem {
   title: string;
   hot?: boolean;
   content?: string; // 正文（markdown 源），缺省时由详情页合成
+  summary?: string; // 摘要（可选）
+  createTime?: string; // 发布时间（可选）
 }
 
 /** 精选推荐卡片 */
@@ -89,6 +91,8 @@ export interface McpServer {
   tag: string; // 一级标签，如 data-extraction / AI
   category: string; // 所属分类
   description: string;
+  url?: string; // 官方地址（可选，缺省走搜索兜底）
+  logo?: string; // 官方 logo 地址（可选）
 }
 
 /** Skill 指令（/skills 页） */
@@ -97,6 +101,7 @@ export interface SkillItem {
   name: string;
   category: string; // 所属分类
   description: string;
+  url?: string; // 官方/文档地址（可选）
 }
 
 /** 社区帖子（/essay 页，带话题分类与标签） */
@@ -131,6 +136,7 @@ export interface PromptTemplate {
   tags: string[];
   kind: "draw" | "text";
   useCount: number;
+  cover?: string; // 封面图（可选）
 }
 
 /** 知识库专栏（/library 页） */

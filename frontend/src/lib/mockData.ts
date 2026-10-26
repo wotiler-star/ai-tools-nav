@@ -877,3 +877,12 @@ export function removeToolMock(id: number): boolean {
 }
 
 export { CAT };
+
+// 兼容 LearnFeed / LearnDetail（/resource/learn|course|encyclopedia）引用；
+// 由 ARTICLES 派生并补齐 authorName / content 字段，避免悬空导入导致页面运行时崩溃。
+export const LEARN_POSTS = ARTICLES.map((a) => ({
+  ...a,
+  authorName: "toolly 编辑部",
+  content: `${a.title}：本文系统梳理核心概念与实操要点，帮助读者快速上手。`,
+  createTime: `2024-${String(a.id).padStart(2, "0")}-15`,
+}));
