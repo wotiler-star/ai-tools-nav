@@ -237,16 +237,16 @@ export default function ToolCatalog() {
 
           {/* 红框第 3 行：全局混合标签云（直角 chip，跨分类子标签聚合） */}
           {allTags.length > 0 && (
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 8,
-                padding: "10px 0 14px",
-                borderTop: "1px dashed #e5e7eb",
-                alignItems: "center"
-              }}
-            >
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 6,
+                  padding: "8px 0 10px",
+                  borderTop: "1px dashed var(--chip-border)",
+                  alignItems: "center"
+                }}
+              >
               <CloudChip
                 label="全部"
                 active={activeCat === 0 && !activeTag}
@@ -327,23 +327,11 @@ export default function ToolCatalog() {
                 style={{ marginBottom: 36, scrollMarginTop: 130 }}
               >
                 <div style={sectionHeaderStyle}>
-                  <h2 style={sectionTitleStyle}>
-                    {cat.name}
-                    <span
-                      style={{
-                        marginLeft: 10,
-                        fontSize: 13,
-                        fontWeight: 400,
-                        color: "#9ca3af"
-                      }}
-                    >
-                      {tools.length}
-                    </span>
-                  </h2>
+                  <h2 style={sectionTitleStyle}>{cat.name}</h2>
                   <Link
                     href={`/tool?keyword=${encodeURIComponent(cat.name)}`}
                     style={{
-                      color: BRAND,
+                      color: "var(--text-2)",
                       fontSize: 13,
                       display: "inline-flex",
                       alignItems: "center",
@@ -353,14 +341,18 @@ export default function ToolCatalog() {
                     全部 <RightOutlined style={{ fontSize: 11 }} />
                   </Link>
                 </div>
-                {/* 该分类的二级子标签行（目标红框里"AI写作"区块下面那行 chip） */}
+                {/* 该分类的二级子标签行：带边框圆角容器，激活 chip 蓝边 + 浅蓝底（对齐红框样式） */}
                 {(cat.tags || []).length > 0 && (
                   <div
                     style={{
                       display: "flex",
                       flexWrap: "wrap",
                       gap: 4,
-                      marginBottom: 14,
+                      marginBottom: 10,
+                      padding: "6px 10px",
+                      border: "1px solid var(--chip-border)",
+                      borderRadius: 8,
+                      background: "var(--surface)",
                       alignItems: "center"
                     }}
                   >
@@ -438,13 +430,13 @@ function CloudChip({
   );
 }
 
-/* ========== 样式 ========== */
+/* ========== 样式（颗粒度对齐目标站：全部消费站点语义 token，暗色模式自动跟随） ========== */
 function navTabStyle(active: boolean): React.CSSProperties {
   return {
     padding: "6px 12px",
     border: "none",
     background: "transparent",
-    color: active ? BRAND : "#4b5563",
+    color: active ? BRAND : "var(--text-2)",
     fontSize: 14,
     fontWeight: active ? 600 : 500,
     cursor: "pointer",
@@ -460,9 +452,9 @@ function cloudChipStyle(active: boolean): React.CSSProperties {
   return {
     padding: "2px 10px",
     borderRadius: 4,
-    border: active ? `1px solid ${BRAND}` : "1px solid #e5e7eb",
-    background: active ? "#eaf1fe" : "#fff",
-    color: active ? BRAND : "#6b7280",
+    border: active ? `1px solid ${BRAND}` : "1px solid var(--chip-border)",
+    background: active ? "var(--brand-tint)" : "var(--surface)",
+    color: active ? BRAND : "var(--text-2)",
     fontSize: 12,
     cursor: "pointer",
     lineHeight: 1.7,
@@ -473,11 +465,11 @@ function cloudChipStyle(active: boolean): React.CSSProperties {
 
 function sectionTagStyle(active: boolean): React.CSSProperties {
   return {
-    padding: "2px 8px",
+    padding: "3px 10px",
     borderRadius: 4,
-    border: "none",
-    background: active ? "#eaf1fe" : "transparent",
-    color: active ? BRAND : "#6b7280",
+    border: active ? `1px solid ${BRAND}` : "1px solid transparent",
+    background: active ? "var(--brand-tint)" : "transparent",
+    color: active ? BRAND : "var(--text-2)",
     fontSize: 13,
     cursor: "pointer",
     lineHeight: 1.7,
@@ -490,20 +482,20 @@ const sectionHeaderStyle: React.CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  marginBottom: 12
+  marginBottom: 10
 };
 
 const sectionTitleStyle: React.CSSProperties = {
   fontSize: 20,
   fontWeight: 800,
   margin: 0,
-  color: "#1f2937",
+  color: "var(--text-1)",
   display: "flex",
   alignItems: "center"
 };
 
 const gridStyle: React.CSSProperties = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-  gap: 16
+  gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+  gap: 12
 };

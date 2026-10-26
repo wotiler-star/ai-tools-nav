@@ -4,7 +4,7 @@
 
 /*
  * 全局样式。
- * 字体：文档实测 ai.codefather.cn 使用 Inter(next/font) + 系统兜底。
+ * 字体：Inter(next/font) + 系统兜底。
  * 为保证离线可构建，这里用系统字体栈近似 Inter；如需严格一致，
  * 可在 layout 中启用 next/font/google 的 Inter 并绑定 --font-inter。
  */
@@ -75,8 +75,8 @@ a {
 .hover-brand-lift:hover {
   border-color: rgba(56, 116, 247, 0.3);
   background-color: #f1f5ff;
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(56, 116, 247, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(56, 116, 247, 0.1);
 }
 
 /* 自定义滚动条 */
