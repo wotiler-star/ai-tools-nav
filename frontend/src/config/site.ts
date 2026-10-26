@@ -14,7 +14,7 @@ export const SITE = {
 
 /**
  * 后端 API 地址。
- * - 生产：https://api.codefather.cn （复刻目标真实后端）
+ * - 生产：由 NEXT_PUBLIC_API_BASE 环境变量指定（部署时配置）
  * - 本地：Spring Boot 默认 8123 端口
  */
 export const API_BASE =
@@ -27,5 +27,5 @@ export const API_BASE =
 export const USE_MOCK =
   (process.env.NEXT_PUBLIC_USE_MOCK || "true") === "true";
 
-/** 图片 CDN（复刻 pic.code-nav.cn） */
+/** 图片 CDN */
 export const IMG_CDN = "https://pic.code-nav.cn";

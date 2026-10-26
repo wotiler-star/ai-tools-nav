@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- 父工程：Spring Boot 多模块（对齐 api.codefather.cn 技术栈） -->
+    <!-- 父工程：Spring Boot 多模块 -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -17,7 +17,7 @@
     <version>1.0.0</version>
     <packaging>pom</packaging>
     <name>ai-nav</name>
-    <description>AI 工具导航与社区站后端（复刻 api.codefather.cn）</description>
+    <description>AI 工具导航与社区站后端</description>
 
     <modules>
         <module>ai-nav-common</module>

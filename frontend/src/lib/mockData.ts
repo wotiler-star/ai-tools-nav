@@ -15,7 +15,7 @@ import {
   KbColumn
 } from "@/types";
 
-// ===== 14 大类分类（名称/图标/顺序/二级 tags 1:1 对齐 ai.codefather.cn /tool） =====
+// ===== 14 大类分类（名称/图标/顺序/二级 tags） =====
 export const CATEGORIES: Category[] = [
   { id: 1, name: "AI写作", icon: "✍️", sort: 1, tags: ["AI写作工具","AI小红书文案","AI小说","AI论文写作","AI总结摘要","AI提示词","AIGC检测","AI公文","AI标书写作","AI论文查重","AI阅读","降AIGC率"] },
   { id: 2, name: "AI图像", icon: "🎨", sort: 2, tags: ["常用AI图像工具","AI图片优化修复","AI图片背景移除","AI图片无损放大","AI 3D模型生成","AI商品图生成","AI图片插画生成","AI图片物体抹除"] },
@@ -320,7 +320,7 @@ export const AI_POSTS: AiPost[] = [
     title: "我用 AI 工具一个月，效率翻了 3 倍：我的全栈工作流",
     content:
       "分享我日常使用的 AI 工具组合：Cursor 写代码、Kimi 读长文档、Gamma 做汇报、Suno 配背景音乐……",
-    authorName: "鱼皮",
+    authorName: "toolly",
     authorAvatar: "",
     thumbUrl: "",
     createTime: "2026-07-20 10:00:00",
@@ -806,7 +806,7 @@ function kb(id: number, title: string, description: string, articleCount: number
 }
 
 export const KB_COLUMNS: KbColumn[] = [
-  kb(1, "鱼皮的 AI 知识库", "从 0 到 1 系统学习 AI 应用开发，持续更新。", 68, true),
+  kb(1, "toolly 的 AI 知识库", "从 0 到 1 系统学习 AI 应用开发，持续更新。", 68, true),
   kb(2, "Vibe Coding 零基础入门", "用自然语言与 AI 协作编程，快速做出可用产品。", 32, true),
   kb(3, "OpenClaw 保姆级教程", "从安装到进阶，玩转 AI 编程助手。", 24, true),
   kb(4, "提示词工程完全指南", "系统讲解提示词设计方法论与实战模板。", 40, false),

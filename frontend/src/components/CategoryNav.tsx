@@ -63,7 +63,7 @@ export default function CategoryNav({
         })}
       </div>
 
-      {/* 二级子标签：复刻目标站『分类→子标签』导航，仅当前激活分类有标签时展示 */}
+      {/* 二级子标签：分类→子标签导航，仅当前激活分类有标签时展示 */}
       {activeCat && activeCat.id !== 0 && activeCat.tags && activeCat.tags.length > 0 && (
         <div
           style={{

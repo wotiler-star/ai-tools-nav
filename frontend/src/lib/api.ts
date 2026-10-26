@@ -20,7 +20,7 @@ import {
 
 /**
  * API 路径与 SWR fetcher。
- * 真实后端路径对齐 api.codefather.cn：
+ * 后端接口路径：
  *   /ai_tool/list/page、/ai_tool/get、/category/list
  *   /ai_post/list/page、/ai_prompt/list/page
  * 真实模式直连后端；Mock 模式由 src/app/api/* 路由返回内置数据。

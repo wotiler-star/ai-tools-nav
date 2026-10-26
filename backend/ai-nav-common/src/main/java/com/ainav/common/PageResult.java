@@ -28,12 +28,4 @@ public class PageResult<T> implements Serializable {
     private long current;
 
     private long pages;
-
-    public PageResult(List<T> records, long total, long size, long current, long pages) {
-        this.records = records;
-        this.total = total;
-        this.size = size;
-        this.current = current;
-        this.pages = pages;
-    }
 }

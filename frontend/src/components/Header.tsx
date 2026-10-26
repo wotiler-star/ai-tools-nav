@@ -25,7 +25,7 @@ import { ToollyLogo } from "@/components/Logo";
 import { useTheme } from "@/app/theme-context";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
-/** 顶部主导航：与 ai.codefather.cn 实测顺序/子菜单 100% 一致 */
+/** 顶部主导航：主导航顺序与子菜单 */
 const NAV: {
   label: string;
   href: string;

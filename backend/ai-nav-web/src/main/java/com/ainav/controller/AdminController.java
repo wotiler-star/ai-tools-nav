@@ -348,7 +348,11 @@ public class AdminController {
             u.setRole(req.getRole());
         }
         u.setUpdateTime(LocalDateTime.now());
-        return ResultUtils.success(userService.updateById(u));
+        boolean ok = userService.updateById(u);
+        // 帖子缓存里冗余了 authorName / authorAvatar，改用户名/头像后必须失效，
+        // 否则前台列表会继续显示旧的作者信息直到 TTL 到期
+        evictCache(CacheKeys.POST_LIST, CacheKeys.POST_DETAIL);
+        return ResultUtils.success(ok);
     }
 
     @Operation(summary = "删除用户")
@@ -357,7 +361,10 @@ public class AdminController {
         if (id == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "缺少用户 id");
         }
-        return ResultUtils.success(userService.removeById(id));
+        boolean ok = userService.removeById(id);
+        // 同上：其名下帖子的作者信息仍缓存在列表里
+        evictCache(CacheKeys.POST_LIST, CacheKeys.POST_DETAIL);
+        return ResultUtils.success(ok);
     }
 
     // ===== 社区帖子管理 =====
@@ -461,6 +468,13 @@ public class AdminController {
     @Operation(summary = "删除评论")
     @DeleteMapping("/comment/{id}")
     public BaseResponse<Boolean> deleteComment(@PathVariable Long id) {
-        return ResultUtils.success(aiCommentService.removeById(id));
+        // 先取出再删：comment_num 冗余在帖子上，需按评论归属精准失效
+        AiComment comment = aiCommentService.getById(id);
+        boolean ok = aiCommentService.removeById(id);
+        // 文章没有 comment_num 字段，只有帖子需要失效
+        if (comment != null && "post".equals(comment.getTargetType())) {
+            evictCache(CacheKeys.POST_LIST, CacheKeys.POST_DETAIL);
+        }
+        return ResultUtils.success(ok);
     }
 }

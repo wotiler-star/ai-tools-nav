@@ -1,6 +1,6 @@
-# AI 工具导航与社区站（复刻 ai.codefather.cn）
+# AI 工具导航与社区站
 
-前后端分离的 AI 工具导航 + 社区网站，**全栈技术栈严格对齐 ai.codefather.cn / api.codefather.cn 实测结果**（非臆测）。
+前后端分离的 AI 工具导航 + 社区网站，全栈技术栈。
 
 - 前端：`frontend/` —— Next.js 14 (App Router) + React 18 + TypeScript
 - 后端：`backend/` —— Spring Boot 3.2 + MyBatis-Plus + MySQL + Redis + Sa-Token + Knife4j
@@ -11,7 +11,7 @@
 
 ## 一、技术栈对照表
 
-### 前端（实测 ai.codefather.cn）
+### 前端
 | 维度 | 技术 |
 | --- | --- |
 | 框架 | React 18 + Next.js 14（App Router） |
@@ -26,7 +26,7 @@
 | 工具库 | classNames / dayjs / uuid / lodash / qrcode / nprogress |
 | 代码规范 | ESLint + Prettier，字体 Inter(next/font) |
 
-### 后端（实测 api.codefather.cn）
+### 后端
 | 维度 | 技术 |
 | --- | --- |
 | 框架 | Spring Boot 3.2（Maven 多模块） |
@@ -35,7 +35,7 @@
 | 缓存 | Redis 7 |
 | 认证 | Sa-Token（SESSION Cookie，手机号/微信/短信多方式登录，**无 GitHub OAuth**） |
 | 接口文档 | Knife4j（/doc.html） |
-| 其他 | Caffeine、Redisson、Elasticsearch、Sentinel、Nacos（按目标站统一栈预留） |
+| 其他 | Caffeine、Redisson、Elasticsearch、Sentinel、Nacos（按统一技术栈预留） |
 
 ---
 
@@ -145,11 +145,11 @@ java -jar ai-nav-web/target/ai-nav-web.jar
 
 ## 六、后续可扩展
 
-- 接入 Elasticsearch 做工具/文章全文检索（目标站 `hotSearchText` / `recommendAiContent`）
+- 接入 Elasticsearch 做工具/文章全文检索（`hotSearchText` / `recommendAiContent`）
 - Sa-Token 接入微信/短信真实登录流程
 - 后台管理模块（`/admin/**`，已配置登录拦截）
 - 图片上传至 `pic.code-nav.cn` 风格 CDN
-- Docker Compose 增加 Nginx 反代，对齐目标站部署架构
+- Docker Compose 增加 Nginx 反代，对齐部署架构
 
 ---
 

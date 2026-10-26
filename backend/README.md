@@ -1,6 +1,6 @@
 # AI 导航站后端（Spring Boot）
 
-复刻 api.codefather.cn 的 AI 工具导航与社区站后端。
+AI 工具导航与社区站后端。
 
 技术栈：Spring Boot 3.2.5 + MyBatis-Plus 3.5.7 + Druid + MySQL / Redis / Elasticsearch 8 / Nacos 2 + Sa-Token + Knife4j。
 前端技术栈：Next.js 14（App Router）+ React 18 + TypeScript + Zustand + SWR + Ant Design 5。

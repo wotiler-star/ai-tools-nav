@@ -13,10 +13,13 @@ import com.ainav.service.AiCommentService;
 import com.ainav.service.AiMessageService;
 import com.ainav.service.AiPostService;
 import com.ainav.service.UserService;
+import com.ainav.service.cache.CacheKeys;
+import com.ainav.service.cache.RedisCacheService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,6 +48,22 @@ public class AiCommentController {
 
     @Resource
     private AiMessageService aiMessageService;
+
+    /** Redis 查询缓存：仅 prod profile 启用时存在（ainav.cache.enabled=true） */
+    @Autowired(required = false)
+    private RedisCacheService redisCacheService;
+
+    /**
+     * 评论增删会改变帖子的 comment_num，而该值被缓存在帖子列表/详情里。
+     * 文章没有 comment_num 字段，因此只有 targetType=post 时才需要失效。
+     */
+    private void evictPostCacheOnComment(String targetType) {
+        if (redisCacheService == null || !"post".equals(targetType)) {
+            return;
+        }
+        redisCacheService.deleteByPrefix(CacheKeys.POST_LIST);
+        redisCacheService.deleteByPrefix(CacheKeys.POST_DETAIL);
+    }
 
     /** 发评论请求体 */
     @Data
@@ -93,6 +112,7 @@ public class AiCommentController {
         c.setLikeNum(0L);
         c.setStatus(1);
         aiCommentService.save(c);
+        evictPostCacheOnComment(c.getTargetType());
         notifyOwner(c, userId);
         return ResultUtils.success(c.getId());
     }
@@ -173,6 +193,8 @@ public class AiCommentController {
         if (!isAdmin && !Objects.equals(c.getUserId(), userId)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "只能删除自己的评论");
         }
-        return ResultUtils.success(aiCommentService.removeById(id));
+        boolean ok = aiCommentService.removeById(id);
+        evictPostCacheOnComment(c.getTargetType());
+        return ResultUtils.success(ok);
     }
 }

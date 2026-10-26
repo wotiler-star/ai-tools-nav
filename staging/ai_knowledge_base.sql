@@ -78,7 +78,7 @@ INSERT INTO ai_column (id, title, description, cover_color, category_id, categor
 (20, 'Gemini 3.0 上手',   'Google 最新多模态大模型 Gemini 3.0 前端能力实测。',         '#22C55E', 4, 'AI 工具测评', 'Gemini,多模态,测评', 1, 3, 3990, 170, 300, 42);
 
 -- ===================== 文章（30 篇，每专栏 3 篇） =====================
--- 正文为 markdown 占位骨架（基于真实鱼皮教程目录）
+-- 正文为 markdown 占位骨架（基于真实toolly教程目录）
 INSERT INTO ai_article (column_id, title, summary, content, view_num, like_num, collect_num, sort) VALUES
 -- 11 新手入门 / AI 基础概念
 (11, '2 分钟看懂：大模型到底是什么', '用最通俗的比喻讲清大语言模型的本质，零基础也能秒懂。',

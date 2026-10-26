@@ -2,7 +2,7 @@
   "name": "ai-nav-frontend",
   "version": "1.0.0",
   "private": true,
-  "description": "AI 工具导航与社区网站前端（复刻 ai.codefather.cn）——Next.js 14 App Router",
+  "description": "AI 工具导航与社区网站前端 —— Next.js 14 App Router",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

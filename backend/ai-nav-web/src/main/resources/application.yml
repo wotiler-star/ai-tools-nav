@@ -68,7 +68,7 @@ knife4j:
   openapi:
     title: AI 导航站 API
     version: 1.0.0
-    description: 复刻 api.codefather.cn
+    description: AI 导航站 API
     group:
       default:
         api-rule: package

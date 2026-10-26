@@ -41,7 +41,7 @@
 前端 tsc --noEmit → 0 错误；docker compose 全栈 build 成功
 ```
 
-## 踩坑记录（复刻站后端，后续会再踩）
+## 踩坑记录（后端，后续会再踩）
 
 1. **Maven `-q` 吞报错**：Dockerfile 用 `mvn -B -q` 看不到真实错误。改用 `docker run maven:3.9-eclipse-temurin-17 mvn -B -s settings.xml clean package -DskipTests` 抓完整日志。
 2. **漏 import 导致编译失败**：`AdminController` 用 `@RequestParam` 但没 import；`AiColumnController` 用 `@PostMapping` 但没 import。两处补 import 后通过。

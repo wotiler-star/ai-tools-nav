@@ -1,6 +1,6 @@
 # 2026-09-02 红框对齐 v2（与目标红框完全一致）
 
-## 目标站红框元素（ai.codefather.cn/tool）
+## 参考站红框元素（www.toolly.cc/tool）
 1. **第 1 行**：14 个分类横排 chip + ▾ 下拉指示，纯文字 + 蓝色下划线 active
 2. **第 2 行**：搜索框 "在「AI工具」中搜索" + 独立蓝色"搜索"按钮（不是 prefix 图标）
 3. **第 3 行**：全局混合标签云 ~20 个**精选**标签，直角 chip，按分类顺序
@@ -26,7 +26,7 @@
 - 类型检查 TSC_EXIT=0
 - 后端 + 前端 docker compose up -d --build BUILD_EXIT=0
 - /api/category/list 返回 14 个分类 + cloudCount 字段
-- /tool 200，全局云 19 个标签（与目标站 20 接近）
+- /tool 200，全局云 19 个标签（与参考站 20 接近）
 - AI办公▾ hover 弹出 9 项：AI PPT/AI文档工具/AI思维导图/AI表格数据处理/AI语言翻译/AI会议工具/AI招聘求职/AI效率提升/AI法律助手 ✅
 - AI写作 区块显示 12 个子标签 + 全部 > ✅
 

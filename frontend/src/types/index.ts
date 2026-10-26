@@ -1,4 +1,4 @@
-// 全局类型定义（对齐 ai.codefather.cn / api.codefather.cn 业务模型）
+// 全局类型定义（业务模型）
 
 /** 分类 */
 export interface Category {
@@ -6,9 +6,9 @@ export interface Category {
   name: string;
   icon: string;
   sort: number;
-  /** 二级子标签（复刻目标站『分类→子标签』导航） */
+  /** 二级子标签（分类→子标签导航） */
   tags?: string[];
-  /** 全局标签云配额：该分类在全局云里展示几个标签（对齐目标站红框第 3 行） */
+  /** 全局标签云配额：该分类在全局云里展示几个标签 */
   cloudCount?: number;
 }
 

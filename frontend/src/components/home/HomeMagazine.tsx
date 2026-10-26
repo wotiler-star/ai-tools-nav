@@ -239,7 +239,7 @@ function ArticleSection() {
                             {a.title}
                           </div>
                           <div className="mt-2 text-xs text-gray-400">
-                            鱼皮 · 精选
+                            toolly · 精选
                           </div>
                         </div>
                       </div>
@@ -359,7 +359,7 @@ export default function HomeMagazine() {
                 ))}
               </div>
               <div className="mt-1.5 text-xs text-gray-400">
-                鱼皮团队严选 · 覆盖 AI 教程 / 工具实测 / 学习路线，每日更新
+                toolly 团队严选 · 覆盖 AI 教程 / 工具实测 / 学习路线，每日更新
               </div>
             </div>
           </div>

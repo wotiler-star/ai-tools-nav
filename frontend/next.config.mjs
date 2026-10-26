@@ -30,10 +30,9 @@ const nextConfig = {
   // 图片 CDN 白名单（收窄，避免任意域名代理隐患）
   images: {
     remotePatterns: [
-      // 项目图片 CDN（复刻 pic.code-nav.cn）
+      // 项目图片 CDN
       { protocol: "https", hostname: "pic.code-nav.cn" },
       { protocol: "https", hostname: "**.code-nav.cn" },
-      { protocol: "https", hostname: "**.codefather.cn" },
       // 常用头像 / 占位图服务
       { protocol: "https", hostname: "api.dicebear.com" },
       { protocol: "https", hostname: "avatars.githubusercontent.com" }

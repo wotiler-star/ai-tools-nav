@@ -12,7 +12,7 @@ CREATE TABLE category (
     name  VARCHAR(64)  NOT NULL,
     icon  VARCHAR(32)  DEFAULT '',
     sort  INT          DEFAULT 0,
-    tags  VARCHAR(512) DEFAULT '' COMMENT '二级子标签，逗号分隔（复刻目标站『分类→子标签』导航）'
+    tags  VARCHAR(512) DEFAULT '' COMMENT '二级子标签，逗号分隔（分类→子标签导航）'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- AI 工具
@@ -100,7 +100,7 @@ CREATE TABLE user_favorite (
     KEY idx_user (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ===== 初始分类数据（14 大类，名称/图标/顺序/二级 tags 1:1 对齐 ai.codefather.cn /tool） =====
+-- ===== 初始分类数据（14 大类，名称/图标/顺序/二级 tags） =====
 INSERT INTO category (id, name, icon, sort, tags) VALUES
 (1,'AI写作','✍️',1,'AI写作工具,AI小红书文案,AI小说,AI论文写作,AI总结摘要,AI提示词,AIGC检测,AI公文,AI标书写作,AI论文查重,AI阅读,降AIGC率'),
 (2,'AI图像','🎨',2,'常用AI图像工具,AI图片优化修复,AI图片背景移除,AI图片无损放大,AI 3D模型生成,AI商品图生成,AI图片插画生成,AI图片物体抹除'),
@@ -331,7 +331,7 @@ INSERT INTO ai_prompt (title, content, category_name, use_count) VALUES
 
 -- ============ 社区帖子 ai_post ============
 INSERT INTO ai_post (title, content, author_name, author_avatar, thumb_url, view_num, like_num, comment_num) VALUES
-('我用 AI 一周做了 3 个网站，方法全公开', '最近尝试用 v0、Cursor 和 Claude 组合，把想法快速落地成可上线的小网站。核心心法是：先用对话明确需求，再让 AI 生成骨架，最后人工精修细节。', '鱼皮', 'https://api.dicebear.com/7.x/initials/svg?seed=Yupi', 'https://picsum.photos/seed/aiweb/600/400', 5200, 320, 45),
+('我用 AI 一周做了 3 个网站，方法全公开', '最近尝试用 v0、Cursor 和 Claude 组合，把想法快速落地成可上线的小网站。核心心法是：先用对话明确需求，再让 AI 生成骨架，最后人工精修细节。', 'toolly', 'https://api.dicebear.com/7.x/initials/svg?seed=Yupi', 'https://picsum.photos/seed/aiweb/600/400', 5200, 320, 45),
 ('2026 年最值得收藏的 20 个 AI 工具', '整理了对话、绘画、视频、编程各赛道的神器，按使用频率和性价比排序，建议先码后看。', '星河', 'https://api.dicebear.com/7.x/initials/svg?seed=Xinghe', 'https://picsum.photos/seed/aitools/600/400', 8800, 510, 88),
 ('从零搭建你的 AI 绘画工作流', '分享我如何用 Midjourney 出图、Stable Diffusion 精修、ComfyUI 串联节点，效率提升 3 倍。', '阿木', 'https://api.dicebear.com/7.x/initials/svg?seed=Amu', 'https://picsum.photos/seed/aiart/600/400', 4100, 260, 33),
 ('Prompt 工程的 7 个实用技巧', '好的提示词决定了一半的产出质量。本文总结角色设定、少样本、链式思考等可立即上手的技巧。', '墨笔', 'https://api.dicebear.com/7.x/initials/svg?seed=Mobi', 'https://picsum.photos/seed/prompt/600/400', 6700, 410, 67),

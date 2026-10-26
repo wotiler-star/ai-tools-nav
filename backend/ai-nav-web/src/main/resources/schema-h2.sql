@@ -1,13 +1,16 @@
 -- ===== AI 导航站 H2 初始化脚本（由 gen_h2_schema.py 生成，勿手改） =====
 -- H2 MySQL 兼容模式；数据与前端 mockData.ts 保持一致
+-- 注意：DDL 必须与 com.ainav.model.entity 下的实体字段保持同步，
+--       否则本地(local) profile 启动后对应接口会报 Column/Table not found。
 
 DROP TABLE IF EXISTS category;
 CREATE TABLE category (
-    id    BIGINT PRIMARY KEY AUTO_INCREMENT,
-    name  VARCHAR(64)  NOT NULL,
-    icon  VARCHAR(32)  DEFAULT '',
-    sort  INT          DEFAULT 0,
-    tags  VARCHAR(512) DEFAULT ''
+    id          BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name        VARCHAR(64)  NOT NULL,
+    icon        VARCHAR(32)  DEFAULT '',
+    sort        INT          DEFAULT 0,
+    tags        VARCHAR(512) DEFAULT '',
+    cloud_count INT          DEFAULT 0
 );
 
 DROP TABLE IF EXISTS ai_tool;
@@ -37,7 +40,8 @@ CREATE TABLE ai_post (
     create_time   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     view_num      BIGINT DEFAULT 0,
     like_num      BIGINT DEFAULT 0,
-    comment_num   BIGINT DEFAULT 0
+    comment_num   BIGINT DEFAULT 0,
+    user_id       BIGINT DEFAULT 0
 );
 
 DROP TABLE IF EXISTS ai_prompt;
@@ -46,23 +50,92 @@ CREATE TABLE ai_prompt (
     title         VARCHAR(256) NOT NULL,
     content       TEXT,
     category_name VARCHAR(64) DEFAULT '',
-    use_count     BIGINT DEFAULT 0
+    use_count     BIGINT DEFAULT 0,
+    user_id       BIGINT DEFAULT 0
 );
 
 DROP TABLE IF EXISTS "user";
 CREATE TABLE "user" (
-    id            BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_account  VARCHAR(64)  NOT NULL DEFAULT '',
-    user_password VARCHAR(128) NOT NULL DEFAULT '',
-    user_name     VARCHAR(64)  DEFAULT '',
-    user_avatar   VARCHAR(512) DEFAULT '',
-    user_profile  VARCHAR(512) DEFAULT '',
-    phone         VARCHAR(32)  DEFAULT '',
-    email         VARCHAR(128) DEFAULT '',
-    role          VARCHAR(32)  DEFAULT 'user',
-    create_time   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_time   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id              BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_account    VARCHAR(64)  NOT NULL DEFAULT '',
+    user_password   VARCHAR(128) NOT NULL DEFAULT '',
+    user_name       VARCHAR(64)  DEFAULT '',
+    user_avatar     VARCHAR(512) DEFAULT '',
+    user_profile    VARCHAR(512) DEFAULT '',
+    phone           VARCHAR(32)  DEFAULT '',
+    email           VARCHAR(128) DEFAULT '',
+    role            VARCHAR(32)  DEFAULT 'user',
+    points          BIGINT       DEFAULT 0,
+    level           INT          DEFAULT 1,
+    vip_type        INT          DEFAULT 0,
+    vip_expire_time TIMESTAMP,
+    create_time     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    update_time     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uk_user_account UNIQUE (user_account)
+);
+
+-- ===== AI 知识库：分类 =====
+DROP TABLE IF EXISTS ai_column_category;
+CREATE TABLE ai_column_category (
+    id          BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name        VARCHAR(64) DEFAULT '',
+    sort        INT         DEFAULT 0,
+    description VARCHAR(512) DEFAULT ''
+);
+
+-- ===== AI 知识库：专栏 =====
+DROP TABLE IF EXISTS ai_column;
+CREATE TABLE ai_column (
+    id            BIGINT PRIMARY KEY AUTO_INCREMENT,
+    title         VARCHAR(256) DEFAULT '',
+    description   VARCHAR(512) DEFAULT '',
+    cover_color   VARCHAR(32)  DEFAULT '',
+    category_id   BIGINT,
+    category_name VARCHAR(64)  DEFAULT '',
+    tags          VARCHAR(256) DEFAULT '',
+    need_vip      INT          DEFAULT 0,
+    article_count INT          DEFAULT 0,
+    view_num      BIGINT       DEFAULT 0,
+    like_num      BIGINT       DEFAULT 0,
+    collect_num   BIGINT       DEFAULT 0,
+    sort          INT          DEFAULT 0,
+    status        INT          DEFAULT 1,
+    create_time   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    update_time   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ===== AI 知识库：文章 =====
+DROP TABLE IF EXISTS ai_article;
+CREATE TABLE ai_article (
+    id          BIGINT PRIMARY KEY AUTO_INCREMENT,
+    column_id   BIGINT,
+    title       VARCHAR(256) DEFAULT '',
+    summary     VARCHAR(512) DEFAULT '',
+    content     TEXT,
+    cover_url   VARCHAR(512) DEFAULT '',
+    view_num    BIGINT       DEFAULT 0,
+    like_num    BIGINT       DEFAULT 0,
+    collect_num BIGINT       DEFAULT 0,
+    sort        INT          DEFAULT 0,
+    status      INT          DEFAULT 1,
+    create_time TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ===== 通用评论 =====
+DROP TABLE IF EXISTS ai_comment;
+CREATE TABLE ai_comment (
+    id          BIGINT PRIMARY KEY AUTO_INCREMENT,
+    target_type VARCHAR(32) DEFAULT '',
+    target_id   BIGINT,
+    user_id     BIGINT,
+    user_name   VARCHAR(64)  DEFAULT '',
+    user_avatar VARCHAR(512) DEFAULT '',
+    content     TEXT,
+    parent_id   BIGINT       DEFAULT 0,
+    like_num    BIGINT       DEFAULT 0,
+    status      INT          DEFAULT 1,
+    create_time TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
 );
 
 INSERT INTO category (id, name, icon, sort, tags) VALUES
@@ -119,7 +192,7 @@ INSERT INTO ai_tool (id, name, logo, description, url, category_id, tags, heat, 
 (63, 'AutoGPT', '', '自主任务规划与执行的智能体框架。', 'https://agpt.co', 6, '自主,开源', 5000, 0, 0),
 (1, 'ChatGPT', '', 'OpenAI 出品，最强通用对话 AI，支持联网、代码解释器。', 'https://chat.openai.com', 7, '聊天,GPT-4', 9999, 1, 1),
 (2, 'Claude', '', 'Anthropic 出品，长文本理解与写作能力出众。', 'https://claude.ai', 7, '长文本,写作', 8800, 1, 1),
-(3, '文心一言', '', '百度出品的中文大模型，中文理解能力强。', 'https://yiyan.baidu.com', 7, '中文,百度', 7600, 0, 1),
+(3, '文心一言', '', '百度出品的中文大模型，中文理解能力强。', 'https://yiran.baidu.com', 7, '中文,百度', 7600, 0, 1),
 (4, '通义千问', '', '阿里云出品，多模态对话助手。', 'https://tongyi.aliyun.com', 7, '中文,阿里', 7200, 0, 0),
 (5, 'Kimi', '', '月之暗面出品，超长上下文（200 万字）对话。', 'https://kimi.moonshot.cn', 7, '长文本,搜索', 8100, 1, 1),
 (6, '智谱清言', '', '智谱 AI 出品，GLM 大模型对话。', 'https://chatglm.cn', 7, '中文,GLM', 6500, 0, 0),
@@ -158,20 +231,44 @@ INSERT INTO ai_tool (id, name, logo, description, url, category_id, tags, heat, 
 INSERT INTO "user" (id, user_account, user_password, user_name, role) VALUES
 (1, 'admin', '0b9835153a177bb9be34675b9b929bb4', '管理员', 'admin');
 
-INSERT INTO ai_post (title, content, author_name, view_num, like_num, comment_num) VALUES
-('用 Cursor 一周撸完一个全栈项目的心得', '分享我用 AI 编辑器提效的完整工作流……', '鱼皮', 1280, 96, 32),
-('DeepSeek 本地部署踩坑记录', '从显存到量化，把大模型跑在自己机器上的全过程。', '摸鱼学姐', 860, 61, 18),
-('提示词工程实战：让 AI 写出可用的营销文案', '结构化提示词模板与案例拆解。', 'AI 产品菌', 640, 44, 12),
-('2026 年最值得关注的 10 个 AI 智能体平台', '从 Coze 到 Dify 的横向评测。', '极客老王', 970, 73, 25);
+INSERT INTO ai_post (title, content, author_name, view_num, like_num, comment_num, user_id) VALUES
+('用 Cursor 一周撸完一个全栈项目的心得', '分享我用 AI 编辑器提效的完整工作流……', 'toolly', 1280, 96, 32, 1),
+('DeepSeek 本地部署踩坑记录', '从显存到量化，把大模型跑在自己机器上的全过程。', '摸鱼学姐', 860, 61, 18, 1),
+('提示词工程实战：让 AI 写出可用的营销文案', '结构化提示词模板与案例拆解。', 'AI 产品菌', 640, 44, 12, 1),
+('2026 年最值得关注的 10 个 AI 智能体平台', '从 Coze 到 Dify 的横向评测。', '极客老王', 970, 73, 25, 1);
 
-INSERT INTO ai_prompt (title, content, category_name, use_count) VALUES
-('通用写作助手', '你是一位资深中文编辑，请帮我润色以下文字，使其更流畅专业：', '写作', 5200),
-('代码解释器', '请逐行解释下面这段代码的作用，并指出潜在问题：', '编程', 4800),
-('小红书文案生成', '请以小红书爆款风格，为以下产品写 3 条种草文案：', '营销', 6100),
-('英文邮件助手', '请把下面的中文改写成礼貌专业的商务英文邮件：', '办公', 3900);
+INSERT INTO ai_prompt (title, content, category_name, use_count, user_id) VALUES
+('通用写作助手', '你是一位资深中文编辑，请帮我润色以下文字，使其更流畅专业：', '写作', 5200, 1),
+('代码解释器', '请逐行解释下面这段代码的作用，并指出潜在问题：', '编程', 4800, 1),
+('小红书文案生成', '请以小红书爆款风格，为以下产品写 3 条种草文案：', '营销', 6100, 1),
+('英文邮件助手', '请把下面的中文改写成礼貌专业的商务英文邮件：', '办公', 3900, 1);
+
+-- ===== 知识库示例数据 =====
+INSERT INTO ai_column_category (id, name, sort, description) VALUES
+(1, '新手入门', 1, 'AI 工具与概念零基础指南'),
+(2, 'DeepSeek', 2, 'DeepSeek 系列模型使用与部署'),
+(3, 'AI 编程', 3, '用 AI 提升编码效率'),
+(4, 'AI 工具测评', 4, '热门 AI 工具横向评测');
+
+INSERT INTO ai_column (id, title, description, cover_color, category_id, category_name, tags, need_vip, article_count, view_num, like_num, collect_num, sort, status) VALUES
+(1, 'DeepSeek 从入门到精通', '系统讲解 DeepSeek 的能力边界与实战技巧。', '#3874F7', 2, 'DeepSeek', 'DeepSeek,大模型', 0, 2, 1200, 86, 40, 1, 1),
+(2, 'AI 编程实战专栏', '用 Cursor、Copilot 等工具高效写代码。', '#22C55E', 3, 'AI 编程', 'Cursor,编程', 0, 1, 980, 70, 33, 2, 1);
+
+INSERT INTO ai_article (id, column_id, title, summary, content, cover_url, view_num, like_num, collect_num, sort, status) VALUES
+(1, 1, 'DeepSeek 本地部署踩坑记录', '从显存到量化的完整过程。', '这里是正文 markdown 内容……', '', 600, 40, 18, 1, 1),
+(2, 1, 'DeepSeek 提示词技巧', '让回答更精准的 10 个技巧。', '正文 markdown 内容……', '', 540, 33, 15, 2, 1),
+(3, 2, '用 Cursor 一周撸完全栈', 'AI 编辑器提效工作流。', '正文 markdown 内容……', '', 480, 28, 12, 1, 1);
+
+INSERT INTO ai_comment (id, target_type, target_id, user_id, user_name, user_avatar, content, parent_id, like_num, status) VALUES
+(1, 'article', 1, 1, '管理员', '', '写得很实用，已收藏！', 0, 5, 1),
+(2, 'article', 1, 1, '管理员', '', '请问量化有推荐参数吗？', 0, 2, 1);
 
 ALTER TABLE category ALTER COLUMN id RESTART WITH 100;
 ALTER TABLE ai_tool ALTER COLUMN id RESTART WITH 200;
 ALTER TABLE ai_post ALTER COLUMN id RESTART WITH 100;
 ALTER TABLE ai_prompt ALTER COLUMN id RESTART WITH 100;
 ALTER TABLE "user" ALTER COLUMN id RESTART WITH 100;
+ALTER TABLE ai_column_category ALTER COLUMN id RESTART WITH 100;
+ALTER TABLE ai_column ALTER COLUMN id RESTART WITH 100;
+ALTER TABLE ai_article ALTER COLUMN id RESTART WITH 100;
+ALTER TABLE ai_comment ALTER COLUMN id RESTART WITH 100;

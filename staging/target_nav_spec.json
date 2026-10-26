@@ -1,5 +1,5 @@
 {
-  "source": "ai.codefather.cn (鱼皮AI导航站) 实测提取",
+  "source": "www.toolly.cc (toolly AI 导航站) 实测提取",
   "extractedAt": "2026-09-02",
   "topNav": [
     { "name": "主页", "path": "/" },
@@ -39,7 +39,7 @@
   ],
   "notes": {
     "cloneCurrentToolCategories": ["对话","绘画","写作","视频","音频","编程","办公","设计","搜索","开发平台","学习"],
-    "gap": "克隆站当前 11 个分类与目标站 14 个分类命名/顺序/数量均不同，需整体替换才能 100% 一致",
-    "twoLevelNav": "目标站工具分类为『分类→子标签(tags)』二级结构；克隆站 CategoryNav 当前为扁平列表，需扩展才完全等价"
+    "gap": "克隆站当前 11 个分类与参考站 14 个分类命名/顺序/数量均不同，需整体替换才能 100% 一致",
+    "twoLevelNav": "参考站工具分类为『分类→子标签(tags)』二级结构；克隆站 CategoryNav 当前为扁平列表，需扩展才完全等价"
   }
 }

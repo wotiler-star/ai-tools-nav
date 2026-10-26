@@ -3,7 +3,7 @@ package com.ainav.common;
 import lombok.Getter;
 
 /**
- * 错误码（对齐 api.codefather.cn 约定）
+ * 错误码约定
  */
 @Getter
 public enum ErrorCode {

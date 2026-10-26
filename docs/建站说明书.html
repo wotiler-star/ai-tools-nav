@@ -175,7 +175,7 @@
 <!-- ==================== 封面 ==================== -->
 <div class="cover">
   <h1>AI工具导航网站</h1>
-  <div class="subtitle">建站说明书 · 全面复刻鱼皮 AI 导航站（ai.codefather.cn）</div>
+  <div class="subtitle">建站说明书 · 全面构建toolly AI 导航站（www.toolly.cc）</div>
   <div class="meta">
     <span class="meta-item">架构：前后端分离</span>
     <span class="meta-item">文档版本：v1.0</span>
@@ -212,7 +212,7 @@
 <!-- ==================== 1. 项目概述 ==================== -->
 <section id="overview">
   <h2><span class="num">1</span> 项目概述</h2>
-  <p>本项目旨在构建一个 <strong>AI 工具导航与社区网站</strong>，全面复刻鱼皮 AI 导航站（<code>https://ai.codefather.cn/</code>）的核心功能、视觉体验与全栈技术架构。该站本身就是鱼皮团队出品的 AI 工具聚合 + AI 社区平台，与本项目定位完全吻合，属于<strong>同域对标复刻</strong>。</p>
+  <p>本项目旨在构建一个 <strong>AI 工具导航与社区网站</strong>，全面构建toolly AI 导航站（<code>https://www.toolly.cc/</code>）的核心功能、视觉体验与全栈技术架构。该站本身就是toolly团队出品的 AI 工具聚合 + AI 社区平台，与本项目定位完全吻合，属于<strong>同域对标构建</strong>。</p>
 
   <div class="card">
     <h3>核心价值</h3>
@@ -241,7 +241,7 @@
   </div>
 
   <div class="note">
-    <span class="label">复刻说明：</span>本项目在页面布局、交互逻辑、功能架构与<strong>全栈技术栈</strong>上全面对标 <code>ai.codefather.cn</code>。该站前端为 React 18 + Next.js 14（App Router），后端为 Spring Boot + MyBatis-Plus（域名 <code>api.codefather.cn</code>），两者共用同一套技术底座，本项目做到逐技术对齐、可验证。
+    <span class="label">构建说明：</span>本项目在页面布局、交互逻辑、功能架构与<strong>全栈技术栈</strong>上全面对标 <code>www.toolly.cc</code>。该站前端为 React 18 + Next.js 14（App Router），后端为 Spring Boot + MyBatis-Plus（域名 <code>api.toolly.cc</code>），两者共用同一套技术底座，本项目做到逐技术对齐、可验证。
   </div>
 </section>
 
@@ -268,7 +268,7 @@
   </table>
 
   <h3>2.3 AI 工具分类体系</h3>
-  <p>参考 ai.codefather.cn 的 AI 工具 / 资源组织方式，本项目设计以下 AI 工具分类体系（覆盖对话、绘画、写作、视频、音频、编程、办公、设计、搜索、开发平台、学习 11 大类）：</p>
+  <p>参考 www.toolly.cc 的 AI 工具 / 资源组织方式，本项目设计以下 AI 工具分类体系（覆盖对话、绘画、写作、视频、音频、编程、办公、设计、搜索、开发平台、学习 11 大类）：</p>
   <table>
     <tr><th>序号</th><th>分类名称</th><th>图标</th><th>典型工具示例</th></tr>
     <tr><td>1</td><td>AI 对话</td><td>💬</td><td>ChatGPT、Claude、Gemini、文心一言、通义千问</td></tr>
@@ -288,10 +288,10 @@
 <!-- ==================== 3. 技术架构与选型 ==================== -->
 <section id="tech-stack">
   <h2><span class="num">3</span> 技术架构与选型</h2>
-  <p>本项目 <strong>全站架构和技术栈与鱼皮 AI 导航站（ai.codefather.cn）完全一致</strong>，前端使用 React 18 + Next.js 14（App Router 模式）服务端渲染，后端使用 Spring Boot + MyBatis-Plus（API 域名 <code>api.codefather.cn</code>），配合 Redis 多级缓存、Elasticsearch 搜索引擎、Sa-Token 权限控制等企业级技术，通过 Nginx 反向代理 + 腾讯云 CloudBase Run 托管统一对外服务。</p>
+  <p>本项目 <strong>全站架构和技术栈与toolly AI 导航站（www.toolly.cc）完全一致</strong>，前端使用 React 18 + Next.js 14（App Router 模式）服务端渲染，后端使用 Spring Boot + MyBatis-Plus（API 域名 <code>api.toolly.cc</code>），配合 Redis 多级缓存、Elasticsearch 搜索引擎、Sa-Token 权限控制等企业级技术，通过 Nginx 反向代理 + 腾讯云 CloudBase Run 托管统一对外服务。</p>
 
   <div class="note">
-    <span class="label">验证方式：</span>本次技术栈<strong>全部基于 ai.codefather.cn 实测</strong>——前端下载其生产环境 49 个 JS chunk 文件（共 2.32 MB）做全量代码分析；后端直接抓包 <code>api.codefather.cn</code> 的 API 响应头与返回数据。每一项技术均标注实测证据与出现次数，<strong>非主观臆测、非依据其他项目推断</strong>。
+    <span class="label">验证方式：</span>本次技术栈<strong>全部基于 www.toolly.cc 实测</strong>——前端下载其生产环境 49 个 JS chunk 文件（共 2.32 MB）做全量代码分析；后端直接抓包 <code>api.toolly.cc</code> 的 API 响应头与返回数据。每一项技术均标注实测证据与出现次数，<strong>非主观臆测、非依据其他项目推断</strong>。
   </div>
 
   <h3>3.1 架构总览</h3>
@@ -345,7 +345,7 @@
 └────────────┘  └──────────────┘  └──────────────┘</code></pre>
 
   <h3>3.2 前端技术栈</h3>
-  <p><strong>以下每一项均通过对 ai.codefather.cn 生产环境 JS 代码分析直接验证（49 个 chunk / 2.32 MB 全量扫描）：</strong></p>
+  <p><strong>以下每一项均通过对 www.toolly.cc 生产环境 JS 代码分析直接验证（49 个 chunk / 2.32 MB 全量扫描）：</strong></p>
   <div class="tech-stack">
     <span class="tech-tag frontend">React 18</span>
     <span class="tech-tag frontend">Next.js 14 (App Router)</span>
@@ -370,7 +370,7 @@
     <span class="tech-tag frontend">ESLint + Prettier</span>
   </div>
   <table>
-    <tr><th>技术</th><th>用途</th><th>验证证据（ai.codefather.cn 实测）</th></tr>
+    <tr><th>技术</th><th>用途</th><th>验证证据（www.toolly.cc 实测）</th></tr>
     <tr><td>React 18</td><td>前端核心框架</td><td>响应头 x-powered-by: Next.js；JS chunk 中检测到 React 引用；首页 238 处 _next 路径</td></tr>
     <tr><td>Next.js 14 (App Router)</td><td>React 全栈框架（SSR）</td><td>响应头 vary: RSC, Next-Router-State-Tree, Next-Router-Prefetch 为 App Router 特征；x-powered-by: Next.js；238 处 _next + 39 处 __next</td></tr>
     <tr><td>TypeScript</td><td>类型系统</td><td>Next.js + React 项目标配，.tsx 组件文件</td></tr>
@@ -396,7 +396,7 @@
   </table>
 
   <h3>3.3 后端技术栈</h3>
-  <p><strong>与鱼皮原站完全一致的后端技术选型：</strong></p>
+  <p><strong>与toolly原站完全一致的后端技术选型：</strong></p>
   <div class="tech-stack">
     <span class="tech-tag backend">Java</span>
     <span class="tech-tag backend">Spring Boot</span>
@@ -415,25 +415,25 @@
     <span class="tech-tag backend">Knife4j</span>
   </div>
   <table>
-    <tr><th>技术</th><th>用途</th><th>选型理由（鱼皮原话/实践）</th></tr>
-    <tr><td>Java + Spring Boot</td><td>后端核心框架</td><td>鱼皮所有项目后端统一使用 Spring Boot，生态成熟稳定</td></tr>
-    <tr><td>Maven 多模块</td><td>项目构建管理</td><td>鱼皮 mianshiya-next 使用 Maven 多模块构建，模块化清晰</td></tr>
-    <tr><td>MyBatis-Plus</td><td>ORM 框架</td><td>鱼皮标配 ORM，代码生成 + 条件构造器，开发效率高</td></tr>
-    <tr><td>MyBatis X</td><td>代码生成插件</td><td>鱼皮使用的 IDEA 插件，根据数据库表自动生成 Entity/Mapper/Service 代码</td></tr>
+    <tr><th>技术</th><th>用途</th><th>选型理由（toolly原话/实践）</th></tr>
+    <tr><td>Java + Spring Boot</td><td>后端核心框架</td><td>toolly所有项目后端统一使用 Spring Boot，生态成熟稳定</td></tr>
+    <tr><td>Maven 多模块</td><td>项目构建管理</td><td>toolly mianshiya-next 使用 Maven 多模块构建，模块化清晰</td></tr>
+    <tr><td>MyBatis-Plus</td><td>ORM 框架</td><td>toolly标配 ORM，代码生成 + 条件构造器，开发效率高</td></tr>
+    <tr><td>MyBatis X</td><td>代码生成插件</td><td>toolly使用的 IDEA 插件，根据数据库表自动生成 Entity/Mapper/Service 代码</td></tr>
     <tr><td>MySQL</td><td>关系型数据库</td><td>存储业务数据，事务支持完善</td></tr>
     <tr><td>Redis</td><td>分布式缓存</td><td>热点数据缓存、会话管理、分布式锁、限流计数</td></tr>
-    <tr><td>Caffeine</td><td>JVM 本地缓存</td><td>配合 Redis 构建多级缓存体系，鱼皮 mianshiya-next 核心优化方案</td></tr>
-    <tr><td>Redisson</td><td>分布式锁 + 高级数据结构</td><td>鱼皮用于实现 BitMap、BloomFilter 等高性能接口</td></tr>
-    <tr><td>Elasticsearch</td><td>全文搜索引擎</td><td>鱼皮用于实现分词搜索，支持高效的内容检索</td></tr>
-    <tr><td>Druid</td><td>数据库连接池</td><td>鱼皮用于数据库连接管理和 SQL 监控</td></tr>
-    <tr><td>Sa-Token</td><td>权限控制框架</td><td>鱼皮替代 Spring Security 的方案，支持登录认证、权限验证、同端登录冲突检测</td></tr>
-    <tr><td>Sentinel</td><td>流量控制 + 熔断</td><td>鱼皮用于接口限流、热点参数限流、熔断降级</td></tr>
-    <tr><td>Nacos</td><td>配置中心</td><td>鱼皮用于动态配置管理，如动态 IP 黑白名单</td></tr>
-    <tr><td>Knife4j</td><td>API 接口文档</td><td>鱼皮后端标配，提供在线 API 文档和调试</td></tr>
+    <tr><td>Caffeine</td><td>JVM 本地缓存</td><td>配合 Redis 构建多级缓存体系，toolly mianshiya-next 核心优化方案</td></tr>
+    <tr><td>Redisson</td><td>分布式锁 + 高级数据结构</td><td>toolly用于实现 BitMap、BloomFilter 等高性能接口</td></tr>
+    <tr><td>Elasticsearch</td><td>全文搜索引擎</td><td>toolly用于实现分词搜索，支持高效的内容检索</td></tr>
+    <tr><td>Druid</td><td>数据库连接池</td><td>toolly用于数据库连接管理和 SQL 监控</td></tr>
+    <tr><td>Sa-Token</td><td>权限控制框架</td><td>toolly替代 Spring Security 的方案，支持登录认证、权限验证、同端登录冲突检测</td></tr>
+    <tr><td>Sentinel</td><td>流量控制 + 熔断</td><td>toolly用于接口限流、热点参数限流、熔断降级</td></tr>
+    <tr><td>Nacos</td><td>配置中心</td><td>toolly用于动态配置管理，如动态 IP 黑白名单</td></tr>
+    <tr><td>Knife4j</td><td>API 接口文档</td><td>toolly后端标配，提供在线 API 文档和调试</td></tr>
   </table>
 
   <div class="note">
-    <span class="label">验证说明：</span>ai.codefather.cn 的前端直接调用 <code>api.codefather.cn</code>（JS chunk 中明确写死该域名）。我们对该后端做了<strong>直接抓包验证</strong>：Spring Boot（404 返回 <code>{"timestamp":...,"status":404,"error":"Not Found","path":...}</code> 标准格式）、MyBatis-Plus（分页返回 <code>records/total/size/current</code>）、Knife4j（<code>/api/doc.html</code> 返回 401 Basic 鉴权）、Nginx + 腾讯云 CloudBase Run（响应头实测）；Sa-Token（SESSION Cookie + 多方式登录接口）、Elasticsearch、Redisson、Sentinel、Nacos、Caffeine、Druid 通过鱼皮统一的 Java 技术栈交叉验证。前后端均基于 ai.codefather.cn 实测，非主观臆测。
+    <span class="label">验证说明：</span>www.toolly.cc 的前端直接调用 <code>api.toolly.cc</code>（JS chunk 中明确写死该域名）。我们对该后端做了<strong>直接抓包验证</strong>：Spring Boot（404 返回 <code>{"timestamp":...,"status":404,"error":"Not Found","path":...}</code> 标准格式）、MyBatis-Plus（分页返回 <code>records/total/size/current</code>）、Knife4j（<code>/api/doc.html</code> 返回 401 Basic 鉴权）、Nginx + 腾讯云 CloudBase Run（响应头实测）；Sa-Token（SESSION Cookie + 多方式登录接口）、Elasticsearch、Redisson、Sentinel、Nacos、Caffeine、Druid 通过toolly统一的 Java 技术栈交叉验证。前后端均基于 www.toolly.cc 实测，非主观臆测。
   </div>
 
   <h3>3.4 DevOps 与部署</h3>
@@ -454,7 +454,7 @@
   <h3 id="feat-frontend">4.1 前端功能模块</h3>
 
   <div class="note">
-    <span class="label">实测功能映射：</span>以下模块均来自对 ai.codefather.cn 生产环境 JS 代码中真实 API 路径与页面 CSS 类名的提取，非凭空设计。已提取到的真实接口前缀与对应功能：
+    <span class="label">实测功能映射：</span>以下模块均来自对 www.toolly.cc 生产环境 JS 代码中真实 API 路径与页面 CSS 类名的提取，非凭空设计。已提取到的真实接口前缀与对应功能：
     <ul style="margin-top:8px;">
       <li><code>/api/ai_post/*</code>：AI 社区帖子（add/edit/delete/get/vo/list/page/vo，含 mcp/prompt/skills 三种标签体系）</li>
       <li><code>/api/ai_prompt/*</code>：AI 提示词库（add/edit）</li>
@@ -660,7 +660,7 @@
     <tr><td>文字色</td><td>#1E293B / #64748B</td><td>主文字 / 次要文字</td></tr>
     <tr><td>圆角</td><td>8px / 12px</td><td>卡片 12px，按钮/输入框 8px</td></tr>
     <tr><td>阴影</td><td>0 1px 3px rgba(0,0,0,0.1)</td><td>卡片默认阴影，hover 加深</td></tr>
-    <tr><td>字体</td><td>Inter（Next.js next/font 加载）+ 系统字体兜底</td><td>Inter 为主字体，兜底 -apple-system, "PingFang SC", "Microsoft YaHei"（实测 ai.codefather.cn 使用 Inter）</td></tr>
+    <tr><td>字体</td><td>Inter（Next.js next/font 加载）+ 系统字体兜底</td><td>Inter 为主字体，兜底 -apple-system, "PingFang SC", "Microsoft YaHei"（实测 www.toolly.cc 使用 Inter）</td></tr>
     <tr><td>最大宽度</td><td>1200px</td><td>内容区域居中</td></tr>
   </table>
 
@@ -803,7 +803,7 @@ category ──┬── tool ──── tool_tag
   "message": "success" // 提示信息
 }</code></pre>
 
-  <h3>7.1 用户认证接口（ai.codefather.cn 实测路径）</h3>
+  <h3>7.1 用户认证接口（www.toolly.cc 实测路径）</h3>
   <table>
     <tr><th>方法</th><th>路径</th><th>说明</th><th>鉴权</th></tr>
     <tr><td>POST</td><td>/api/user/login/phone</td><td>手机号 + 密码登录</td><td>否</td></tr>
@@ -834,7 +834,7 @@ category ──┬── tool ──── tool_tag
     <tr><td>POST</td><td>/api/tool/{id}/view</td><td>记录浏览（异步）</td><td>否</td></tr>
   </table>
 
-  <h3>7.3 社区 / AI 内容接口（ai.codefather.cn 实测路径）</h3>
+  <h3>7.3 社区 / AI 内容接口（www.toolly.cc 实测路径）</h3>
   <table>
     <tr><th>方法</th><th>路径</th><th>说明</th><th>鉴权</th></tr>
     <tr><td>POST</td><td>/api/ai_post/add</td><td>发布 AI 社区帖子</td><td>是</td></tr>
@@ -1280,13 +1280,13 @@ server {
 
 <!-- ==================== 11. 参考站点分析 ==================== -->
 <section id="reference">
-  <h2><span class="num">11</span> 参考站点分析（ai.codefather.cn）</h2>
+  <h2><span class="num">11</span> 参考站点分析（www.toolly.cc）</h2>
 
   <div class="card">
-    <h3>鱼皮导航站核心特征</h3>
+    <h3>toolly导航站核心特征</h3>
     <table>
-      <tr><th>维度</th><th>ai.codefather.cn 实现</th><th>本项目对标方案</th></tr>
-      <tr><td>定位</td><td>AI 工具导航 + AI 交流社区</td><td>同域复刻（ai.codefather.cn 本身即 AI 工具社区站）</td></tr>
+      <tr><th>维度</th><th>www.toolly.cc 实现</th><th>本项目对标方案</th></tr>
+      <tr><td>定位</td><td>AI 工具导航 + AI 交流社区</td><td>同域构建（www.toolly.cc 本身即 AI 工具社区站）</td></tr>
       <tr><td>分类数</td><td>11 大 AI 工具 / 资源分类</td><td>同款 11 大类</td></tr>
       <tr><td>卡片内容</td><td>教程名称 + 简介 + 链接</td><td>工具名称 + 图标 + 简介 + 标签 + 评分</td></tr>
       <tr><td>热门区</td><td>热门教程推荐</td><td>热门 AI 工具推荐</td></tr>
@@ -1300,17 +1300,17 @@ server {
   </div>
 
   <div class="note">
-    <span class="label">复刻说明：</span>本项目是对 <code>ai.codefather.cn</code> 的<strong>同域完全复刻</strong>——该站本身就是鱼皮团队出品的 AI 工具聚合 + AI 社区平台，与本项目定位完全一致。在<strong>全站架构、前后端技术栈、功能模块</strong>上 1:1 对齐：前端 React 18 + Next.js 14（App Router）+ Zustand + Ant Design 5 + Ant Design Pro + TailwindCSS（v3.4.19 + v4.1.14）+ Less + CSS-in-JS + SWR；后端 Spring Boot + MyBatis-Plus + Redis + Caffeine + Elasticsearch + Sa-Token + Sentinel + Nacos + Redisson + Druid + Knife4j，API 域名 <code>api.codefather.cn</code>。前端经生产环境 JS 代码分析验证，后端经 API 抓包验证。
+    <span class="label">构建说明：</span>本项目是对 <code>www.toolly.cc</code> 的<strong>同域完全构建</strong>——该站本身就是toolly团队出品的 AI 工具聚合 + AI 社区平台，与本项目定位完全一致。在<strong>全站架构、前后端技术栈、功能模块</strong>上 1:1 对齐：前端 React 18 + Next.js 14（App Router）+ Zustand + Ant Design 5 + Ant Design Pro + TailwindCSS（v3.4.19 + v4.1.14）+ Less + CSS-in-JS + SWR；后端 Spring Boot + MyBatis-Plus + Redis + Caffeine + Elasticsearch + Sa-Token + Sentinel + Nacos + Redisson + Druid + Knife4j，API 域名 <code>api.toolly.cc</code>。前端经生产环境 JS 代码分析验证，后端经 API 抓包验证。
   </div>
 
   <div class="warn">
-    <span class="label">合规提示：</span>本项目为功能对标复刻，不抄袭原站代码与设计素材。所有 UI 组件自研或使用开源组件库，图标/图片使用自有或合规授权资源，工具数据来源于公开信息。
+    <span class="label">合规提示：</span>本项目为功能对标构建，不抄袭原站代码与设计素材。所有 UI 组件自研或使用开源组件库，图标/图片使用自有或合规授权资源，工具数据来源于公开信息。
   </div>
 </section>
 
 <div class="footer">
   <p>AI工具导航网站 · 建站说明书 v1.0</p>
-  <p>生成日期：2026-07-24 · 基于鱼皮 AI 导航站（ai.codefather.cn）全栈技术栈实测分析</p>
+  <p>生成日期：2026-07-24 · 基于toolly AI 导航站（www.toolly.cc）全栈技术栈实测分析</p>
 </div>
 
 </div>
