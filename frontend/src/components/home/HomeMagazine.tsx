@@ -415,17 +415,22 @@ export default function HomeMagazine() {
                     key={n.id}
                     className="group flex transform-gpu cursor-pointer items-center gap-3 rounded-lg border-b border-gray-50 px-3 py-3 transition-all duration-200 last:border-0 hover:bg-[var(--list-row-hover)] hover:pl-4 hover:shadow-sm"
                   >
-                    <span
-                      className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded text-xs font-bold transition-all duration-200 group-hover:scale-110 group-hover:shadow ${
-                        top ? "bg-[#ff4d4f] text-white" : "bg-gray-100 text-gray-500"
-                      }`}
+                    <Link
+                      href={`/news/${n.id}`}
+                      className="flex w-full items-center gap-3"
                     >
-                      {n.rank}
-                    </span>
-                    <span className="flex-1 truncate text-sm text-gray-700 transition-all duration-200 group-hover:translate-x-0.5 group-hover:font-medium hover-brand-title">
-                      {n.title}
-                    </span>
-                    {n.hot && <span>🔥</span>}
+                      <span
+                        className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded text-xs font-bold transition-all duration-200 group-hover:scale-110 group-hover:shadow ${
+                          top ? "bg-[#ff4d4f] text-white" : "bg-gray-100 text-gray-500"
+                        }`}
+                      >
+                        {n.rank}
+                      </span>
+                      <span className="flex-1 truncate text-sm text-gray-700 transition-all duration-200 group-hover:translate-x-0.5 group-hover:font-medium hover-brand-title">
+                        {n.title}
+                      </span>
+                      {n.hot && <span>🔥</span>}
+                    </Link>
                   </li>
                 );
               })}
