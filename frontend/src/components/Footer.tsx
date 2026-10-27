@@ -3,9 +3,9 @@ import { SITE } from "@/config/site";
 import { ToollyMark } from "@/components/Logo";
 
 const LINKS = [
-  { label: "关于本站", href: "#" },
-  { label: "商务合作", href: "#" },
-  { label: "增值电信业务经营许可证", href: "#" }
+  { label: "关于本站", href: "/about" },
+  { label: "商务合作", href: "mailto:bd@toolly.cc" },
+  { label: "增值电信业务经营许可证", href: "https://beian.miit.gov.cn/", external: true }
 ];
 
 const SOCIALS = ["公众号", "官方抖音", "知乎主页", "B站主页"];
@@ -40,12 +40,23 @@ export default function Footer() {
             <ul className="m-0 list-none space-y-2 p-0">
               {LINKS.map((l) => (
                 <li key={l.label}>
-                  <Link
-                    href={l.href}
-                    className="text-sm text-gray-500 hover:text-[#3874F7]"
-                  >
-                    {l.label}
-                  </Link>
+                  {l.external || l.href.startsWith("mailto:") ? (
+                    <a
+                      href={l.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-sm text-gray-500 hover:text-[#3874F7]"
+                    >
+                      {l.label}
+                    </a>
+                  ) : (
+                    <Link
+                      href={l.href}
+                      className="text-sm text-gray-500 hover:text-[#3874F7]"
+                    >
+                      {l.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

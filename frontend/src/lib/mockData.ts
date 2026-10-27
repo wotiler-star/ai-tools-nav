@@ -515,13 +515,14 @@ export const AI_NEWS: NewsItem[] = [
 ];
 
 // ===== 精选推荐（资讯区右侧） =====
-// 历史遗留的 /learn 死链已修复：每条编辑精选分别指向真实存在的路由
+// 历史遗留的 /learn 死链已修复：每条编辑精选分别指向真实存在的【具体详情页】
 export const NEWS_FEATURED: FeaturedItem[] = [
-  { id: 1, title: "Vibe Coding 零基础入门教程", href: "/resource/learn" },
-  { id: 2, title: "AI 编程保姆级实战教程", href: "/resource/learn" },
-  { id: 3, title: "主流大模型一手横向实测", href: "/news" },
-  { id: 4, title: "AI 编辑器隐藏高效技巧", href: "/resource/learn" },
-  { id: 5, title: "从零学会 AI 编程的正确姿势", href: "/essay" }
+  // 对齐目标站颗粒度：每条编辑精选跳转到【具体详情页】，而非列表/分区首页
+  { id: 1, title: "Vibe Coding 零基础入门教程", href: "/resource/learn/1" },
+  { id: 2, title: "AI 编程保姆级实战教程", href: "/resource/learn/2" },
+  { id: 3, title: "主流大模型一手横向实测", href: "/resource/learn/3" },
+  { id: 4, title: "AI 编辑器隐藏高效技巧", href: "/resource/learn/4" },
+  { id: 5, title: "从零学会 AI 编程的正确姿势", href: "/resource/learn/5" }
 ];
 
 // ===== 学习教程 / 项目课程 / 知识百科 =====
