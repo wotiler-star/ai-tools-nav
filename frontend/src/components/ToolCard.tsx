@@ -28,23 +28,41 @@ export default function ToolCard({ tool }: { tool: AiTool }) {
           gap: 8
         }}
       >
-        <div
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 10,
-            background: colorFromName(tool.name),
-            color: "#fff",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 18,
-            fontWeight: 700,
-            flexShrink: 0
-          }}
-        >
-          {tool.name.charAt(0)}
-        </div>
+        {tool.logo ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={tool.logo}
+            alt={tool.name}
+            width={40}
+            height={40}
+            loading="lazy"
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 10,
+              objectFit: "cover",
+              flexShrink: 0
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 10,
+              background: colorFromName(tool.name),
+              color: "#fff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 18,
+              fontWeight: 700,
+              flexShrink: 0
+            }}
+          >
+            {tool.name.charAt(0)}
+          </div>
+        )}
         <div style={{ minWidth: 0, flex: 1 }}>
           <div
             className="hover-brand-title"
