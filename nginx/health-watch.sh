@@ -5,7 +5,7 @@
 set -u
 
 STATE="/etc/nginx/health_state.conf"
-INTERVAL=10
+INTERVAL=5
 THRESHOLD=2   # 连续失败达到该次数才判定 down，避免瞬时抖动误摘流
 
 fb=0; bb=0; gb=0            # 连续失败计数
