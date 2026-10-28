@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import useSWR from "swr";
@@ -24,6 +24,12 @@ export default function ToolCatalog() {
   const [activeCat, setActiveCat] = useState<number>(0);
   const [activeTag, setActiveTag] = useState<string | null>(null);
 
+  // 顶部 sticky 导航区（分类行 + 搜索框 + 标签云）实际高度。
+  // 侧边栏 sticky top 必须大于 Header(64) + 导航区高度，否则滚动时侧栏顶部会被导航遮住。
+  const topNavRef = useRef<HTMLDivElement>(null);
+  const [navH, setNavH] = useState(190);
+  const sideTop = 64 + navH + 12;
+
   useEffect(() => {
     setKeyword(urlKw);
   }, [urlKw]);
@@ -38,9 +44,17 @@ export default function ToolCatalog() {
     [catRes]
   );
 
+  // 测量顶部 sticky 导航区实际高度（分类数据加载完成后高度会变，故依赖 categories）
+  useEffect(() => {
+    const measure = () => setNavH(topNavRef.current?.offsetHeight || 190);
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [categories]);
+
   // 一次性拉取全部工具
   const { data: toolRes, isLoading } = useSWR<BaseResponsePage<AiTool>>(
-    "/ai_tool/list/page?categoryId=0&pageSize=200",
+    "/ai_tool/list/page?categoryId=0&pageSize=1000",
     swrFetcher
   );
   const allTools = useMemo(() => toolRes?.data?.records || [], [toolRes]);
@@ -59,6 +73,10 @@ export default function ToolCatalog() {
   }, [categories]);
 
   const isFiltered = activeCat > 0 || !!activeTag;
+  // 滚动高亮分类（仅驱动高亮样式，绝不参与筛选/渲染分支 —— activeCat 是用户点击筛选，
+  // 二者必须分离，否则滚动监听会把页面"锁"进单分类过滤视图，内容塌缩、无法继续下滚）
+  const [highlightCat, setHighlightCat] = useState<number>(0);
+  const shownCat = isFiltered ? activeCat : highlightCat;
 
   // 搜索结果（跨全部工具）
   const kw = keyword.trim().toLowerCase();
@@ -116,14 +134,15 @@ export default function ToolCatalog() {
       let cur = 0;
       for (const c of categories) {
         const el = document.getElementById(`cat-${c.id}`);
-        if (el && el.getBoundingClientRect().top <= 150) cur = c.id;
+        // 阈值 = 侧栏 sticky top + 一点缓冲，保证当前区块标题不被 sticky 导航遮挡时就高亮
+        if (el && el.getBoundingClientRect().top <= sideTop + 20) cur = c.id;
       }
-      setActiveCat(cur);
+      setHighlightCat(cur);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
-  }, [categories, kw, isFiltered]);
+  }, [categories, kw, isFiltered, sideTop]);
 
   const onSearch = (v: string) => {
     setKeyword(v);
@@ -140,6 +159,7 @@ export default function ToolCatalog() {
     <div style={{ background: "#f5f6f8", minHeight: "100vh" }}>
       {/* 顶部导航区：分类行 + 搜索框 + 全局标签云（sticky，对齐目标红框） */}
       <div
+        ref={topNavRef}
         style={{
           position: "sticky",
           top: 64,
@@ -162,12 +182,12 @@ export default function ToolCatalog() {
           >
             <NavTab
               label="全部"
-              active={activeCat === 0 && !activeTag}
+              active={shownCat === 0 && !activeTag}
               onClick={clearFilter}
             />
             {categories.map((c) => {
               const hasTags = (c.tags || []).length > 0;
-              const catActive = activeCat === c.id && !activeTag;
+              const catActive = shownCat === c.id && !activeTag;
               return (
                 <div key={c.id} className="relative group">
                   <button
@@ -237,19 +257,19 @@ export default function ToolCatalog() {
 
           {/* 红框第 3 行：全局混合标签云（直角 chip，跨分类子标签聚合） */}
           {allTags.length > 0 && (
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 8,
-                padding: "10px 0 14px",
-                borderTop: "1px dashed #e5e7eb",
-                alignItems: "center"
-              }}
-            >
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 6,
+                  padding: "8px 0 10px",
+                  borderTop: "1px dashed var(--chip-border)",
+                  alignItems: "center"
+                }}
+              >
               <CloudChip
                 label="全部"
-                active={activeCat === 0 && !activeTag}
+                active={shownCat === 0 && !activeTag}
                 onClick={clearFilter}
               />
               {allTags.map((t) => (
@@ -265,8 +285,39 @@ export default function ToolCatalog() {
         </div>
       </div>
 
-      {/* 内容区 */}
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "20px 20px 60px" }}>
+      {/* 内容区：左侧 sticky 分类侧边栏 + 右侧工具网格 */}
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "20px 20px 60px", display: "flex", gap: 24, alignItems: "flex-start" }}>
+        {/* 左侧分类侧边栏（sticky，对齐红框“侧边栏导航”） */}
+        <aside
+          style={{
+            position: "sticky",
+            top: sideTop,
+            width: 220,
+            flexShrink: 0,
+            background: "var(--surface)",
+            border: "1px solid var(--chip-border)",
+            borderRadius: 12,
+            padding: 12,
+            maxHeight: `calc(100vh - ${sideTop + 16}px)`,
+            overflowY: "auto"
+          }}
+        >
+          <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-2)", margin: "4px 8px 10px" }}>分类导航</div>
+          <button onClick={clearFilter} style={sideCatStyle(shownCat === 0 && !activeTag)}>全部</button>
+          {categories.map((c) => (
+            <div key={c.id}>
+              <button onClick={() => selectCat(c.id)} style={sideCatStyle(shownCat === c.id && !activeTag)}>{c.name}</button>
+              {shownCat === c.id && (c.tags || []).length > 0 && (
+                <div style={{ margin: "2px 0 6px 10px" }}>
+                  {c.tags!.map((t) => (
+                    <button key={t} onClick={() => selectTag(c.id, t)} style={sideTagStyle(activeTag === t && shownCat === c.id)}>{t}</button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </aside>
+        <div style={{ flex: 1, minWidth: 0 }}>
         {isLoading ? (
           <SkeletonGrid count={12} />
         ) : kw ? (
@@ -324,26 +375,14 @@ export default function ToolCatalog() {
               <section
                 key={cat.id}
                 id={`cat-${cat.id}`}
-                style={{ marginBottom: 36, scrollMarginTop: 130 }}
+                style={{ marginBottom: 36, scrollMarginTop: sideTop + 20 }}
               >
                 <div style={sectionHeaderStyle}>
-                  <h2 style={sectionTitleStyle}>
-                    {cat.name}
-                    <span
-                      style={{
-                        marginLeft: 10,
-                        fontSize: 13,
-                        fontWeight: 400,
-                        color: "#9ca3af"
-                      }}
-                    >
-                      {tools.length}
-                    </span>
-                  </h2>
+                  <h2 style={sectionTitleStyle}>{cat.name}</h2>
                   <Link
                     href={`/tool?keyword=${encodeURIComponent(cat.name)}`}
                     style={{
-                      color: BRAND,
+                      color: "var(--text-2)",
                       fontSize: 13,
                       display: "inline-flex",
                       alignItems: "center",
@@ -353,14 +392,18 @@ export default function ToolCatalog() {
                     全部 <RightOutlined style={{ fontSize: 11 }} />
                   </Link>
                 </div>
-                {/* 该分类的二级子标签行（目标红框里"AI写作"区块下面那行 chip） */}
+                {/* 该分类的二级子标签行：带边框圆角容器，激活 chip 蓝边 + 浅蓝底（对齐红框样式） */}
                 {(cat.tags || []).length > 0 && (
                   <div
                     style={{
                       display: "flex",
                       flexWrap: "wrap",
                       gap: 4,
-                      marginBottom: 14,
+                      marginBottom: 10,
+                      padding: "6px 10px",
+                      border: "1px solid var(--chip-border)",
+                      borderRadius: 8,
+                      background: "var(--surface)",
                       alignItems: "center"
                     }}
                   >
@@ -399,6 +442,7 @@ export default function ToolCatalog() {
             ))}
           </>
         )}
+        </div>
       </div>
     </div>
   );
@@ -438,13 +482,13 @@ function CloudChip({
   );
 }
 
-/* ========== 样式 ========== */
+/* ========== 样式（颗粒度对齐目标站：全部消费站点语义 token，暗色模式自动跟随） ========== */
 function navTabStyle(active: boolean): React.CSSProperties {
   return {
     padding: "6px 12px",
     border: "none",
     background: "transparent",
-    color: active ? BRAND : "#4b5563",
+    color: active ? BRAND : "var(--text-2)",
     fontSize: 14,
     fontWeight: active ? 600 : 500,
     cursor: "pointer",
@@ -460,9 +504,9 @@ function cloudChipStyle(active: boolean): React.CSSProperties {
   return {
     padding: "2px 10px",
     borderRadius: 4,
-    border: active ? `1px solid ${BRAND}` : "1px solid #e5e7eb",
-    background: active ? "#eaf1fe" : "#fff",
-    color: active ? BRAND : "#6b7280",
+    border: active ? `1px solid ${BRAND}` : "1px solid var(--chip-border)",
+    background: active ? "var(--brand-tint)" : "var(--surface)",
+    color: active ? BRAND : "var(--text-2)",
     fontSize: 12,
     cursor: "pointer",
     lineHeight: 1.7,
@@ -473,11 +517,11 @@ function cloudChipStyle(active: boolean): React.CSSProperties {
 
 function sectionTagStyle(active: boolean): React.CSSProperties {
   return {
-    padding: "2px 8px",
+    padding: "3px 10px",
     borderRadius: 4,
-    border: "none",
-    background: active ? "#eaf1fe" : "transparent",
-    color: active ? BRAND : "#6b7280",
+    border: active ? `1px solid ${BRAND}` : "1px solid transparent",
+    background: active ? "var(--brand-tint)" : "transparent",
+    color: active ? BRAND : "var(--text-2)",
     fontSize: 13,
     cursor: "pointer",
     lineHeight: 1.7,
@@ -486,24 +530,60 @@ function sectionTagStyle(active: boolean): React.CSSProperties {
   };
 }
 
+function sideCatStyle(active: boolean): React.CSSProperties {
+  return {
+    display: "block",
+    width: "100%",
+    textAlign: "left",
+    padding: "8px 10px",
+    marginBottom: 2,
+    borderRadius: 8,
+    border: "none",
+    background: active ? "var(--brand-tint)" : "transparent",
+    color: active ? BRAND : "var(--text-1)",
+    fontSize: 14,
+    fontWeight: active ? 600 : 500,
+    cursor: "pointer",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    transition: "all .15s"
+  };
+}
+
+function sideTagStyle(active: boolean): React.CSSProperties {
+  return {
+    display: "inline-block",
+    padding: "2px 8px",
+    margin: "0 4px 4px 0",
+    borderRadius: 4,
+    border: active ? `1px solid ${BRAND}` : "1px solid transparent",
+    background: active ? "var(--brand-tint)" : "transparent",
+    color: active ? BRAND : "var(--text-2)",
+    fontSize: 12,
+    cursor: "pointer",
+    transition: "all .15s"
+  };
+}
+
 const sectionHeaderStyle: React.CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  marginBottom: 12
+  marginBottom: 10
 };
 
 const sectionTitleStyle: React.CSSProperties = {
   fontSize: 20,
   fontWeight: 800,
   margin: 0,
-  color: "#1f2937",
+  color: "var(--text-1)",
   display: "flex",
   alignItems: "center"
 };
 
 const gridStyle: React.CSSProperties = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-  gap: 16
+  gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+  gap: 12
 };

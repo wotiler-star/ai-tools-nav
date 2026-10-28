@@ -789,7 +789,7 @@ export function FavoritesTab() {
               {f.targetCover ? (
                 <img
                   src={f.targetCover}
-                  alt=""
+                  alt={f.targetTitle ? `${f.targetTitle}封面` : "收藏封面"}
                   style={{ width: 40, height: 40, borderRadius: 8, objectFit: "cover", flexShrink: 0 }}
                 />
               ) : null}
@@ -841,17 +841,17 @@ export function FavoritesTab() {
 
 /* ==================== 6. 会员中心 ==================== */
 
-/** 成长等级体系（对齐目标站：等级 + 等级名 + 升级所需成长值阈值） */
+/** 成长等级体系（等级 + 等级名 + 升级所需成长值阈值） */
 const GROWTH_LEVELS = [
   { lv: 1, name: "初出茅庐", min: 0 },
   { lv: 2, name: "小有名气", min: 100 },
   { lv: 3, name: "崭露头角", min: 300 },
   { lv: 4, name: "独当一面", min: 600 },
   { lv: 5, name: "行业精英", min: 1000 },
-  { lv: 6, name: "鱼皮之友", min: 2000 }
+  { lv: 6, name: "toolly 之友", min: 2000 }
 ];
 
-/** 会员套餐（对齐目标站 会员中心 开通会员区） */
+/** 会员套餐（会员中心 开通会员区） */
 const VIP_PLANS = [
   { type: 1, name: "月度会员", price: "¥19", unit: "/月", desc: "连续包月，随时可取消", tag: "" },
   { type: 2, name: "年度会员", price: "¥198", unit: "/年", desc: "立省 ¥130，超值推荐", tag: "推荐" },

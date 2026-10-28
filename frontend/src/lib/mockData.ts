@@ -15,7 +15,7 @@ import {
   KbColumn
 } from "@/types";
 
-// ===== 14 大类分类（名称/图标/顺序/二级 tags 1:1 对齐 ai.codefather.cn /tool） =====
+// ===== 14 大类分类（名称/图标/顺序/二级 tags） =====
 export const CATEGORIES: Category[] = [
   { id: 1, name: "AI写作", icon: "✍️", sort: 1, tags: ["AI写作工具","AI小红书文案","AI小说","AI论文写作","AI总结摘要","AI提示词","AIGC检测","AI公文","AI标书写作","AI论文查重","AI阅读","降AIGC率"] },
   { id: 2, name: "AI图像", icon: "🎨", sort: 2, tags: ["常用AI图像工具","AI图片优化修复","AI图片背景移除","AI图片无损放大","AI 3D模型生成","AI商品图生成","AI图片插画生成","AI图片物体抹除"] },
@@ -320,7 +320,7 @@ export const AI_POSTS: AiPost[] = [
     title: "我用 AI 工具一个月，效率翻了 3 倍：我的全栈工作流",
     content:
       "分享我日常使用的 AI 工具组合：Cursor 写代码、Kimi 读长文档、Gamma 做汇报、Suno 配背景音乐……",
-    authorName: "鱼皮",
+    authorName: "toolly",
     authorAvatar: "",
     thumbUrl: "",
     createTime: "2026-07-20 10:00:00",
@@ -515,13 +515,14 @@ export const AI_NEWS: NewsItem[] = [
 ];
 
 // ===== 精选推荐（资讯区右侧） =====
-// 历史遗留的 /learn 死链已修复：每条编辑精选分别指向真实存在的路由
+// 历史遗留的 /learn 死链已修复：每条编辑精选分别指向真实存在的【具体详情页】
 export const NEWS_FEATURED: FeaturedItem[] = [
-  { id: 1, title: "Vibe Coding 零基础入门教程", href: "/resource/learn" },
-  { id: 2, title: "AI 编程保姆级实战教程", href: "/resource/learn" },
-  { id: 3, title: "主流大模型一手横向实测", href: "/news" },
-  { id: 4, title: "AI 编辑器隐藏高效技巧", href: "/resource/learn" },
-  { id: 5, title: "从零学会 AI 编程的正确姿势", href: "/essay" }
+  // 对齐目标站颗粒度：每条编辑精选跳转到【具体详情页】，而非列表/分区首页
+  { id: 1, title: "Vibe Coding 零基础入门教程", href: "/resource/learn/1" },
+  { id: 2, title: "AI 编程保姆级实战教程", href: "/resource/learn/2" },
+  { id: 3, title: "主流大模型一手横向实测", href: "/resource/learn/3" },
+  { id: 4, title: "AI 编辑器隐藏高效技巧", href: "/resource/learn/4" },
+  { id: 5, title: "从零学会 AI 编程的正确姿势", href: "/resource/learn/5" }
 ];
 
 // ===== 学习教程 / 项目课程 / 知识百科 =====
@@ -806,7 +807,7 @@ function kb(id: number, title: string, description: string, articleCount: number
 }
 
 export const KB_COLUMNS: KbColumn[] = [
-  kb(1, "鱼皮的 AI 知识库", "从 0 到 1 系统学习 AI 应用开发，持续更新。", 68, true),
+  kb(1, "toolly 的 AI 知识库", "从 0 到 1 系统学习 AI 应用开发，持续更新。", 68, true),
   kb(2, "Vibe Coding 零基础入门", "用自然语言与 AI 协作编程，快速做出可用产品。", 32, true),
   kb(3, "OpenClaw 保姆级教程", "从安装到进阶，玩转 AI 编程助手。", 24, true),
   kb(4, "提示词工程完全指南", "系统讲解提示词设计方法论与实战模板。", 40, false),
@@ -877,3 +878,12 @@ export function removeToolMock(id: number): boolean {
 }
 
 export { CAT };
+
+// 兼容 LearnFeed / LearnDetail（/resource/learn|course|encyclopedia）引用；
+// 由 ARTICLES 派生并补齐 authorName / content 字段，避免悬空导入导致页面运行时崩溃。
+export const LEARN_POSTS = ARTICLES.map((a) => ({
+  ...a,
+  authorName: "toolly 编辑部",
+  content: `${a.title}：本文系统梳理核心概念与实操要点，帮助读者快速上手。`,
+  createTime: `2024-${String(a.id).padStart(2, "0")}-15`,
+}));

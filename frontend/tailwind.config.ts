@@ -7,7 +7,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // 主品牌色（对齐 ai.codefather.cn 蓝紫调）
+        // 主品牌色（蓝紫调）
         brand: {
           DEFAULT: "#1677ff",
           light: "#4096ff",

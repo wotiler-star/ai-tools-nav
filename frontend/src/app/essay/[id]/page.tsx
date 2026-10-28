@@ -1,72 +1,75 @@
-"use client";
+import type { Metadata } from "next";
+import { serverGet } from "@/lib/server-api";
+import { SITE } from "@/config/site";
+import { EssayClient } from "./EssayClient";
 
-import { useMemo } from "react";
-import useSWR from "swr";
-import { Spin } from "antd";
-import { EssayPost, AiPost, BaseResponse, BaseResponsePage } from "@/types";
-import { swrFetcher } from "@/lib/api";
-import EssayDetail from "./EssayDetail";
+interface PostLite {
+  id?: string | number;
+  title?: string;
+  content?: string;
+}
 
-function toEssayPost(p: AiPost): EssayPost {
-  const summary = p.content
-    ? p.content.replace(/\s+/g, " ").slice(0, 80)
+export async function generateMetadata({
+  params
+}: {
+  params: { id: string };
+}): Promise<Metadata> {
+  const post = await serverGet<PostLite>(`/ai_post/get`, { id: params.id });
+  if (!post || !post.title) {
+    return {
+      title: `社区帖子｜${SITE.name}`,
+      description: `AI 社区优质帖子分享，涵盖 AI 编程、工具与实战经验——${SITE.name}。`
+    };
+  }
+  const summary = post.content
+    ? post.content.replace(/\s+/g, " ").slice(0, 90)
     : "（暂无简介）";
   return {
-    id: p.id,
-    authorName: p.authorName || "匿名用户",
-    authorAvatar: p.authorAvatar || "",
-    authorTag: "AI社区",
-    topic: "AI编程",
-    createTime: (p.createTime || "").toString().slice(0, 10),
-    title: p.title,
-    summary,
-    tags: [],
-    likeNum: p.likeNum || 0,
-    commentNum: p.commentNum || 0,
-    content: p.content || ""
+    title: `${post.title}｜${SITE.name}`,
+    description: summary,
+    alternates: { canonical: `/essay/${params.id}` },
+    openGraph: {
+      title: `${post.title}｜${SITE.name}`,
+      description: summary,
+      url: `/essay/${params.id}`,
+      type: "article"
+    }
   };
 }
 
-export default function Page({ params }: { params: { id: string } }) {
-  const id = params.id;
-
-  const { data: postRes, isLoading: postLoading } = useSWR<BaseResponse<AiPost>>(
-    `/ai_post/get?id=${id}`,
-    swrFetcher
+export default async function Page({ params }: { params: { id: string } }) {
+  const post = await serverGet<PostLite>(`/ai_post/get`, { id: params.id });
+  const jsonLd =
+    post && post.title
+      ? {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "首页", item: `https://${SITE.domain}/` },
+                { "@type": "ListItem", position: 2, name: "AI社区", item: `https://${SITE.domain}/essay` },
+                { "@type": "ListItem", position: 3, name: post.title, item: `https://${SITE.domain}/essay/${params.id}` }
+              ]
+            },
+            {
+              "@type": "Article",
+              headline: post.title,
+              description: post.content ? post.content.replace(/\s+/g, " ").slice(0, 160) : "",
+              url: `https://${SITE.domain}/essay/${params.id}`
+            }
+          ]
+        }
+      : null;
+  return (
+    <>
+      <EssayClient params={params} />
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+    </>
   );
-  const { data: listRes } = useSWR<BaseResponsePage<AiPost>>(
-    "/ai_post/list/page?current=1&pageSize=20",
-    swrFetcher
-  );
-
-  const post: EssayPost | undefined = useMemo(() => {
-    const p = postRes?.data;
-    return p ? toEssayPost(p) : undefined;
-  }, [postRes]);
-
-  const relatedPosts: EssayPost[] = useMemo(() => {
-    const records = listRes?.data?.records || [];
-    return records
-      .filter((p) => String(p.id) !== String(id))
-      .slice(0, 3)
-      .map(toEssayPost);
-  }, [listRes, id]);
-
-  if (postLoading) {
-    return (
-      <div style={{ textAlign: "center", padding: 60 }}>
-        <Spin />
-      </div>
-    );
-  }
-
-  if (!post) {
-    return (
-      <div style={{ maxWidth: 820, margin: "0 auto", padding: 60, textAlign: "center", color: "#9ca3af" }}>
-        帖子不存在或已删除
-      </div>
-    );
-  }
-
-  return <EssayDetail post={post} relatedPosts={relatedPosts} />;
 }

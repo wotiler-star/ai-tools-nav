@@ -19,6 +19,6 @@ public class Knife4jConfig {
                 .info(new Info()
                         .title("AI 导航站 API")
                         .version("1.0.0")
-                        .description("复刻 api.codefather.cn 的 AI 工具导航与社区站后端接口"));
+                        .description("AI 工具导航与社区站后端接口"));
     }
 }

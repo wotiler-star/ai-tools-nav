@@ -23,6 +23,7 @@ import { AiTool, BaseResponse } from "@/types";
 
 interface ToolDetail extends AiTool {
   related: AiTool[];
+  detail?: string;
 }
 
 export default function ToolDetailPage() {

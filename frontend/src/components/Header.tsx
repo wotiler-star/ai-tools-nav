@@ -25,7 +25,7 @@ import { ToollyLogo } from "@/components/Logo";
 import { useTheme } from "@/app/theme-context";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
-/** 顶部主导航：与 ai.codefather.cn 实测顺序/子菜单 100% 一致 */
+/** 顶部主导航：主导航顺序与子菜单 */
 const NAV: {
   label: string;
   href: string;
@@ -35,7 +35,7 @@ const NAV: {
   { label: "主页", href: "/" },
   { label: "社区", href: "/essay" },
   { label: "AI工具", href: "/tool" },
-  { label: "AI知识库", href: "/library" },
+  { label: "AI知识库", href: "/library/21" },  // 对齐目标站：导航直达具体知识库专栏（后端列 id=21）
   { label: "AI提示词", href: "/painting" },
   { label: "MCP", href: "/mcp" },
   { label: "Skills", href: "/skills" },
@@ -115,7 +115,7 @@ export default function Header() {
     loginUser?.userAvatar ? (
       <img
         src={loginUser.userAvatar}
-        alt=""
+        alt={loginUser.userName ? `${loginUser.userName}的头像` : "用户头像"}
         style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover" }}
       />
     ) : (

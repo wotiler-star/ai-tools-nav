@@ -9,76 +9,86 @@ function colorFromName(name: string): string {
 
 /**
  * AI 工具卡（服务端组件，无 antd / 无 "use client"，可在 SSR HTML 中直出）。
+ * 紧凑版式：图标居左，右侧一列「名称 + 一行灰描述」，无热度、无标签。
  * hover 语言统一走 .hover-brand-lift / .hover-brand-title。
  */
 export default function ToolCard({ tool }: { tool: AiTool }) {
   return (
     <Link
       href={`/tool/${tool.id}`}
-      className="group hover-brand-lift block rounded-xl bg-white"
+      className="group hover-brand-lift block rounded-lg bg-white"
       style={{ height: "100%" }}
     >
-      <div style={{ padding: 16, height: "100%" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+      <div
+        style={{
+          padding: 12,
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          gap: 8
+        }}
+      >
+        {tool.logo ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={tool.logo}
+            alt={tool.name}
+            width={40}
+            height={40}
+            loading="lazy"
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 10,
+              objectFit: "cover",
+              flexShrink: 0
+            }}
+          />
+        ) : (
           <div
             style={{
-              width: 44,
-              height: 44,
+              width: 40,
+              height: 40,
               borderRadius: 10,
               background: colorFromName(tool.name),
               color: "#fff",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 20,
+              fontSize: 18,
               fontWeight: 700,
               flexShrink: 0
             }}
           >
             {tool.name.charAt(0)}
           </div>
-          <div style={{ minWidth: 0 }}>
-            <div
-              className="hover-brand-title"
-              style={{
-                fontWeight: 600,
-                fontSize: 15,
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis"
-              }}
-            >
-              {tool.name}
-              {tool.isHot && (
-                <span style={{ color: "#ff4d4f", marginLeft: 6, fontSize: 13 }}>🔥</span>
-              )}
-            </div>
-            <div style={{ fontSize: 12, color: "#86909c" }}>热度 {tool.heat}</div>
+        )}
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <div
+            className="hover-brand-title"
+            style={{
+              fontWeight: 600,
+              fontSize: 14,
+              color: "var(--text-1)",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis"
+            }}
+          >
+            {tool.name}
           </div>
-        </div>
-
-        <div
-          style={{
-            fontSize: 13,
-            color: "#4e5969",
-            lineHeight: 1.6,
-            height: 42,
-            overflow: "hidden"
-          }}
-        >
-          {tool.description}
-        </div>
-
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 10 }}>
-          {tool.tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded px-1.5 py-0.5 text-xs"
-              style={{ background: "var(--chip-bg)", color: "var(--chip-text)", fontSize: 12 }}
-            >
-              {tag}
-            </span>
-          ))}
+          <div
+            style={{
+              marginTop: 3,
+              fontSize: 12,
+              color: "var(--text-3)",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis"
+            }}
+          >
+            {tool.description}
+          </div>
         </div>
       </div>
     </Link>

@@ -4,6 +4,7 @@ import com.ainav.common.BaseResponse;
 import com.ainav.common.ResultUtils;
 import com.ainav.model.entity.Category;
 import com.ainav.service.CategoryService;
+import com.ainav.service.cache.CacheKeys;
 import com.ainav.service.cache.RedisCacheService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Duration;
 import java.util.List;
 
 @RestController
@@ -28,21 +28,18 @@ public class CategoryController {
     @Autowired(required = false)
     private RedisCacheService redisCacheService;
 
-    private static final String CACHE_KEY = "ainav:category:list";
-    private static final Duration CACHE_TTL = Duration.ofMinutes(5);
-
     @Operation(summary = "分类列表（prod profile 下走 Redis 缓存）")
     @GetMapping("/list")
     public BaseResponse<List<Category>> list() {
         if (redisCacheService != null) {
-            List<Category> cached = redisCacheService.getList(CACHE_KEY, Category.class);
+            List<Category> cached = redisCacheService.getList(CacheKeys.CATEGORY_LIST, Category.class);
             if (cached != null) {
                 return ResultUtils.success(cached);
             }
         }
         List<Category> data = categoryService.listOrdered();
         if (redisCacheService != null) {
-            redisCacheService.putList(CACHE_KEY, data, CACHE_TTL);
+            redisCacheService.putList(CacheKeys.CATEGORY_LIST, data, CacheKeys.TTL_DICT);
         }
         return ResultUtils.success(data);
     }

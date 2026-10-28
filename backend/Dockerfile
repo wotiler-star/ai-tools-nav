@@ -15,4 +15,7 @@ WORKDIR /app
 # 默认 prod profile：MySQL + Redis + 查询缓存
 COPY --from=builder /build/ai-nav-web/target/ai-nav-web.jar app.jar
 EXPOSE 8123
+HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=3 \
+    CMD wget -q -O - http://127.0.0.1:8123/api/health || exit 1
+
 ENTRYPOINT ["java", "-jar", "/app/app.jar", "--spring.profiles.active=prod"]

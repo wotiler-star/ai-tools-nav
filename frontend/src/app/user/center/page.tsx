@@ -148,7 +148,7 @@ export default function UserCenterPage() {
   const avatar = loginUser.userAvatar ? (
     <img
       src={loginUser.userAvatar}
-      alt=""
+      alt={loginUser.userName ? `${loginUser.userName}的头像` : "用户头像"}
       style={{ width: 64, height: 64, borderRadius: "50%", objectFit: "cover" }}
     />
   ) : (

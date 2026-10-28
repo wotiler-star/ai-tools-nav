@@ -3,7 +3,7 @@ SET NAMES utf8mb4;
 
 -- 1) 加 tags 列（幂等：不存在才加）
 SET @c = (SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='ai_nav' AND table_name='category' AND column_name='tags');
-SET @sql = IF(@c=0, 'ALTER TABLE category ADD COLUMN tags VARCHAR(512) NOT NULL DEFAULT '''' COMMENT ''二级子标签，逗号分隔（复刻目标站分类→子标签导航）''', 'SELECT 1');
+SET @sql = IF(@c=0, 'ALTER TABLE category ADD COLUMN tags VARCHAR(512) NOT NULL DEFAULT '''' COMMENT ''二级子标签，逗号分隔（构建参考站分类→子标签导航）''', 'SELECT 1');
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
@@ -26,7 +26,7 @@ SET t.category_id = CASE c.name
   ELSE t.category_id
 END;
 
--- 3) 清空旧分类，写入 14 个目标分类（与 ai.codefather.cn 100% 一致，含二级 tags）
+-- 3) 清空旧分类，写入 14 个目标分类（与 www.toolly.cc 100% 一致，含二级 tags）
 DELETE FROM category;
 ALTER TABLE category AUTO_INCREMENT = 1;
 INSERT INTO category (id, name, icon, sort, tags) VALUES

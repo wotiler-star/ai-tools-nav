@@ -1,4 +1,4 @@
-// 全局类型定义（对齐 ai.codefather.cn / api.codefather.cn 业务模型）
+// 全局类型定义（业务模型）
 
 /** 分类 */
 export interface Category {
@@ -6,9 +6,9 @@ export interface Category {
   name: string;
   icon: string;
   sort: number;
-  /** 二级子标签（复刻目标站『分类→子标签』导航） */
+  /** 二级子标签（分类→子标签导航） */
   tags?: string[];
-  /** 全局标签云配额：该分类在全局云里展示几个标签（对齐目标站红框第 3 行） */
+  /** 全局标签云配额：该分类在全局云里展示几个标签 */
   cloudCount?: number;
 }
 
@@ -56,6 +56,10 @@ export interface NewsItem {
   title: string;
   hot?: boolean;
   content?: string; // 正文（markdown 源），缺省时由详情页合成
+  summary?: string; // 摘要（可选）
+  createTime?: string; // 发布时间（可选）
+  source?: string; // 来源（后端 ai_news.source，实时取数时填充）
+  viewNum?: number; // 热度/阅读量（后端 ai_news.viewNum，实时取数时填充）
 }
 
 /** 精选推荐卡片 */
@@ -89,6 +93,8 @@ export interface McpServer {
   tag: string; // 一级标签，如 data-extraction / AI
   category: string; // 所属分类
   description: string;
+  url?: string; // 官方地址（可选，缺省走搜索兜底）
+  logo?: string; // 官方 logo 地址（可选）
 }
 
 /** Skill 指令（/skills 页） */
@@ -97,6 +103,7 @@ export interface SkillItem {
   name: string;
   category: string; // 所属分类
   description: string;
+  url?: string; // 官方/文档地址（可选）
 }
 
 /** 社区帖子（/essay 页，带话题分类与标签） */
@@ -131,6 +138,7 @@ export interface PromptTemplate {
   tags: string[];
   kind: "draw" | "text";
   useCount: number;
+  cover?: string; // 封面图（可选）
 }
 
 /** 知识库专栏（/library 页） */
@@ -288,4 +296,17 @@ export interface AiMessage {
   /** 0 未读 / 1 已读 */
   isRead?: number;
   createTime?: string;
+}
+
+/** 后台管理：数据概览统计，对齐后端 AdminStatsVO */
+export interface AdminStatsVO {
+  userCount?: number;
+  toolCount?: number;
+  categoryCount?: number;
+  postCount?: number;
+  promptCount?: number;
+  commentCount?: number;
+  columnCount?: number;
+  articleCount?: number;
+  messageCount?: number;
 }

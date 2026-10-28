@@ -12,7 +12,7 @@ CREATE TABLE category (
     name  VARCHAR(64)  NOT NULL,
     icon  VARCHAR(32)  DEFAULT '',
     sort  INT          DEFAULT 0,
-    tags  VARCHAR(512) DEFAULT '' COMMENT '二级子标签，逗号分隔（复刻目标站『分类→子标签』导航）'
+    tags  VARCHAR(512) DEFAULT '' COMMENT '二级子标签，逗号分隔（分类→子标签导航）'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- AI 工具
@@ -100,7 +100,7 @@ CREATE TABLE user_favorite (
     KEY idx_user (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ===== 初始分类数据（14 大类，名称/图标/顺序/二级 tags 1:1 对齐 ai.codefather.cn /tool） =====
+-- ===== 初始分类数据（14 大类，名称/图标/顺序/二级 tags） =====
 INSERT INTO category (id, name, icon, sort, tags) VALUES
 (1,'AI写作','✍️',1,'AI写作工具,AI小红书文案,AI小说,AI论文写作,AI总结摘要,AI提示词,AIGC检测,AI公文,AI标书写作,AI论文查重,AI阅读,降AIGC率'),
 (2,'AI图像','🎨',2,'常用AI图像工具,AI图片优化修复,AI图片背景移除,AI图片无损放大,AI 3D模型生成,AI商品图生成,AI图片插画生成,AI图片物体抹除'),
@@ -331,7 +331,7 @@ INSERT INTO ai_prompt (title, content, category_name, use_count) VALUES
 
 -- ============ 社区帖子 ai_post ============
 INSERT INTO ai_post (title, content, author_name, author_avatar, thumb_url, view_num, like_num, comment_num) VALUES
-('我用 AI 一周做了 3 个网站，方法全公开', '最近尝试用 v0、Cursor 和 Claude 组合，把想法快速落地成可上线的小网站。核心心法是：先用对话明确需求，再让 AI 生成骨架，最后人工精修细节。', '鱼皮', 'https://api.dicebear.com/7.x/initials/svg?seed=Yupi', 'https://picsum.photos/seed/aiweb/600/400', 5200, 320, 45),
+('我用 AI 一周做了 3 个网站，方法全公开', '最近尝试用 v0、Cursor 和 Claude 组合，把想法快速落地成可上线的小网站。核心心法是：先用对话明确需求，再让 AI 生成骨架，最后人工精修细节。', 'toolly', 'https://api.dicebear.com/7.x/initials/svg?seed=Yupi', 'https://picsum.photos/seed/aiweb/600/400', 5200, 320, 45),
 ('2026 年最值得收藏的 20 个 AI 工具', '整理了对话、绘画、视频、编程各赛道的神器，按使用频率和性价比排序，建议先码后看。', '星河', 'https://api.dicebear.com/7.x/initials/svg?seed=Xinghe', 'https://picsum.photos/seed/aitools/600/400', 8800, 510, 88),
 ('从零搭建你的 AI 绘画工作流', '分享我如何用 Midjourney 出图、Stable Diffusion 精修、ComfyUI 串联节点，效率提升 3 倍。', '阿木', 'https://api.dicebear.com/7.x/initials/svg?seed=Amu', 'https://picsum.photos/seed/aiart/600/400', 4100, 260, 33),
 ('Prompt 工程的 7 个实用技巧', '好的提示词决定了一半的产出质量。本文总结角色设定、少样本、链式思考等可立即上手的技巧。', '墨笔', 'https://api.dicebear.com/7.x/initials/svg?seed=Mobi', 'https://picsum.photos/seed/prompt/600/400', 6700, 410, 67),
@@ -343,3 +343,98 @@ INSERT INTO ai_post (title, content, author_name, author_avatar, thumb_url, view
 -- 给前几条帖子/提示词归属到 admin（id=1），便于演示「我的帖子 / 我的提示词」
 UPDATE ai_post SET user_id = 1 WHERE id <= 3;
 UPDATE ai_prompt SET user_id = 1 WHERE id <= 3;
+
+-- ============================================================
+-- 存量补齐：以下 5 张表原仅存在于 migrations/ 子目录。
+-- docker-entrypoint-initdb.d 挂载的是 backend/sql 顶层目录，MySQL initdb
+-- 不会递归子目录，导致新环境从零初始化时缺表（知识库/评论/消息中心全线不可用）。
+-- 现同步到本文件，保证「全新环境只跑 schema.sql 也能建全表」。
+-- 全部使用 CREATE TABLE IF NOT EXISTS，对已存在的线上库重复执行安全。
+-- ============================================================
+
+-- 知识库分类
+CREATE TABLE IF NOT EXISTS ai_column_category (
+    id          BIGINT      PRIMARY KEY AUTO_INCREMENT,
+    name        VARCHAR(64) NOT NULL DEFAULT '' COMMENT '分类名称（新手入门 / DeepSeek / AI 编程 ...）',
+    sort        INT         DEFAULT 0 COMMENT '排序，越小越靠前',
+    description VARCHAR(256) DEFAULT '' COMMENT '分类描述',
+    KEY idx_sort (sort)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='AI 知识库分类';
+
+-- 知识库专栏
+CREATE TABLE IF NOT EXISTS ai_column (
+    id            BIGINT       PRIMARY KEY AUTO_INCREMENT,
+    title         VARCHAR(128) NOT NULL DEFAULT '' COMMENT '专栏标题',
+    description   VARCHAR(512) DEFAULT '' COMMENT '专栏简介',
+    cover_color   VARCHAR(32)  DEFAULT '' COMMENT '封面色值（如 #3874F7），前端生成渐变封面',
+    category_id   BIGINT       DEFAULT NULL COMMENT '所属分类 id（关联 ai_column_category.id）',
+    category_name VARCHAR(64)  DEFAULT '' COMMENT '分类名称冗余，列表直接展示',
+    tags          VARCHAR(256) DEFAULT '' COMMENT '标签，逗号分隔，用于标签云',
+    need_vip      TINYINT      DEFAULT 0 COMMENT '是否免费：0 免费 / 1 会员',
+    article_count INT          DEFAULT 0 COMMENT '文章数（冗余，发布文章时维护）',
+    view_num      BIGINT       DEFAULT 0 COMMENT '阅读量',
+    like_num      BIGINT       DEFAULT 0 COMMENT '点赞数',
+    collect_num   BIGINT       DEFAULT 0 COMMENT '收藏数',
+    sort          INT          DEFAULT 0 COMMENT '排序，越小越靠前',
+    status        TINYINT      DEFAULT 1 COMMENT '状态：0 下架 / 1 已发布',
+    create_time   DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    update_time   DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY idx_category (category_id),
+    KEY idx_status_sort (status, sort)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='AI 知识库专栏';
+
+-- 知识库文章
+CREATE TABLE IF NOT EXISTS ai_article (
+    id          BIGINT       PRIMARY KEY AUTO_INCREMENT,
+    column_id   BIGINT       DEFAULT NULL COMMENT '所属专栏 id（关联 ai_column.id）',
+    title       VARCHAR(256) NOT NULL DEFAULT '' COMMENT '文章标题',
+    summary     VARCHAR(512) DEFAULT '' COMMENT '文章摘要（列表展示）',
+    content     MEDIUMTEXT   COMMENT '正文（markdown）',
+    cover_url   VARCHAR(512) DEFAULT '' COMMENT '封面 url，可空（空则前端生成色块）',
+    view_num    BIGINT       DEFAULT 0 COMMENT '阅读量',
+    like_num    BIGINT       DEFAULT 0 COMMENT '点赞数',
+    collect_num BIGINT       DEFAULT 0 COMMENT '收藏数',
+    sort        INT          DEFAULT 0 COMMENT '排序，越小越靠前',
+    status      TINYINT      DEFAULT 0 COMMENT '状态：0 草稿 / 1 已发布',
+    create_time DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY idx_column (column_id),
+    KEY idx_status_sort (status, sort)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='AI 知识库文章';
+
+-- 通用评论（当前用于知识库文章；target_type 预留 post 扩展）
+CREATE TABLE IF NOT EXISTS ai_comment (
+    id          BIGINT       PRIMARY KEY AUTO_INCREMENT,
+    target_type VARCHAR(32)  NOT NULL DEFAULT 'article' COMMENT '评论目标类型：article / post',
+    target_id   BIGINT       DEFAULT NULL COMMENT '评论目标 id',
+    user_id     BIGINT       DEFAULT NULL COMMENT '评论用户 id',
+    user_name   VARCHAR(64)  DEFAULT '' COMMENT '评论人昵称（冗余，避免频繁 join）',
+    user_avatar VARCHAR(512) DEFAULT '' COMMENT '评论人头像（冗余）',
+    content     VARCHAR(1024) DEFAULT '' COMMENT '评论内容',
+    parent_id   BIGINT       DEFAULT 0 COMMENT '父评论 id，0 表示顶级评论',
+    like_num    BIGINT       DEFAULT 0 COMMENT '点赞数',
+    status      TINYINT      DEFAULT 1 COMMENT '状态：0 已删除 / 1 正常',
+    create_time DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_target (target_type, target_id),
+    KEY idx_user (user_id),
+    KEY idx_parent (parent_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='通用评论';
+
+-- 站内消息（评论 / 回复通知）
+CREATE TABLE IF NOT EXISTS ai_message (
+    id               BIGINT       PRIMARY KEY AUTO_INCREMENT,
+    user_id          BIGINT       NOT NULL COMMENT '接收消息的用户 id',
+    type             VARCHAR(32)  NOT NULL DEFAULT 'comment' COMMENT 'comment 评论 / reply 回复 / system 系统',
+    target_type      VARCHAR(32)  NOT NULL DEFAULT '' COMMENT 'post / article',
+    target_id        BIGINT       DEFAULT NULL COMMENT '关联目标 id',
+    target_title     VARCHAR(256) DEFAULT '' COMMENT '目标标题快照（目标被删后消息仍可读）',
+    from_user_id     BIGINT       DEFAULT NULL COMMENT '触发者用户 id',
+    from_user_name   VARCHAR(128) DEFAULT '' COMMENT '触发者昵称',
+    from_user_avatar VARCHAR(512) DEFAULT '' COMMENT '触发者头像',
+    content          VARCHAR(512) DEFAULT '' COMMENT '消息摘要（评论内容截断）',
+    is_read          TINYINT      DEFAULT 0 COMMENT '0 未读 / 1 已读',
+    create_time      DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_user (user_id),
+    KEY idx_user_read (user_id, is_read),
+    KEY idx_create (create_time)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='站内消息';

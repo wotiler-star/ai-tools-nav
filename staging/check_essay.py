@@ -6,7 +6,7 @@ with urllib.request.urlopen(url, timeout=20) as r:
 
 d = json.loads(raw)
 recs = d["data"]["records"]
-key = "鱼皮"
+key = "toolly"
 print(f"total={d['data']['total']}, records_returned={len(recs)}")
 for rec in recs:
     print(f"  id={rec['id']} | author={rec['authorName']} | title={rec['title'][:30]}")

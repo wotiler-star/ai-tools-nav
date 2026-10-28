@@ -24,16 +24,21 @@ export default function Provider({
 }) {
   const [isDark, setIsDark] = useState(false);
 
-  // 挂载时恢复用户主题偏好
+  // 挂载时以 <html data-theme> 为准（该值已由 layout 的内联脚本在首屏渲染前设好），
+  // 而不是从默认值 false 起步——否则暗色用户每次打开都会先闪一下白屏。
   useEffect(() => {
-    const saved = localStorage.getItem("theme");
-    setIsDark(saved === "dark");
+    setIsDark(document.documentElement.dataset.theme === "dark");
   }, []);
 
-  // 同步到 <html data-theme> 与 localStorage
+  // 只在值真正变化时才写回，避免挂载瞬间用默认 light 覆盖掉用户偏好
   useEffect(() => {
-    document.documentElement.dataset.theme = isDark ? "dark" : "light";
-    localStorage.setItem("theme", isDark ? "dark" : "light");
+    const next = isDark ? "dark" : "light";
+    if (document.documentElement.dataset.theme !== next) {
+      document.documentElement.dataset.theme = next;
+    }
+    if (localStorage.getItem("theme") !== next) {
+      localStorage.setItem("theme", next);
+    }
   }, [isDark]);
 
   const token = isDark

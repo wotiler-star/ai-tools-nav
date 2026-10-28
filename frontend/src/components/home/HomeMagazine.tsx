@@ -3,21 +3,77 @@ import RecentTools from "@/components/RecentTools";
 import TabController from "./TabController";
 import ToolCard from "@/components/ToolCard";
 import {
-  AI_NEWS,
-  AI_POSTS,
-  ARTICLES,
-  HOT_ARTICLES,
-  HOME_PROMPTS,
+  AI_NEWS as MOCK_NEWS,
+  AI_POSTS as MOCK_POSTS,
+  AI_TOOLS as MOCK_TOOLS,
+  ARTICLES as MOCK_ARTICLES,
+  HOT_ARTICLES as MOCK_HOT_ARTICLES,
+  HOME_PROMPTS as MOCK_PROMPTS,
   HOT_SEARCHES,
   NEWS_FEATURED,
   RECOMMENDS,
-  AI_TOOLS,
-  TOOL_TABS
+  TOOL_TABS as MOCK_TOOL_TABS
 } from "@/lib/mockData";
+import type {
+  NewsItem,
+  AiPost,
+  AiTool,
+  AiPrompt,
+  Category,
+  HomePrompt,
+  FeaturedItem,
+  Article
+} from "@/types";
 import { SITE } from "@/config/site";
 
 const BRAND = "#3874F7";
 const BANNER_ICONS = ["💡", "🚀", "🎨", "🔥", "🛠️"];
+
+// ===== 服务端直连后端 =====
+// 本组件是 Server Component，运行在 Node 环境，无法使用浏览器侧的相对 /api，
+// 必须走容器内网地址。docker-compose 中后端服务名为 backend（端口 8123），
+// 与前端同在 ainav-net 网络，已实测可达。可用 INTERNAL_API_BASE 覆盖。
+const SERVER_API = process.env.INTERNAL_API_BASE || "http://backend:8123";
+
+interface PageResult<T> {
+  records: T[];
+  total: number;
+  size?: number;
+  current?: number;
+  pages?: number;
+}
+
+/**
+ * 服务端取数：统一拼装后端地址、带 8s 超时与异常兜底。
+ * 任一接口异常都返回 null，由调用处回退到 mock，绝不因接口抖动导致整页崩溃。
+ */
+async function serverFetch<T = any>(
+  path: string,
+  params?: Record<string, any>
+): Promise<T | null> {
+  try {
+    const url = new URL(`${SERVER_API}/api${path}`);
+    if (params) {
+      Object.entries(params).forEach(([k, v]) => {
+        if (v !== undefined && v !== null && v !== "") url.searchParams.set(k, String(v));
+      });
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(url.toString(), {
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+      signal: controller.signal
+    });
+    clearTimeout(timer);
+    if (!res.ok) return null;
+    const json = await res.json();
+    if (json?.code !== 0 && json?.code !== undefined) return null;
+    return (json.data as T) ?? null;
+  } catch {
+    return null;
+  }
+}
 
 /** 区块标题 + 更多（服务端组件，内联 SVG 箭头避免引入 antd 图标） */
 function SectionHead({
@@ -51,17 +107,23 @@ function SectionHead({
 }
 
 /** AI 工具大全：全部分类面板服务端直出，默认分类可见，Tab 切换由 TabController 接管 */
-function ToolSection() {
+function ToolSection({
+  tools,
+  toolTabs
+}: {
+  tools: AiTool[];
+  toolTabs: { key: number; label: string }[];
+}) {
   return (
     <section data-tabs="tool">
       <SectionHead title="AI 工具大全" moreHref="/tool" />
       <div className="tab-bar mb-4 flex flex-wrap gap-2">
-        {TOOL_TABS.map((t) => (
+        {toolTabs.map((t) => (
           <button
             key={t.key}
             type="button"
             data-tab={t.key}
-            data-active={t.key === TOOL_TABS[0].key}
+            data-active={t.key === toolTabs[0].key}
             className="tab-pill rounded-full px-4 py-1.5 text-sm"
           >
             {t.label}
@@ -69,15 +131,16 @@ function ToolSection() {
         ))}
       </div>
       <div className="tab-panels">
-        {TOOL_TABS.map((t) => (
+        {toolTabs.map((t) => (
           <div
             key={t.key}
             data-panel={t.key}
-            className={t.key === TOOL_TABS[0].key ? "" : "hidden"}
+            className={t.key === toolTabs[0].key ? "" : "hidden"}
           >
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {AI_TOOLS.filter((x) => x.categoryId === t.key)
-                .slice(0, 8)
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {tools
+                .filter((x) => x.categoryId === t.key)
+                .slice(0, 9)
                 .map((tool) => (
                   <ToolCard key={tool.id} tool={tool} />
                 ))}
@@ -94,8 +157,97 @@ function ToolSection() {
   );
 }
 
+/** 🌟 AI 资讯（首页右侧栏，收敛条数避免侧栏过长） */
+function NewsSection({ news }: { news: NewsItem[] }) {
+  return (
+    <section>
+      <SectionHead icon="🌟" title="AI 资讯" moreHref="/news" />
+      <div className="rounded-2xl bg-white p-2 shadow-sm">
+        <ul className="m-0 list-none p-0">
+          {news.slice(0, 10).map((n) => {
+            const top = n.rank <= 3;
+            return (
+              <li
+                key={n.id}
+                className="group flex transform-gpu cursor-pointer items-center gap-3 rounded-lg border-b border-gray-50 px-3 py-3 transition-all duration-200 last:border-0 hover:bg-[var(--list-row-hover)] hover:pl-4 hover:shadow-sm"
+              >
+                <Link
+                  href={`/news/${n.id}`}
+                  className="flex w-full items-center gap-3"
+                >
+                  <span
+                    className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded text-xs font-bold transition-all duration-200 group-hover:scale-110 group-hover:shadow ${
+                      top ? "bg-[#ff4d4f] text-white" : "bg-gray-100 text-gray-500"
+                    }`}
+                  >
+                    {n.rank}
+                  </span>
+                  <span className="flex-1 truncate text-sm text-gray-700 transition-all duration-200 group-hover:translate-x-0.5 group-hover:font-medium hover-brand-title">
+                    {n.title}
+                  </span>
+                  {n.hot && <span>🔥</span>}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+/** 🔥 热门文章（首页右侧栏） */
+function HotArticlesSection({
+  articles
+}: {
+  articles: { id: string | number; title: string; viewNum: number; href: string }[];
+}) {
+  return (
+    <section>
+      <SectionHead icon="🔥" title="热门文章" moreHref="/essay" />
+      <div className="rounded-2xl bg-white p-2 shadow-sm">
+        <ul className="m-0 list-none p-0">
+          {articles.map((a, i) => {
+            const top = i < 3;
+            return (
+              <li
+                key={a.id}
+                className="group flex transform-gpu cursor-pointer items-center gap-3 rounded-lg border-b border-gray-50 px-3 py-3 transition-all duration-200 last:border-0 hover:bg-[var(--list-row-hover)] hover:pl-4 hover:shadow-sm"
+              >
+                <span
+                  className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded text-xs font-bold transition-all duration-200 group-hover:scale-110 group-hover:shadow ${
+                    top ? "bg-[#ff4d4f] text-white" : "bg-gray-100 text-gray-500"
+                  }`}
+                >
+                  {i + 1}
+                </span>
+                <Link
+                  href={a.href}
+                  className="flex-1 truncate text-sm text-gray-700 transition-all duration-200 group-hover:translate-x-0.5 group-hover:font-medium hover-brand-title"
+                >
+                  {a.title}
+                </Link>
+                <span className="flex-shrink-0 text-xs tabular-nums text-gray-400 transition-colors duration-200 hover-brand-title">
+                  {a.viewNum} 阅读
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+
 /** AI 提示词：绘图/文字两面板服务端直出 + 推荐内容（常驻） */
-function PromptSection() {
+function PromptSection({
+  prompts,
+  recommends
+}: {
+  prompts: HomePrompt[];
+  recommends: FeaturedItem[];
+}) {
   const kinds: Array<"draw" | "text"> = ["draw", "text"];
   const labelOf = (k: "draw" | "text") =>
     k === "draw" ? "AI 绘图提示词" : "AI 文字提示词";
@@ -130,7 +282,8 @@ function PromptSection() {
             className={k === "draw" ? "" : "hidden"}
           >
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {HOME_PROMPTS.filter((p) => p.kind === k)
+              {prompts
+                .filter((p) => p.kind === k)
                 .slice(0, 8)
                 .map((p) => (
                   <Link
@@ -167,7 +320,7 @@ function PromptSection() {
       <div className="mt-8 rounded-2xl bg-white p-5 shadow-sm">
         <div className="mb-3 font-semibold text-gray-900">推荐内容</div>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {RECOMMENDS.map((r) => (
+          {recommends.map((r) => (
             <div
               key={r.id}
               className="group hover-brand flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-700"
@@ -189,8 +342,8 @@ function PromptSection() {
   );
 }
 
-/** 学习教程：教程/课程/百科三面板服务端直出 + 右侧小助手二维码（常驻） */
-function ArticleSection() {
+/** 学习教程：教程/课程/百科三面板服务端直出 + 右侧小助手二维码（常驻，编辑精选静态内容） */
+function ArticleSection({ articles }: { articles: Article[] }) {
   const tabs = [
     { key: "tutorial", label: "AI 学习教程" },
     { key: "course", label: "AI 项目课程" },
@@ -221,7 +374,8 @@ function ArticleSection() {
                 className={t.key === "tutorial" ? "" : "hidden"}
               >
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  {ARTICLES.filter((a) => a.category === t.key)
+                  {articles
+                    .filter((a) => a.category === t.key)
                     .slice(0, 6)
                     .map((a) => (
                       <div
@@ -239,7 +393,7 @@ function ArticleSection() {
                             {a.title}
                           </div>
                           <div className="mt-2 text-xs text-gray-400">
-                            鱼皮 · 精选
+                            toolly · 精选
                           </div>
                         </div>
                       </div>
@@ -280,11 +434,83 @@ function ArticleSection() {
 }
 
 /**
- * 首页内容（Server Component）。
- * 所有区块（含各 Tab 默认/全部面板、搜索框、二维码）均在此服务端直出，
- * dev/生产都能拿到完整 SSR HTML；仅 Tab 切换由 <TabController/>（渲染 null）在客户端水合。
+ * 首页内容（Server Component，动态渲染）。
+ * 各板块数据服务端直连后端实时拉取（工具/社区/资讯/热门文章/提示词/分类），
+ * 任一接口异常均回退到内置 mock，保证首屏完整且绝不整页崩溃。
+ * 编辑精选、推荐内容、热门搜索、学习教程三栏为人工精选静态内容，沿用 mock。
  */
-export default function HomeMagazine() {
+export default async function HomeMagazine() {
+  const [toolsRaw, postsRaw, newsRaw, promptsRaw, catsRaw] = await Promise.all([
+    serverFetch<PageResult<AiTool>>("/ai_tool/list/page", {
+      current: 1,
+      pageSize: 600
+    }),
+    serverFetch<PageResult<AiPost>>("/ai_post/list/page", {
+      current: 1,
+      pageSize: 30
+    }),
+    serverFetch<PageResult<any>>("/ai_news/list/page", {
+      current: 1,
+      pageSize: 20
+    }),
+    serverFetch<PageResult<AiPrompt>>("/ai_prompt/list/page", {
+      current: 1,
+      pageSize: 30
+    }),
+    serverFetch<Category[]>("/category/list")
+  ]);
+
+  // 工具：实时优先，失败回退 mock
+  const tools: AiTool[] = toolsRaw?.records?.length ? toolsRaw.records : MOCK_TOOLS;
+
+  // 分类 Tab：实时分类（按 sort 排序），失败回退 mock
+  const toolTabs: { key: number; label: string }[] =
+    catsRaw && catsRaw.length
+      ? [...catsRaw]
+          .sort((a, b) => (a.sort || 0) - (b.sort || 0))
+          .map((c) => ({ key: c.id, label: c.name }))
+      : MOCK_TOOL_TABS;
+
+  // 社区帖子：实时优先
+  const posts: AiPost[] = postsRaw?.records?.length ? postsRaw.records : MOCK_POSTS;
+
+  // AI 资讯：实时优先，归一化 rank/hot（后端 sort 字段即排序位，hot=1 表示热门）
+  const news: NewsItem[] = (newsRaw?.records?.length ? newsRaw.records : MOCK_NEWS).map(
+    (n: any, i: number) => ({
+      id: n.id,
+      rank: typeof n.sort === "number" && n.sort > 0 ? n.sort : i + 1,
+      title: n.title,
+      hot: !!n.hot,
+      content: n.content,
+      summary: n.summary,
+      createTime: n.createTime
+    })
+  );
+
+  // 热门文章：实时帖子按阅读量降序取前 10，链接到帖子详情
+  const hotArticles = (
+    posts.length
+      ? [...posts].sort((a, b) => (b.viewNum || 0) - (a.viewNum || 0)).slice(0, 10)
+      : MOCK_HOT_ARTICLES
+  ).map((p: any) => ({
+    id: p.id,
+    title: p.title,
+    viewNum: p.viewNum || 0,
+    href: `/essay/${p.id}`
+  }));
+
+  // 首页提示词：实时提示词归一化为 绘图/文字（按 categoryName 判断）
+  const DRAW_KEYWORDS = ["绘画", "绘图", "图片", "图像", "设计", "插画", "二次元", "3D", "漫", "画"];
+  const homePrompts: HomePrompt[] = (
+    promptsRaw?.records?.length ? promptsRaw.records : MOCK_PROMPTS
+  ).map((p: any) => {
+    const cat = p.categoryName || "";
+    const kind: "draw" | "text" = DRAW_KEYWORDS.some((k) => cat.includes(k))
+      ? "draw"
+      : "text";
+    return { id: p.id, title: p.title, tags: cat ? [cat] : [], kind };
+  });
+
   return (
     <div className="pb-10">
       {/* ===== Hero 搜索区（文案静态 + 原生 form 无 JS 可提交） ===== */}
@@ -359,7 +585,7 @@ export default function HomeMagazine() {
                 ))}
               </div>
               <div className="mt-1.5 text-xs text-gray-400">
-                鱼皮团队严选 · 覆盖 AI 教程 / 工具实测 / 学习路线，每日更新
+                toolly 团队严选 · 覆盖 AI 教程 / 工具实测 / 学习路线，每日更新
               </div>
             </div>
           </div>
@@ -368,108 +594,58 @@ export default function HomeMagazine() {
         {/* ===== 最近浏览（localStorage，仅在有记录时显示） ===== */}
         <RecentTools />
 
-        {/* ===== AI 工具大全（全分类面板 SSR 直出） ===== */}
-        <ToolSection />
-
-        {/* ===== AI 交流社区 ===== */}
-        <section>
-          <SectionHead title="AI 交流社区" moreHref="/essay" />
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {AI_POSTS.map((p) => (
-              <Link
-                key={p.id}
-                href="/essay"
-                className="group hover-brand-lift block rounded-2xl bg-white p-5 shadow-sm"
-              >
-                <div className="mb-3 flex items-center gap-2">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-sm">
-                    👤
-                  </span>
-                  <span className="text-sm font-medium text-gray-800">
-                    {p.authorName}
-                  </span>
-                  <span className="text-xs text-gray-400">
-                    · {p.createTime.slice(5, 16)}
-                  </span>
-                </div>
-                <div className="mb-2 line-clamp-1 font-semibold text-gray-900 hover-brand-title">
-                  {p.title}
-                </div>
-                <div className="line-clamp-2 text-sm text-gray-500">
-                  {p.content}
-                </div>
-              </Link>
-            ))}
+        {/* ===== 双栏：AI 工具大全（主列） + 🌟 AI 资讯（右侧栏） ===== */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="min-w-0 lg:col-span-2">
+            <ToolSection tools={tools} toolTabs={toolTabs} />
           </div>
-        </section>
+          <aside className="min-w-0">
+            <NewsSection news={news} />
+          </aside>
+        </div>
 
-        {/* ===== 🌟 AI 资讯 ===== */}
-        <section>
-          <SectionHead icon="🌟" title="AI 资讯" moreHref="/news" />
-          <div className="rounded-2xl bg-white p-2 shadow-sm">
-            <ul className="m-0 list-none p-0">
-              {AI_NEWS.map((n) => {
-                const top = n.rank <= 3;
-                return (
-                  <li
-                    key={n.id}
-                    className="group flex transform-gpu cursor-pointer items-center gap-3 rounded-lg border-b border-gray-50 px-3 py-3 transition-all duration-200 last:border-0 hover:bg-[var(--list-row-hover)] hover:pl-4 hover:shadow-sm"
-                  >
-                    <span
-                      className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded text-xs font-bold transition-all duration-200 group-hover:scale-110 group-hover:shadow ${
-                        top ? "bg-[#ff4d4f] text-white" : "bg-gray-100 text-gray-500"
-                      }`}
-                    >
-                      {n.rank}
+        {/* ===== 双栏：AI 交流社区（主列） + 🔥 热门文章（右侧栏） ===== */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <section className="min-w-0 lg:col-span-2">
+            <SectionHead title="AI 交流社区" moreHref="/essay" />
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {posts.slice(0, 12).map((p) => (
+                <Link
+                  key={p.id}
+                  href={`/essay/${p.id}`}
+                  className="group hover-brand-lift block rounded-2xl bg-white p-5 shadow-sm"
+                >
+                  <div className="mb-3 flex items-center gap-2">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-sm">
+                      👤
                     </span>
-                    <span className="flex-1 truncate text-sm text-gray-700 transition-all duration-200 group-hover:translate-x-0.5 group-hover:font-medium hover-brand-title">
-                      {n.title}
+                    <span className="text-sm font-medium text-gray-800">
+                      {p.authorName}
                     </span>
-                    {n.hot && <span>🔥</span>}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </section>
-
-        {/* ===== 🔥 热门文章 ===== */}
-        <section>
-          <SectionHead icon="🔥" title="热门文章" moreHref="/essay" />
-          <div className="rounded-2xl bg-white p-2 shadow-sm">
-            <ul className="m-0 list-none p-0">
-              {HOT_ARTICLES.map((a, i) => {
-                const top = i < 3;
-                return (
-                  <li
-                    key={a.id}
-                    className="group flex transform-gpu cursor-pointer items-center gap-3 rounded-lg border-b border-gray-50 px-3 py-3 transition-all duration-200 last:border-0 hover:bg-[var(--list-row-hover)] hover:pl-4 hover:shadow-sm"
-                  >
-                    <span
-                      className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded text-xs font-bold transition-all duration-200 group-hover:scale-110 group-hover:shadow ${
-                        top ? "bg-[#ff4d4f] text-white" : "bg-gray-100 text-gray-500"
-                      }`}
-                    >
-                      {i + 1}
+                    <span className="text-xs text-gray-400">
+                      · {String(p.createTime || "").slice(5, 16)}
                     </span>
-                    <span className="flex-1 truncate text-sm text-gray-700 transition-all duration-200 group-hover:translate-x-0.5 group-hover:font-medium hover-brand-title">
-                      {a.title}
-                    </span>
-                    <span className="flex-shrink-0 text-xs tabular-nums text-gray-400 transition-colors duration-200 hover-brand-title">
-                      {a.viewNum} 阅读
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </section>
+                  </div>
+                  <h3 className="mb-2 line-clamp-1 font-semibold text-gray-900 hover-brand-title">
+                    {p.title}
+                  </h3>
+                  <div className="line-clamp-2 text-sm text-gray-500">
+                    {p.content}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+          <aside className="min-w-0">
+            <HotArticlesSection articles={hotArticles} />
+          </aside>
+        </div>
 
         {/* ===== AI 提示词（两面板 SSR 直出 + 推荐内容） ===== */}
-        <PromptSection />
+        <PromptSection prompts={homePrompts} recommends={RECOMMENDS} />
 
         {/* ===== 学习教程 / 项目课程 / 知识百科（三面板 SSR 直出 + 二维码） ===== */}
-        <ArticleSection />
+        <ArticleSection articles={MOCK_ARTICLES} />
       </div>
 
       {/* 唯一的客户端水合组件：接管所有 [data-tabs] 的切换行为 */}

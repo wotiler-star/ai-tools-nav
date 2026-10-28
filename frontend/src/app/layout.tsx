@@ -53,7 +53,13 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true
-  }
+  },
+  // Google Search Console 站点验证：拿到 GSC 提供的 token 后，通过环境变量
+  // NEXT_PUBLIC_GOOGLE_VERIFICATION 注入即可输出 <meta name="google-site-verification">，
+  // 留空则不输出该标签（不影响其他 SEO 配置）。
+  ...(process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION
+    ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION } }
+    : {})
 };
 
 export default function RootLayout({
@@ -89,8 +95,16 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="zh-CN">
+    // 内联脚本会在首屏渲染前改写 <html data-theme>，与 SSR 输出不一致，故抑制水合警告
+    <html lang="zh-CN" suppressHydrationWarning>
       <body>
+        {/* 主题预置：必须在页面内容之前同步执行，否则暗色用户会先看到一帧白屏再跳暗色。
+            未存过偏好时跟随系统 prefers-color-scheme。 */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("theme");if(t!=="dark"&&t!=="light"){t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.dataset.theme=t;}catch(e){document.documentElement.dataset.theme="light";}})();`
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

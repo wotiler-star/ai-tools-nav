@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 用户（手机号/微信/短信多方式登录，无 GitHub OAuth，对齐 ai.codefather.cn）
+ * 用户（手机号/微信/短信多方式登录，无 GitHub OAuth）
  */
 @Data
 @TableName("user")

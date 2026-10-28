@@ -7,7 +7,10 @@ import com.ainav.model.dto.ToolQueryRequest;
 import com.ainav.model.entity.AiTool;
 import com.ainav.model.vo.ToolDetailVO;
 import com.ainav.service.AiToolService;
+import com.ainav.service.cache.CacheKeys;
+import com.ainav.service.cache.RedisCacheService;
 import com.ainav.service.es.EsToolSearchService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -29,10 +32,28 @@ public class AiToolController {
     @Autowired(required = false)
     private EsToolSearchService esToolSearchService;
 
-    @Operation(summary = "AI 工具分页列表")
+    /** Redis 查询缓存：仅 prod profile 启用时存在（ainav.cache.enabled=true） */
+    @Autowired(required = false)
+    private RedisCacheService redisCacheService;
+
+    @Operation(summary = "AI 工具分页列表（prod profile 下走 Redis 缓存）")
     @GetMapping("/list/page")
     public BaseResponse<PageResult<AiTool>> listPage(ToolQueryRequest req) {
-        return ResultUtils.success(aiToolService.listToolByPage(req));
+        String key = RedisCacheService.buildKey(CacheKeys.TOOL_LIST,
+                req.getCategoryId(), req.getKeyword(), req.getTag(), req.getCurrent(), req.getPageSize());
+        if (redisCacheService != null) {
+            PageResult<AiTool> cached =
+                    redisCacheService.getGeneric(key, new TypeReference<PageResult<AiTool>>() {
+                    });
+            if (cached != null) {
+                return ResultUtils.success(cached);
+            }
+        }
+        PageResult<AiTool> data = aiToolService.listToolByPage(req);
+        if (redisCacheService != null) {
+            redisCacheService.put(key, data, CacheKeys.TTL_LIST);
+        }
+        return ResultUtils.success(data);
     }
 
     @Operation(summary = "AI 工具搜索（ES 优先，未启用 ES 或异常时回退 DB）")
@@ -52,12 +73,37 @@ public class AiToolController {
         req.setCurrent(current);
         req.setPageSize(pageSize);
         req.setKeyword(keyword);
-        return ResultUtils.success(aiToolService.listToolByPage(req));
+        // 搜索走独立前缀：关键词组合极多，混在列表前缀里会让失效成本变高
+        String key = RedisCacheService.buildKey(CacheKeys.TOOL_SEARCH, keyword, current, pageSize);
+        if (redisCacheService != null) {
+            PageResult<AiTool> cached =
+                    redisCacheService.getGeneric(key, new TypeReference<PageResult<AiTool>>() {
+                    });
+            if (cached != null) {
+                return ResultUtils.success(cached);
+            }
+        }
+        PageResult<AiTool> data = aiToolService.listToolByPage(req);
+        if (redisCacheService != null) {
+            redisCacheService.put(key, data, CacheKeys.TTL_LIST);
+        }
+        return ResultUtils.success(data);
     }
 
-    @Operation(summary = "AI 工具详情")
+    @Operation(summary = "AI 工具详情（prod profile 下走 Redis 缓存）")
     @GetMapping("/get")
     public BaseResponse<ToolDetailVO> get(@RequestParam Long id) {
-        return ResultUtils.success(aiToolService.getToolDetail(id));
+        String key = RedisCacheService.buildKey(CacheKeys.TOOL_DETAIL, id);
+        if (redisCacheService != null) {
+            ToolDetailVO cached = redisCacheService.get(key, ToolDetailVO.class);
+            if (cached != null) {
+                return ResultUtils.success(cached);
+            }
+        }
+        ToolDetailVO data = aiToolService.getToolDetail(id);
+        if (redisCacheService != null) {
+            redisCacheService.put(key, data, CacheKeys.TTL_DETAIL);
+        }
+        return ResultUtils.success(data);
     }
 }
