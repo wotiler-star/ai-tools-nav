@@ -482,12 +482,12 @@ export const AI_PROMPTS: AiPrompt[] = [
 ];
 
 // ===== 首页热门搜索词 =====
+// 对齐目标站：热门搜索固定 4 个（原 5 个）
 export const HOT_SEARCHES: string[] = [
   "Vibe Coding 教程",
   "AI 学习路线",
   "AI 项目",
-  "AI 编程",
-  "提示词大全"
+  "AI 编程"
 ];
 
 // ===== AI 资讯榜单（首页 1-10） =====
@@ -522,7 +522,8 @@ export const NEWS_FEATURED: FeaturedItem[] = [
   { id: 2, title: "AI 编程保姆级实战教程", href: "/resource/learn/2" },
   { id: 3, title: "主流大模型一手横向实测", href: "/resource/learn/3" },
   { id: 4, title: "AI 编辑器隐藏高效技巧", href: "/resource/learn/4" },
-  { id: 5, title: "从零学会 AI 编程的正确姿势", href: "/resource/learn/5" }
+  { id: 5, title: "从零学会 AI 编程的正确姿势", href: "/resource/learn/5" },
+  { id: 6, title: "AI 提示词编写实战指南", href: "/resource/learn/6" }
 ];
 
 // ===== 学习教程 / 项目课程 / 知识百科 =====
