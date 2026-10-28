@@ -137,10 +137,10 @@ function ToolSection({
             data-panel={t.key}
             className={t.key === toolTabs[0].key ? "" : "hidden"}
           >
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {tools
                 .filter((x) => x.categoryId === t.key)
-                .slice(0, 8)
+                .slice(0, 9)
                 .map((tool) => (
                   <ToolCard key={tool.id} tool={tool} />
                 ))}
@@ -156,6 +156,89 @@ function ToolSection({
     </section>
   );
 }
+
+/** 🌟 AI 资讯（首页右侧栏，收敛条数避免侧栏过长） */
+function NewsSection({ news }: { news: NewsItem[] }) {
+  return (
+    <section>
+      <SectionHead icon="🌟" title="AI 资讯" moreHref="/news" />
+      <div className="rounded-2xl bg-white p-2 shadow-sm">
+        <ul className="m-0 list-none p-0">
+          {news.slice(0, 10).map((n) => {
+            const top = n.rank <= 3;
+            return (
+              <li
+                key={n.id}
+                className="group flex transform-gpu cursor-pointer items-center gap-3 rounded-lg border-b border-gray-50 px-3 py-3 transition-all duration-200 last:border-0 hover:bg-[var(--list-row-hover)] hover:pl-4 hover:shadow-sm"
+              >
+                <Link
+                  href={`/news/${n.id}`}
+                  className="flex w-full items-center gap-3"
+                >
+                  <span
+                    className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded text-xs font-bold transition-all duration-200 group-hover:scale-110 group-hover:shadow ${
+                      top ? "bg-[#ff4d4f] text-white" : "bg-gray-100 text-gray-500"
+                    }`}
+                  >
+                    {n.rank}
+                  </span>
+                  <span className="flex-1 truncate text-sm text-gray-700 transition-all duration-200 group-hover:translate-x-0.5 group-hover:font-medium hover-brand-title">
+                    {n.title}
+                  </span>
+                  {n.hot && <span>🔥</span>}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+/** 🔥 热门文章（首页右侧栏） */
+function HotArticlesSection({
+  articles
+}: {
+  articles: { id: string | number; title: string; viewNum: number; href: string }[];
+}) {
+  return (
+    <section>
+      <SectionHead icon="🔥" title="热门文章" moreHref="/essay" />
+      <div className="rounded-2xl bg-white p-2 shadow-sm">
+        <ul className="m-0 list-none p-0">
+          {articles.map((a, i) => {
+            const top = i < 3;
+            return (
+              <li
+                key={a.id}
+                className="group flex transform-gpu cursor-pointer items-center gap-3 rounded-lg border-b border-gray-50 px-3 py-3 transition-all duration-200 last:border-0 hover:bg-[var(--list-row-hover)] hover:pl-4 hover:shadow-sm"
+              >
+                <span
+                  className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded text-xs font-bold transition-all duration-200 group-hover:scale-110 group-hover:shadow ${
+                    top ? "bg-[#ff4d4f] text-white" : "bg-gray-100 text-gray-500"
+                  }`}
+                >
+                  {i + 1}
+                </span>
+                <Link
+                  href={a.href}
+                  className="flex-1 truncate text-sm text-gray-700 transition-all duration-200 group-hover:translate-x-0.5 group-hover:font-medium hover-brand-title"
+                >
+                  {a.title}
+                </Link>
+                <span className="flex-shrink-0 text-xs tabular-nums text-gray-400 transition-colors duration-200 hover-brand-title">
+                  {a.viewNum} 阅读
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
 
 /** AI 提示词：绘图/文字两面板服务端直出 + 推荐内容（常驻） */
 function PromptSection({
@@ -511,110 +594,52 @@ export default async function HomeMagazine() {
         {/* ===== 最近浏览（localStorage，仅在有记录时显示） ===== */}
         <RecentTools />
 
-        {/* ===== AI 工具大全（全分类面板 SSR 直出） ===== */}
-        <ToolSection tools={tools} toolTabs={toolTabs} />
-
-        {/* ===== AI 交流社区 ===== */}
-        <section>
-          <SectionHead title="AI 交流社区" moreHref="/essay" />
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {posts.slice(0, 12).map((p) => (
-              <Link
-                key={p.id}
-                href={`/essay/${p.id}`}
-                className="group hover-brand-lift block rounded-2xl bg-white p-5 shadow-sm"
-              >
-                <div className="mb-3 flex items-center gap-2">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-sm">
-                    👤
-                  </span>
-                  <span className="text-sm font-medium text-gray-800">
-                    {p.authorName}
-                  </span>
-                  <span className="text-xs text-gray-400">
-                    · {String(p.createTime || "").slice(5, 16)}
-                  </span>
-                </div>
-                <div className="mb-2 line-clamp-1 font-semibold text-gray-900 hover-brand-title">
-                  {p.title}
-                </div>
-                <div className="line-clamp-2 text-sm text-gray-500">
-                  {p.content}
-                </div>
-              </Link>
-            ))}
+        {/* ===== 双栏：AI 工具大全（主列） + 🌟 AI 资讯（右侧栏） ===== */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="min-w-0 lg:col-span-2">
+            <ToolSection tools={tools} toolTabs={toolTabs} />
           </div>
-        </section>
+          <aside className="min-w-0">
+            <NewsSection news={news} />
+          </aside>
+        </div>
 
-        {/* ===== 🌟 AI 资讯 ===== */}
-        <section>
-          <SectionHead icon="🌟" title="AI 资讯" moreHref="/news" />
-          <div className="rounded-2xl bg-white p-2 shadow-sm">
-            <ul className="m-0 list-none p-0">
-              {news.map((n) => {
-                const top = n.rank <= 3;
-                return (
-                  <li
-                    key={n.id}
-                    className="group flex transform-gpu cursor-pointer items-center gap-3 rounded-lg border-b border-gray-50 px-3 py-3 transition-all duration-200 last:border-0 hover:bg-[var(--list-row-hover)] hover:pl-4 hover:shadow-sm"
-                  >
-                    <Link
-                      href={`/news/${n.id}`}
-                      className="flex w-full items-center gap-3"
-                    >
-                      <span
-                        className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded text-xs font-bold transition-all duration-200 group-hover:scale-110 group-hover:shadow ${
-                          top ? "bg-[#ff4d4f] text-white" : "bg-gray-100 text-gray-500"
-                        }`}
-                      >
-                        {n.rank}
-                      </span>
-                      <span className="flex-1 truncate text-sm text-gray-700 transition-all duration-200 group-hover:translate-x-0.5 group-hover:font-medium hover-brand-title">
-                        {n.title}
-                      </span>
-                      {n.hot && <span>🔥</span>}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </section>
-
-        {/* ===== 🔥 热门文章 ===== */}
-        <section>
-          <SectionHead icon="🔥" title="热门文章" moreHref="/essay" />
-          <div className="rounded-2xl bg-white p-2 shadow-sm">
-            <ul className="m-0 list-none p-0">
-              {hotArticles.map((a, i) => {
-                const top = i < 3;
-                return (
-                  <li
-                    key={a.id}
-                    className="group flex transform-gpu cursor-pointer items-center gap-3 rounded-lg border-b border-gray-50 px-3 py-3 transition-all duration-200 last:border-0 hover:bg-[var(--list-row-hover)] hover:pl-4 hover:shadow-sm"
-                  >
-                    <span
-                      className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded text-xs font-bold transition-all duration-200 group-hover:scale-110 group-hover:shadow ${
-                        top ? "bg-[#ff4d4f] text-white" : "bg-gray-100 text-gray-500"
-                      }`}
-                    >
-                      {i + 1}
+        {/* ===== 双栏：AI 交流社区（主列） + 🔥 热门文章（右侧栏） ===== */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <section className="min-w-0 lg:col-span-2">
+            <SectionHead title="AI 交流社区" moreHref="/essay" />
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {posts.slice(0, 12).map((p) => (
+                <Link
+                  key={p.id}
+                  href={`/essay/${p.id}`}
+                  className="group hover-brand-lift block rounded-2xl bg-white p-5 shadow-sm"
+                >
+                  <div className="mb-3 flex items-center gap-2">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-sm">
+                      👤
                     </span>
-                    <Link
-                      href={a.href}
-                      className="flex-1 truncate text-sm text-gray-700 transition-all duration-200 group-hover:translate-x-0.5 group-hover:font-medium hover-brand-title"
-                    >
-                      {a.title}
-                    </Link>
-                    <span className="flex-shrink-0 text-xs tabular-nums text-gray-400 transition-colors duration-200 hover-brand-title">
-                      {a.viewNum} 阅读
+                    <span className="text-sm font-medium text-gray-800">
+                      {p.authorName}
                     </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </section>
+                    <span className="text-xs text-gray-400">
+                      · {String(p.createTime || "").slice(5, 16)}
+                    </span>
+                  </div>
+                  <h3 className="mb-2 line-clamp-1 font-semibold text-gray-900 hover-brand-title">
+                    {p.title}
+                  </h3>
+                  <div className="line-clamp-2 text-sm text-gray-500">
+                    {p.content}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+          <aside className="min-w-0">
+            <HotArticlesSection articles={hotArticles} />
+          </aside>
+        </div>
 
         {/* ===== AI 提示词（两面板 SSR 直出 + 推荐内容） ===== */}
         <PromptSection prompts={homePrompts} recommends={RECOMMENDS} />
