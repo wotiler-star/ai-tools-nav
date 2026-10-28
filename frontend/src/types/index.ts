@@ -58,6 +58,8 @@ export interface NewsItem {
   content?: string; // 正文（markdown 源），缺省时由详情页合成
   summary?: string; // 摘要（可选）
   createTime?: string; // 发布时间（可选）
+  source?: string; // 来源（后端 ai_news.source，实时取数时填充）
+  viewNum?: number; // 热度/阅读量（后端 ai_news.viewNum，实时取数时填充）
 }
 
 /** 精选推荐卡片 */

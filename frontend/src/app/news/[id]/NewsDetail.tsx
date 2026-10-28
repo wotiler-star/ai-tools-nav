@@ -11,14 +11,11 @@ import {
 import { useToast, Toast } from "@/components/Toast";
 import Markdown from "@/components/Markdown";
 import { NewsItem } from "@/types";
-import { AI_NEWS } from "@/lib/mockData";
 import { SITE } from "@/config/site";
-
-const SOURCES = ["机器之心", "量子位", "InfoQ", "36氪", "新智元", "钛媒体"];
 
 function buildMarkdown(item: NewsItem): string {
   if (item.content?.trim()) return item.content;
-  const source = SOURCES[(item.rank - 1) % SOURCES.length];
+  const source = item.source || "AI 资讯";
   return [
     `## 事件概要`,
     `${item.title}。本条资讯来自 **${source}**，在 ${SITE.name} AI 资讯榜位列第 **${item.rank}** 位，是近期社区关注的热点之一。`,
@@ -31,15 +28,13 @@ function buildMarkdown(item: NewsItem): string {
   ].join("\n");
 }
 
-export default function NewsDetail({ item }: { item: NewsItem }) {
+export default function NewsDetail({ item, related }: { item: NewsItem; related: NewsItem[] }) {
   const { msg, show } = useToast();
   const [liked, setLiked] = useState(false);
 
-  const source = SOURCES[(item.rank - 1) % SOURCES.length];
+  const source = item.source || "AI 资讯";
   const mdSource = buildMarkdown(item);
-  const heat = 2000 - (item.rank - 1) * 130;
-
-  const related = AI_NEWS.filter((n) => n.id !== item.id).slice(0, 5);
+  const heat = typeof item.viewNum === "number" ? item.viewNum : 2000 - (item.rank - 1) * 130;
 
   const onShare = async () => {
     const url = window.location.href;
