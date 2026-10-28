@@ -43,9 +43,10 @@ export default function ToolExplorer({
   const categories = catRes?.data || [];
 
   // 工具列表（按分类 + 二级子标签 + 关键字过滤，与后端分页结构一致）
+  // 注意：必须显式传 pageSize，否则后端默认只返回 20 条，导致页面"工具显示不全、底部空白"
   const toolKey = `/ai_tool/list/page?categoryId=${activeCategoryId}&tag=${encodeURIComponent(
     activeTag || ""
-  )}&keyword=${encodeURIComponent(keyword)}`;
+  )}&keyword=${encodeURIComponent(keyword)}&pageSize=1000`;
   const { data: toolRes, isLoading } = useSWR<BaseResponsePage<AiTool>>(
     toolKey,
     swrFetcher

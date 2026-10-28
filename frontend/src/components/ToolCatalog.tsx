@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import useSWR from "swr";
@@ -23,6 +23,18 @@ export default function ToolCatalog() {
   const [keyword, setKeyword] = useState(urlKw);
   const [activeCat, setActiveCat] = useState<number>(0);
   const [activeTag, setActiveTag] = useState<string | null>(null);
+
+  // 顶部 sticky 导航区（分类行 + 搜索框 + 标签云）实际高度。
+  // 侧边栏 sticky top 必须大于 Header(64) + 导航区高度，否则滚动时侧栏顶部会被导航遮住。
+  const topNavRef = useRef<HTMLDivElement>(null);
+  const [navH, setNavH] = useState(190);
+  useEffect(() => {
+    const measure = () => setNavH(topNavRef.current?.offsetHeight || 190);
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [categories]);
+  const sideTop = 64 + navH + 12;
 
   useEffect(() => {
     setKeyword(urlKw);
@@ -116,14 +128,15 @@ export default function ToolCatalog() {
       let cur = 0;
       for (const c of categories) {
         const el = document.getElementById(`cat-${c.id}`);
-        if (el && el.getBoundingClientRect().top <= 150) cur = c.id;
+        // 阈值 = 侧栏 sticky top + 一点缓冲，保证当前区块标题不被 sticky 导航遮挡时就高亮
+        if (el && el.getBoundingClientRect().top <= sideTop + 20) cur = c.id;
       }
       setActiveCat(cur);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
-  }, [categories, kw, isFiltered]);
+  }, [categories, kw, isFiltered, sideTop]);
 
   const onSearch = (v: string) => {
     setKeyword(v);
@@ -140,6 +153,7 @@ export default function ToolCatalog() {
     <div style={{ background: "#f5f6f8", minHeight: "100vh" }}>
       {/* 顶部导航区：分类行 + 搜索框 + 全局标签云（sticky，对齐目标红框） */}
       <div
+        ref={topNavRef}
         style={{
           position: "sticky",
           top: 64,
@@ -271,14 +285,14 @@ export default function ToolCatalog() {
         <aside
           style={{
             position: "sticky",
-            top: 150,
+            top: sideTop,
             width: 220,
             flexShrink: 0,
             background: "var(--surface)",
             border: "1px solid var(--chip-border)",
             borderRadius: 12,
             padding: 12,
-            maxHeight: "calc(100vh - 170px)",
+            maxHeight: `calc(100vh - ${sideTop + 16}px)`,
             overflowY: "auto"
           }}
         >
@@ -355,7 +369,7 @@ export default function ToolCatalog() {
               <section
                 key={cat.id}
                 id={`cat-${cat.id}`}
-                style={{ marginBottom: 36, scrollMarginTop: 130 }}
+                style={{ marginBottom: 36, scrollMarginTop: sideTop + 20 }}
               >
                 <div style={sectionHeaderStyle}>
                   <h2 style={sectionTitleStyle}>{cat.name}</h2>
