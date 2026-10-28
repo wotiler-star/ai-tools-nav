@@ -265,8 +265,39 @@ export default function ToolCatalog() {
         </div>
       </div>
 
-      {/* 内容区 */}
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "20px 20px 60px" }}>
+      {/* 内容区：左侧 sticky 分类侧边栏 + 右侧工具网格 */}
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "20px 20px 60px", display: "flex", gap: 24, alignItems: "flex-start" }}>
+        {/* 左侧分类侧边栏（sticky，对齐红框“侧边栏导航”） */}
+        <aside
+          style={{
+            position: "sticky",
+            top: 150,
+            width: 220,
+            flexShrink: 0,
+            background: "var(--surface)",
+            border: "1px solid var(--chip-border)",
+            borderRadius: 12,
+            padding: 12,
+            maxHeight: "calc(100vh - 170px)",
+            overflowY: "auto"
+          }}
+        >
+          <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-2)", margin: "4px 8px 10px" }}>分类导航</div>
+          <button onClick={clearFilter} style={sideCatStyle(activeCat === 0 && !activeTag)}>全部</button>
+          {categories.map((c) => (
+            <div key={c.id}>
+              <button onClick={() => selectCat(c.id)} style={sideCatStyle(activeCat === c.id && !activeTag)}>{c.name}</button>
+              {activeCat === c.id && (c.tags || []).length > 0 && (
+                <div style={{ margin: "2px 0 6px 10px" }}>
+                  {c.tags!.map((t) => (
+                    <button key={t} onClick={() => selectTag(c.id, t)} style={sideTagStyle(activeTag === t && activeCat === c.id)}>{t}</button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </aside>
+        <div style={{ flex: 1, minWidth: 0 }}>
         {isLoading ? (
           <SkeletonGrid count={12} />
         ) : kw ? (
@@ -391,6 +422,7 @@ export default function ToolCatalog() {
             ))}
           </>
         )}
+        </div>
       </div>
     </div>
   );
@@ -475,6 +507,42 @@ function sectionTagStyle(active: boolean): React.CSSProperties {
     lineHeight: 1.7,
     transition: "all .15s",
     whiteSpace: "nowrap"
+  };
+}
+
+function sideCatStyle(active: boolean): React.CSSProperties {
+  return {
+    display: "block",
+    width: "100%",
+    textAlign: "left",
+    padding: "8px 10px",
+    marginBottom: 2,
+    borderRadius: 8,
+    border: "none",
+    background: active ? "var(--brand-tint)" : "transparent",
+    color: active ? BRAND : "var(--text-1)",
+    fontSize: 14,
+    fontWeight: active ? 600 : 500,
+    cursor: "pointer",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    transition: "all .15s"
+  };
+}
+
+function sideTagStyle(active: boolean): React.CSSProperties {
+  return {
+    display: "inline-block",
+    padding: "2px 8px",
+    margin: "0 4px 4px 0",
+    borderRadius: 4,
+    border: active ? `1px solid ${BRAND}` : "1px solid transparent",
+    background: active ? "var(--brand-tint)" : "transparent",
+    color: active ? BRAND : "var(--text-2)",
+    fontSize: 12,
+    cursor: "pointer",
+    transition: "all .15s"
   };
 }
 
