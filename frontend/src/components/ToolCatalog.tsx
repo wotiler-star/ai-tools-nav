@@ -28,12 +28,6 @@ export default function ToolCatalog() {
   // 侧边栏 sticky top 必须大于 Header(64) + 导航区高度，否则滚动时侧栏顶部会被导航遮住。
   const topNavRef = useRef<HTMLDivElement>(null);
   const [navH, setNavH] = useState(190);
-  useEffect(() => {
-    const measure = () => setNavH(topNavRef.current?.offsetHeight || 190);
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, [categories]);
   const sideTop = 64 + navH + 12;
 
   useEffect(() => {
@@ -49,6 +43,14 @@ export default function ToolCatalog() {
     () => (catRes?.data || []).slice().sort((a, b) => a.sort - b.sort),
     [catRes]
   );
+
+  // 测量顶部 sticky 导航区实际高度（分类数据加载完成后高度会变，故依赖 categories）
+  useEffect(() => {
+    const measure = () => setNavH(topNavRef.current?.offsetHeight || 190);
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [categories]);
 
   // 一次性拉取全部工具
   const { data: toolRes, isLoading } = useSWR<BaseResponsePage<AiTool>>(
@@ -71,6 +73,10 @@ export default function ToolCatalog() {
   }, [categories]);
 
   const isFiltered = activeCat > 0 || !!activeTag;
+  // 滚动高亮分类（仅驱动高亮样式，绝不参与筛选/渲染分支 —— activeCat 是用户点击筛选，
+  // 二者必须分离，否则滚动监听会把页面"锁"进单分类过滤视图，内容塌缩、无法继续下滚）
+  const [highlightCat, setHighlightCat] = useState<number>(0);
+  const shownCat = isFiltered ? activeCat : highlightCat;
 
   // 搜索结果（跨全部工具）
   const kw = keyword.trim().toLowerCase();
@@ -131,7 +137,7 @@ export default function ToolCatalog() {
         // 阈值 = 侧栏 sticky top + 一点缓冲，保证当前区块标题不被 sticky 导航遮挡时就高亮
         if (el && el.getBoundingClientRect().top <= sideTop + 20) cur = c.id;
       }
-      setActiveCat(cur);
+      setHighlightCat(cur);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
@@ -176,12 +182,12 @@ export default function ToolCatalog() {
           >
             <NavTab
               label="全部"
-              active={activeCat === 0 && !activeTag}
+              active={shownCat === 0 && !activeTag}
               onClick={clearFilter}
             />
             {categories.map((c) => {
               const hasTags = (c.tags || []).length > 0;
-              const catActive = activeCat === c.id && !activeTag;
+              const catActive = shownCat === c.id && !activeTag;
               return (
                 <div key={c.id} className="relative group">
                   <button
@@ -263,7 +269,7 @@ export default function ToolCatalog() {
               >
               <CloudChip
                 label="全部"
-                active={activeCat === 0 && !activeTag}
+                active={shownCat === 0 && !activeTag}
                 onClick={clearFilter}
               />
               {allTags.map((t) => (
@@ -297,14 +303,14 @@ export default function ToolCatalog() {
           }}
         >
           <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-2)", margin: "4px 8px 10px" }}>分类导航</div>
-          <button onClick={clearFilter} style={sideCatStyle(activeCat === 0 && !activeTag)}>全部</button>
+          <button onClick={clearFilter} style={sideCatStyle(shownCat === 0 && !activeTag)}>全部</button>
           {categories.map((c) => (
             <div key={c.id}>
-              <button onClick={() => selectCat(c.id)} style={sideCatStyle(activeCat === c.id && !activeTag)}>{c.name}</button>
-              {activeCat === c.id && (c.tags || []).length > 0 && (
+              <button onClick={() => selectCat(c.id)} style={sideCatStyle(shownCat === c.id && !activeTag)}>{c.name}</button>
+              {shownCat === c.id && (c.tags || []).length > 0 && (
                 <div style={{ margin: "2px 0 6px 10px" }}>
                   {c.tags!.map((t) => (
-                    <button key={t} onClick={() => selectTag(c.id, t)} style={sideTagStyle(activeTag === t && activeCat === c.id)}>{t}</button>
+                    <button key={t} onClick={() => selectTag(c.id, t)} style={sideTagStyle(activeTag === t && shownCat === c.id)}>{t}</button>
                   ))}
                 </div>
               )}
