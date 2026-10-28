@@ -40,7 +40,7 @@ export default function ToolCatalog() {
 
   // 一次性拉取全部工具
   const { data: toolRes, isLoading } = useSWR<BaseResponsePage<AiTool>>(
-    "/ai_tool/list/page?categoryId=0&pageSize=200",
+    "/ai_tool/list/page?categoryId=0&pageSize=1000",
     swrFetcher
   );
   const allTools = useMemo(() => toolRes?.data?.records || [], [toolRes]);
