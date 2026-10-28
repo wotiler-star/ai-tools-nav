@@ -29,6 +29,10 @@ import { SITE } from "@/config/site";
 const BRAND = "#3874F7";
 const BANNER_ICONS = ["💡", "🚀", "🎨", "🔥", "🛠️"];
 
+/** 去掉标题开头的 emoji 前缀（数据源标题形如「🎨国风插画提示词」，卡片上不再重复展示图标） */
+const stripEmojiPrefix = (s: string) =>
+  s.replace(/^[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\s]+/u, "");
+
 // ===== 服务端直连后端 =====
 // 本组件是 Server Component，运行在 Node 环境，无法使用浏览器侧的相对 /api，
 // 必须走容器内网地址。docker-compose 中后端服务名为 backend（端口 8123），
@@ -96,7 +100,7 @@ function SectionHead({
           href={moreHref}
           className="flex items-center gap-1 text-sm text-gray-500 hover:text-[#3874F7]"
         >
-          更多
+          查看更多
           <svg width="11" height="11" viewBox="0 0 1024 1024" fill="currentColor" aria-hidden>
             <path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 0 0 302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 0 0 0-50.4z" />
           </svg>
@@ -288,26 +292,36 @@ function PromptSection({
                 .map((p) => (
                   <Link
                     key={p.id}
-                    href="/painting"
-                    className="group hover-brand-lift block rounded-2xl bg-white p-4 shadow-sm"
+                    href={`/painting/template/${p.id}`}
+                    className="group hover-brand-lift block overflow-hidden rounded-2xl bg-white shadow-sm"
                   >
+                    {/* 封面：接口暂无 cover 字段，先用分类色渐变占位，后续接入真实封面替换 */}
                     <div
-                      className="mb-3 flex h-24 w-full items-center justify-center rounded-lg text-3xl transition-transform duration-200 group-hover:scale-105"
+                      className="flex h-32 w-full items-center justify-center text-4xl transition-transform duration-200 group-hover:scale-105"
                       style={{
-                        background: k === "draw" ? "var(--tint-pink)" : "var(--tint-blue)"
+                        background:
+                          k === "draw"
+                            ? "linear-gradient(135deg,#ffd9ea,#ffb6cf)"
+                            : "linear-gradient(135deg,#d3e4ff,#a9c6ff)"
                       }}
                     >
-                      {k === "draw" ? "🎨" : "✍️"}
+                      <span aria-hidden="true">{k === "draw" ? "🎨" : "✍️"}</span>
                     </div>
-                    <div className="line-clamp-1 font-medium text-gray-900 hover-brand-title">
-                      {p.title}
-                    </div>
-                    <div className="mt-2 flex flex-wrap gap-1">
-                      {p.tags.map((t) => (
-                        <span key={t} className="text-xs text-gray-400">
-                          #{t}
-                        </span>
-                      ))}
+                    <div className="p-4">
+                      <h3 className="line-clamp-1 text-sm font-semibold text-gray-900 hover-brand-title">
+                        {stripEmojiPrefix(p.title)}
+                      </h3>
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {p.tags.map((t) => (
+                          <span
+                            key={t}
+                            className="rounded px-1.5 py-0.5 text-xs"
+                            style={{ background: "var(--chip-bg)", color: "var(--chip-text)" }}
+                          >
+                            #{t}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </Link>
                 ))}
@@ -554,40 +568,37 @@ export default async function HomeMagazine() {
       </section>
 
       <div className="container-1200 mt-8 space-y-12">
-        {/* ===== 精选推荐 横幅 ===== */}
-        <section
-          className="rounded-2xl p-1 shadow-sm"
-          style={{ background: "var(--banner-bg)" }}
-        >
-          <div
-            className="flex items-start gap-3 rounded-xl px-4 py-3 backdrop-blur-sm max-[640px]:flex-col max-[640px]:items-start"
-            style={{ background: "var(--banner-inner)" }}
-          >
-            <span
-              className="mt-0.5 flex flex-shrink-0 items-center gap-1 rounded-md px-3 py-1.5 text-sm font-semibold text-white shadow-sm"
-              style={{ background: "linear-gradient(135deg,#3874F7,#7c3aed)" }}
-            >
-              ✨ 编辑精选
-            </span>
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-                {NEWS_FEATURED.map((f, idx) => (
-                  <Link
-                    key={f.id}
-                    href={f.href ?? "/resource/learn"}
-                    className="group flex items-center gap-1.5 text-sm text-gray-700 transition-all duration-200 hover:gap-2.5 hover:font-medium hover:text-[#3874F7]"
-                  >
-                    <span className="text-[#3874F7] transition-transform duration-200 group-hover:scale-125 group-hover:translate-x-0.5">
-                      {BANNER_ICONS[idx % BANNER_ICONS.length]}
-                    </span>
+        {/* ===== 精选推荐（6 张大图卡，对齐目标站） ===== */}
+        <section>
+          <SectionHead title="精选推荐" />
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+            {NEWS_FEATURED.slice(0, 6).map((f, idx) => (
+              <Link
+                key={f.id}
+                href={f.href ?? "/resource/learn"}
+                className="group hover-brand-lift block overflow-hidden rounded-2xl bg-white shadow-sm"
+              >
+                {/*
+                  封面：接口暂无 cover 字段，用 id 派生的确定性渐变（非随机数），
+                  保证 SSR 与客户端渲染结果一致、不会水合失配；后续接入真实封面时替换此处即可。
+                */}
+                <div
+                  className="flex h-28 w-full items-center justify-center text-3xl transition-transform duration-200 group-hover:scale-105"
+                  style={{
+                    background: `linear-gradient(135deg, hsl(${(f.id * 47) % 360} 78% 62%), hsl(${(f.id * 47 + 40) % 360} 72% 50%))`
+                  }}
+                >
+                  <span aria-hidden="true">
+                    {BANNER_ICONS[idx % BANNER_ICONS.length]}
+                  </span>
+                </div>
+                <div className="p-3">
+                  <h3 className="line-clamp-2 text-sm font-semibold text-gray-900 hover-brand-title">
                     {f.title}
-                  </Link>
-                ))}
-              </div>
-              <div className="mt-1.5 text-xs text-gray-400">
-                toolly 团队严选 · 覆盖 AI 教程 / 工具实测 / 学习路线，每日更新
-              </div>
-            </div>
+                  </h3>
+                </div>
+              </Link>
+            ))}
           </div>
         </section>
 
