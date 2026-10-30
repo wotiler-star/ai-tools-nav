@@ -64,9 +64,14 @@ export default function ToolCard({ tool }: { tool: AiTool }) {
           </div>
         )}
         <div style={{ minWidth: 0, flex: 1 }}>
-          <div
+          {/*
+            工具名用 h3：卡片在板块 h2 之下，构成 h1→h2→h3 的正确层级，便于搜索引擎与
+            读屏软件理解结构。显式 margin:0 + fontSize/fontWeight 抵消 h3 默认样式，保持视觉不变。
+          */}
+          <h3
             className="hover-brand-title"
             style={{
+              margin: 0,
               fontWeight: 600,
               fontSize: 14,
               color: "var(--text-1)",
@@ -76,7 +81,7 @@ export default function ToolCard({ tool }: { tool: AiTool }) {
             }}
           >
             {tool.name}
-          </div>
+          </h3>
           <div
             style={{
               marginTop: 3,
