@@ -2,14 +2,14 @@
 # AI 导航站 —— 一键部署脚本（腾讯云轻量应用服务器 / 任意 Linux + Docker 环境）
 # 前置：
 #   1. 服务器已装 docker + docker compose，防火墙放行 80/443
-#   2. 域名 www.startoday.cc / startoday.cc 的 A 记录已指向本机公网 IP
+#   2. 域名 www.toolly.cc / toolly.cc 的 A 记录已指向本机公网 IP
 # 用法：在服务器上 clone 本仓库后执行  bash deploy.sh
 
 set -euo pipefail
 
-DOMAIN="www.startoday.cc"
-EXTRA="startoday.cc"
-EMAIL="admin@startoday.cc"
+DOMAIN="www.toolly.cc"
+EXTRA="toolly.cc"
+EMAIL="admin@toolly.cc"
 COMPOSE="docker compose"
 
 echo "==> [1/5] 拉取最新代码"
