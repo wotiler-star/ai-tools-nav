@@ -35,10 +35,10 @@
 >   - 验证（REA 重采 Evidence）：首页 `h1=1/h2=5/h3=153`；分类页 `h1=1/h2=1/h3=42`；搜索页 `h1=1/h2=1/h3=20` —— 三页层级均完整无跳级
 >   - 注：h1 用视觉隐藏而非可见标题，因各页已有可见板块标题（SectionTitle h2），补 h1 仅补全语义层级、不改变版式
 > - 本地提交 `8d82705`；服务器提交 `e723ff7`；备份 `.bak_p0c_20261030-163350`
-> - ✅ **P0-D 社区板块改单列紧凑条目**（2026-10-30 完成；commit/push 进行中）
+> - ✅ **P0-D 社区板块改单列紧凑条目**（2026-10-30 完成；已 push GitHub main `e7a36c22`，待服务器 `bash deploy.sh` 部署）
 >   - 改动：`HomeMagazine.tsx` 社区区由 `md:grid-cols-2` 网格卡（`posts.slice(0,12)`）改为**单列紧凑横向条目**（`grid-cols-1` + 头像 / 作者·时间 / 标题 / 摘要 一行式），仅 `posts.slice(0,4)` 展示 3-4 条，对齐目标站 observed#6
->   - 验证：`next build` 通过（待跑）；复用既有 `Link/SectionHead/HotArticlesSection` 与 `p.authorName/createTime/title/content` 字段，无新增类型/导入；JSX 结构平衡
->   - 本地提交 `____`；服务器提交 `____`；备份 `.bak_p0d_*`
+>   - 验证：`next build` 通过（BUILD_ID 产出，无错误）；复用既有 `Link/SectionHead/HotArticlesSection` 与 `p.authorName/createTime/title/content` 字段，无新增类型/导入；JSX 结构平衡
+>   - 本地提交 `e2e914a`；远程提交 `e7a36c22`（tree `ea19c30b0c` 与本地 `e2e914a^{tree}` 字节级一致）；备份 `HomeMagazine.tsx.bak_p0d_20261030-224304`
 > - ✅ **P1 文案项**（23:55 完成）：精选标题「精选推荐」✓ /「查看更多」✓ / 热门搜索 4 个 ✓ / NEWS_FEATURED 6 条 ✓；P1-5 资讯 12 条 ✓、P1-6 热门文章侧栏 10 条、P1-7「全部提示词」保留自有
 > - 验证（Evidence `tall_toolly_p0b.ev.json`）：h2 含「精选推荐」、h3 0→**29**、提示词深链 11、热门搜索 4、`/news` 12 持平
 > - 本地提交 `bd23b5e`；服务器提交 `e07a8de`；备份 `.bak_p0b_*`
