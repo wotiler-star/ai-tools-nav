@@ -110,6 +110,26 @@ function SearchInner() {
 
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 20px" }}>
+      {/*
+        搜索结果页此前缺 h1：顶部 SectionTitle 是 h2，ToolCard/文章/提示词卡片均用 h3，
+        会形成 h2→h3 跳级。这里补一个视觉隐藏的 h1 作为页面主标题（与 ToolExplorer 同款
+        视觉隐藏写法），让 h1→h2(SectionTitle)→h3(卡片) 层级成立，版式不变。
+      */}
+      <h1
+        style={{
+          position: "absolute",
+          width: 1,
+          height: 1,
+          padding: 0,
+          margin: -1,
+          overflow: "hidden",
+          clip: "rect(0, 0, 0, 0)",
+          whiteSpace: "nowrap",
+          border: 0
+        }}
+      >
+        {keyword ? `搜索：${keyword}` : "搜索"}
+      </h1>
       <SectionTitle
         title={keyword ? `搜索：${keyword}` : "搜索"}
         extra={

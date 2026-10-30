@@ -77,6 +77,26 @@ export default function ToolExplorer({
       </aside>
 
       <section style={{ flex: 1, minWidth: 0 }}>
+        {/*
+          分类页此前没有任何 h1（页面直接是 <ToolExplorer/>），工具卡改 h3 后会形成
+          h2→h3 跳级。这里补一个视觉隐藏的 h1 作为页面主标题，既不改变版式，
+          也让 h1→h2(板块)→h3(工具名) 的层级成立。
+        */}
+        <h1
+          style={{
+            position: "absolute",
+            width: 1,
+            height: 1,
+            padding: 0,
+            margin: -1,
+            overflow: "hidden",
+            clip: "rect(0, 0, 0, 0)",
+            whiteSpace: "nowrap",
+            border: 0
+          }}
+        >
+          {title}
+        </h1>
         <SectionTitle
           title={title}
           extra={
