@@ -615,33 +615,35 @@ export default async function HomeMagazine() {
           </aside>
         </div>
 
-        {/* ===== 双栏：AI 交流社区（主列） + 🔥 热门文章（右侧栏） ===== */}
+        {/* ===== 双栏：AI 交流社区（主列，单列紧凑条目） + 🔥 热门文章（右侧栏） ===== */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <section className="min-w-0 lg:col-span-2">
             <SectionHead title="AI 交流社区" moreHref="/essay" />
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {posts.slice(0, 12).map((p) => (
+            {/* 对齐目标站：单列紧凑条目（头像 + 作者·时间 + 标题 + 摘要），仅展示 3-4 条 */}
+            <div className="grid grid-cols-1 gap-3">
+              {posts.slice(0, 4).map((p) => (
                 <Link
                   key={p.id}
                   href={`/essay/${p.id}`}
-                  className="group hover-brand-lift block rounded-2xl bg-white p-5 shadow-sm"
+                  className="group hover-brand-lift flex gap-3 rounded-2xl bg-white p-4 shadow-sm"
                 >
-                  <div className="mb-3 flex items-center gap-2">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-sm">
-                      👤
-                    </span>
-                    <span className="text-sm font-medium text-gray-800">
-                      {p.authorName}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      · {String(p.createTime || "").slice(5, 16)}
-                    </span>
-                  </div>
-                  <h3 className="mb-2 line-clamp-1 font-semibold text-gray-900 hover-brand-title">
-                    {p.title}
-                  </h3>
-                  <div className="line-clamp-2 text-sm text-gray-500">
-                    {p.content}
+                  <span
+                    className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-base"
+                    aria-hidden="true"
+                  >
+                    👤
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-1 flex items-center gap-2 text-xs text-gray-400">
+                      <span className="font-medium text-gray-700">{p.authorName}</span>
+                      <span>· {String(p.createTime || "").slice(5, 16)}</span>
+                    </div>
+                    <h3 className="line-clamp-1 font-semibold text-gray-900 hover-brand-title">
+                      {p.title}
+                    </h3>
+                    <div className="mt-0.5 line-clamp-1 text-sm text-gray-500">
+                      {p.content}
+                    </div>
                   </div>
                 </Link>
               ))}
