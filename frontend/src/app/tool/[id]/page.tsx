@@ -66,14 +66,20 @@ export default function ToolDetailPage() {
   const catName =
     CATEGORIES.find((c) => c.id === tool.categoryId)?.name ?? "AI 工具";
 
+  // 官网链接兜底：url 为空（如 56 条历史空缺数据）时回退到 Bing 搜索，避免「访问官网」死链
+  // 与 mcp / skills 详情页保持一致的处理方式
+  const officialUrl =
+    tool.url ||
+    `https://www.bing.com/search?q=${encodeURIComponent(tool.name + " 官网")}`;
+
   const toolJsonLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     name: tool.name,
     description: tool.description,
     applicationCategory: "AIApplication",
-    url: tool.url,
-    sameAs: tool.url,
+    url: officialUrl,
+    sameAs: officialUrl,
     keywords: tool.tags.join(", "),
     publisher: {
       "@type": "Organization",
@@ -206,7 +212,7 @@ export default function ToolDetailPage() {
             <a
               className="brand-btn"
               style={isMobile ? { flex: "1 1 100%", marginTop: 8 } : undefined}
-              href={tool.url}
+              href={officialUrl}
               target="_blank"
               rel="noopener noreferrer"
             >
