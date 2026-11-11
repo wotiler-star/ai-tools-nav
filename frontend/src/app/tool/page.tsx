@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ToolCatalog from "@/components/ToolCatalog";
+import ToolGrid from "@/components/ToolGrid";
 import type { AiTool, Category } from "@/types";
 
 export const metadata: Metadata = {
@@ -9,8 +10,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/tool" }
 };
 
-// 服务端直连后端（容器内网地址，与 HomeMagazine 同款），SSR 直出全部工具卡，SEO 友好。
-// 读取 searchParams 会自动让本页动态渲染；保留 force-dynamic 以确保每次都实时取数。
+// 读取 searchParams 自动让本页动态渲染；保留 force-dynamic 确保每次实时取数。
 export const dynamic = "force-dynamic";
 
 const SERVER_API = process.env.INTERNAL_API_BASE || "http://backend:8123";
@@ -25,7 +25,7 @@ interface PageResult<T> {
 
 /**
  * 服务端取数：统一拼装后端地址、8s 超时、异常兜底返回 null。
- * 任一接口异常均返回空数组，由客户端 SWR revalidate 兜底，绝不让整页崩溃。
+ * 任一接口异常均返回空数组，由服务端网格渲染空态，绝不让整页崩溃。
  */
 async function serverFetch<T = any>(
   path: string,
@@ -58,8 +58,13 @@ async function serverFetch<T = any>(
 export default async function ToolListPage({
   searchParams
 }: {
-  searchParams: { keyword?: string };
+  searchParams: { keyword?: string; cat?: string; tag?: string };
 }) {
+  const sp = searchParams || {};
+  const keyword = typeof sp.keyword === "string" ? sp.keyword : "";
+  const activeCat = Number(sp.cat) || 0;
+  const activeTag = typeof sp.tag === "string" ? sp.tag : "";
+
   const [toolRes, catRes] = await Promise.all([
     serverFetch<PageResult<AiTool>>("/ai_tool/list/page", {
       categoryId: 0,
@@ -71,15 +76,21 @@ export default async function ToolListPage({
 
   const initialTools: AiTool[] = toolRes?.records ?? [];
   const initialCategories: Category[] = catRes ?? [];
-  const initialKeyword = searchParams?.keyword || "";
 
-  // 注意：不再用 useSearchParams()，避免客户端组件触发 Suspense 降级导致卡片仅在客户端渲染。
-  // 初始 keyword 由服务端 searchParams 注入，ToolCatalog 在 SSR 阶段即可直出全部卡片 DOM（含 /tool/ID 链接），SEO 友好。
   return (
     <ToolCatalog
-      initialTools={initialTools}
-      initialCategories={initialCategories}
-      initialKeyword={initialKeyword}
-    />
+      categories={initialCategories}
+      activeCat={activeCat}
+      activeTag={activeTag}
+      keyword={keyword}
+    >
+      <ToolGrid
+        tools={initialTools}
+        categories={initialCategories}
+        keyword={keyword}
+        activeCat={activeCat}
+        activeTag={activeTag}
+      />
+    </ToolCatalog>
   );
 }
