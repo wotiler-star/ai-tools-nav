@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import useSWR from "swr";
 import { Input } from "antd";
@@ -17,14 +17,16 @@ const BRAND = "#3874F7";
 
 export default function ToolCatalog({
   initialTools = [],
-  initialCategories = []
+  initialCategories = [],
+  initialKeyword = ""
 }: {
   initialTools?: AiTool[];
   initialCategories?: Category[];
+  initialKeyword?: string;
 }) {
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const urlKw = searchParams.get("keyword") || "";
+  // 初始 keyword 由服务端 searchParams 注入（避免 useSearchParams 触发 SSR 降级）。
+  const urlKw = initialKeyword || "";
 
   const [keyword, setKeyword] = useState(urlKw);
   const [activeCat, setActiveCat] = useState<number>(0);
