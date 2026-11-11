@@ -10,7 +10,6 @@ import {
   HOT_ARTICLES as MOCK_HOT_ARTICLES,
   HOME_PROMPTS as MOCK_PROMPTS,
   HOT_SEARCHES,
-  NEWS_FEATURED,
   RECOMMENDS,
   TOOL_TABS as MOCK_TOOL_TABS
 } from "@/lib/mockData";
@@ -477,6 +476,15 @@ export default async function HomeMagazine() {
   // 工具：实时优先，失败回退 mock
   const tools: AiTool[] = toolsRaw?.records?.length ? toolsRaw.records : MOCK_TOOLS;
 
+  // 首页精选推荐：优先「推荐」工具，其次「热门」，再用其余补足 6 张；
+  // 用工具真实 logo 作封面（第一方资源、SSR 直出、无渐变占位），链接到工具详情页。
+  const featuredTools: AiTool[] = (() => {
+    const rec = tools.filter((t) => t.isRecommended);
+    const hot = tools.filter((t) => !t.isRecommended && t.isHot);
+    const rest = tools.filter((t) => !t.isRecommended && !t.isHot);
+    return [...rec, ...hot, ...rest].slice(0, 6);
+  })();
+
   // 分类 Tab：实时分类（按 sort 排序），失败回退 mock
   const toolTabs: { key: number; label: string }[] =
     catsRaw && catsRaw.length
@@ -568,33 +576,38 @@ export default async function HomeMagazine() {
       </section>
 
       <div className="container-1200 mt-8 space-y-12">
-        {/* ===== 精选推荐（6 张大图卡，对齐目标站） ===== */}
+        {/* ===== 精选推荐（6 张真实封面卡，SSR 直出，去掉渐变占位） ===== */}
         <section>
           <SectionHead title="精选推荐" />
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-            {NEWS_FEATURED.slice(0, 6).map((f, idx) => (
+            {featuredTools.map((t, idx) => (
               <Link
-                key={f.id}
-                href={f.href ?? "/resource/learn"}
+                key={t.id}
+                href={`/tool/${t.id}`}
                 className="group hover-brand-lift block overflow-hidden rounded-2xl bg-white shadow-sm"
               >
-                {/*
-                  封面：接口暂无 cover 字段，用 id 派生的确定性渐变（非随机数），
-                  保证 SSR 与客户端渲染结果一致、不会水合失配；后续接入真实封面时替换此处即可。
-                */}
+                {/* 真实封面：工具 logo（第一方资源），无 logo 时退化品牌图标，不再用渐变占位 */}
                 <div
-                  className="flex h-28 w-full items-center justify-center text-3xl transition-transform duration-200 group-hover:scale-105"
-                  style={{
-                    background: `linear-gradient(135deg, hsl(${(f.id * 47) % 360} 78% 62%), hsl(${(f.id * 47 + 40) % 360} 72% 50%))`
-                  }}
+                  className="flex h-28 w-full items-center justify-center overflow-hidden transition-transform duration-200 group-hover:scale-105"
+                  style={{ background: "var(--surface)", borderBottom: "1px solid var(--chip-border)" }}
                 >
-                  <span aria-hidden="true">
-                    {BANNER_ICONS[idx % BANNER_ICONS.length]}
-                  </span>
+                  {t.logo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={t.logo}
+                      alt={t.name}
+                      loading="lazy"
+                      style={{ width: 56, height: 56, objectFit: "contain" }}
+                    />
+                  ) : (
+                    <span className="text-3xl" aria-hidden="true">
+                      {BANNER_ICONS[idx % BANNER_ICONS.length]}
+                    </span>
+                  )}
                 </div>
                 <div className="p-3">
                   <h3 className="line-clamp-2 text-sm font-semibold text-gray-900 hover-brand-title">
-                    {f.title}
+                    {t.name}
                   </h3>
                 </div>
               </Link>

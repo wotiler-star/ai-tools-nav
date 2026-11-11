@@ -15,7 +15,13 @@ import { AiTool, BaseResponse, BaseResponsePage, Category } from "@/types";
 
 const BRAND = "#3874F7";
 
-export default function ToolCatalog() {
+export default function ToolCatalog({
+  initialTools = [],
+  initialCategories = []
+}: {
+  initialTools?: AiTool[];
+  initialCategories?: Category[];
+}) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const urlKw = searchParams.get("keyword") || "";
@@ -34,13 +40,17 @@ export default function ToolCatalog() {
     setKeyword(urlKw);
   }, [urlKw]);
 
-  // 分类
+  // 分类：服务端直出数据作为 fallbackData，保证 HTML 首屏即含分类（SSR），
+  // 客户端水合后再静默 revalidate，与后端保持一致。
   const { data: catRes } = useSWR<BaseResponse<Category[]>>(
     "/category/list",
-    swrFetcher
+    swrFetcher,
+    {
+      fallbackData: { code: 0, data: initialCategories, message: "" } as BaseResponse<Category[]>
+    }
   );
   const categories = useMemo(
-    () => (catRes?.data || []).slice().sort((a, b) => a.sort - b.sort),
+    () => (catRes?.data || initialCategories).slice().sort((a, b) => (a.sort || 0) - (b.sort || 0)),
     [catRes]
   );
 
@@ -52,12 +62,26 @@ export default function ToolCatalog() {
     return () => window.removeEventListener("resize", measure);
   }, [categories]);
 
-  // 一次性拉取全部工具
+  // 一次性拉取全部工具：服务端直出数据作为 fallbackData，HTML 首屏即渲染全部工具卡（SEO 友好），
+  // 客户端水合后静默 revalidate 保持一致。fallbackData 已存在 → isLoading 初始为 false，直接出卡片而非骨架屏。
   const { data: toolRes, isLoading } = useSWR<BaseResponsePage<AiTool>>(
     "/ai_tool/list/page?categoryId=0&pageSize=1000",
-    swrFetcher
+    swrFetcher,
+    {
+      fallbackData: {
+        code: 0,
+        message: "",
+        data: {
+          records: initialTools,
+          total: initialTools.length,
+          size: initialTools.length,
+          current: 1,
+          pages: 1
+        }
+      } as BaseResponsePage<AiTool>
+    }
   );
-  const allTools = useMemo(() => toolRes?.data?.records || [], [toolRes]);
+  const allTools = useMemo(() => toolRes?.data?.records || initialTools, [toolRes]);
 
   // 全局混合标签云：每个分类按 cloudCount 配额从 tags 数组前 N 个取（对齐目标红框第 3 行约 20 个精选）
   const allTags = useMemo(() => {
