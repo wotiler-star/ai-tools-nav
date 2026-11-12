@@ -542,16 +542,43 @@ export const ARTICLES: Article[] = [
   { id: 12, title: "向量数据库与 Embedding 入门", category: "wiki" }
 ];
 
+// ===== 提示词封面图池（逆向自目标站 ai.codefather.cn /painting 的 prompt-media CDN） =====
+// 目标站 /painting 全是「绘图案例」配图，无文字类封面，故仅 draw 类分配真实封面，
+// text 类留空走渐变兜底。图片由目标站 CDN 直链提供；组件侧做了 onError 渐变兜底，
+// 即便 CDN 对跨站请求拦截也不出现破图。
+export const PROMPT_COVERS: string[] = [
+  "https://pic.code-nav.cn/prompt-media/22/10296_1.webp",
+  "https://pic.code-nav.cn/prompt-media/23/17340_1.webp",
+  "https://pic.code-nav.cn/prompt-media/23/19237_1.webp",
+  "https://pic.code-nav.cn/prompt-media/23/19353_1.webp",
+  "https://pic.code-nav.cn/prompt-media/23/20045_1.webp",
+  "https://pic.code-nav.cn/prompt-media/23/20464_1.webp",
+  "https://pic.code-nav.cn/prompt-media/23/21924_1.webp",
+  "https://pic.code-nav.cn/prompt-media/23/21928_1.webp",
+  "https://pic.code-nav.cn/prompt-media/23/21966_1.webp",
+  "https://pic.code-nav.cn/prompt-media/23/22321_1.webp",
+  "https://pic.code-nav.cn/prompt-media/23/23152_1.webp",
+  "https://pic.code-nav.cn/prompt-media/23/23496_1.webp",
+  "https://pic.code-nav.cn/prompt-media/23/23689_1.webp",
+  "https://pic.code-nav.cn/prompt-media/23/23709_1.webp",
+  "https://pic.code-nav.cn/prompt-media/23/23855_1.webp",
+  "https://pic.code-nav.cn/prompt-media/23/23894_1.webp",
+  "https://pic.code-nav.cn/prompt-media/23/23931_1.webp",
+  "https://pic.code-nav.cn/prompt-media/23/24056_1.webp",
+  "https://pic.code-nav.cn/prompt-media/23/24092_1.webp",
+  "https://pic.code-nav.cn/prompt-media/23/24277_1.webp"
+];
+
 // ===== 首页提示词（绘图 / 文字） =====
 export const HOME_PROMPTS: HomePrompt[] = [
-  { id: 1, title: "可爱风格科普插画", tags: ["可爱", "漫画"], kind: "draw" },
-  { id: 2, title: "城市窗外风景照", tags: ["风景", "写实"], kind: "draw" },
-  { id: 3, title: "关键角色人物关系图", tags: ["电影", "设计"], kind: "draw" },
-  { id: 4, title: "复古怀旧手绘插画", tags: ["复古", "手绘"], kind: "draw" },
-  { id: 5, title: "水彩墨水风格", tags: ["水彩", "淡彩"], kind: "draw" },
-  { id: 6, title: "简约手绘涂鸦风插画", tags: ["手绘", "涂鸦"], kind: "draw" },
-  { id: 7, title: "黏土定格动画风科普插图", tags: ["黏土", "萌趣"], kind: "draw" },
-  { id: 8, title: "奶油色调温馨插画", tags: ["奶油色", "治愈"], kind: "draw" },
+  { id: 1, title: "可爱风格科普插画", tags: ["可爱", "漫画"], kind: "draw", cover: PROMPT_COVERS[0] },
+  { id: 2, title: "城市窗外风景照", tags: ["风景", "写实"], kind: "draw", cover: PROMPT_COVERS[1] },
+  { id: 3, title: "关键角色人物关系图", tags: ["电影", "设计"], kind: "draw", cover: PROMPT_COVERS[2] },
+  { id: 4, title: "复古怀旧手绘插画", tags: ["复古", "手绘"], kind: "draw", cover: PROMPT_COVERS[3] },
+  { id: 5, title: "水彩墨水风格", tags: ["水彩", "淡彩"], kind: "draw", cover: PROMPT_COVERS[4] },
+  { id: 6, title: "简约手绘涂鸦风插画", tags: ["手绘", "涂鸦"], kind: "draw", cover: PROMPT_COVERS[5] },
+  { id: 7, title: "黏土定格动画风科普插图", tags: ["黏土", "萌趣"], kind: "draw", cover: PROMPT_COVERS[6] },
+  { id: 8, title: "奶油色调温馨插画", tags: ["奶油色", "治愈"], kind: "draw", cover: PROMPT_COVERS[7] },
   { id: 9, title: "爆款社交种草文案", tags: ["营销", "文案"], kind: "text" },
   { id: 10, title: "代码审查专家", tags: ["编程", "架构"], kind: "text" },
   { id: 11, title: "周报生成器", tags: ["办公", "效率"], kind: "text" },
@@ -923,19 +950,19 @@ export const LEARN_HOT_TOOLS: string[] = [
 ];
 
 // ===== 提示词模板（/painting 页，绘图 / 文字） =====
-function pt(id: number, title: string, tags: string[], kind: "draw" | "text", useCount: number): PromptTemplate {
-  return { id, title, tags, kind, useCount };
+function pt(id: number, title: string, tags: string[], kind: "draw" | "text", useCount: number, cover?: string): PromptTemplate {
+  return { id, title, tags, kind, useCount, cover };
 }
 
 export const PROMPT_TEMPLATES: PromptTemplate[] = [
-  pt(1, "城市窗外风景照", ["风景", "写实"], "draw", 3200),
-  pt(2, "关键角色人物关系图", ["电影", "设计"], "draw", 2900),
-  pt(3, "可爱风格科普插画", ["可爱", "漫画"], "draw", 2600),
-  pt(4, "复古怀旧手绘插画", ["复古", "手绘"], "draw", 2100),
-  pt(5, "水彩墨水风格", ["水彩", "淡彩"], "draw", 1900),
-  pt(6, "黏土定格动画风插图", ["黏土", "萌趣"], "draw", 1700),
-  pt(7, "奶油色调温馨插画", ["奶油色", "治愈"], "draw", 1500),
-  pt(8, "极简线条图标", ["极简", "图标"], "draw", 1300),
+  pt(1, "城市窗外风景照", ["风景", "写实"], "draw", 3200, PROMPT_COVERS[8]),
+  pt(2, "关键角色人物关系图", ["电影", "设计"], "draw", 2900, PROMPT_COVERS[9]),
+  pt(3, "可爱风格科普插画", ["可爱", "漫画"], "draw", 2600, PROMPT_COVERS[10]),
+  pt(4, "复古怀旧手绘插画", ["复古", "手绘"], "draw", 2100, PROMPT_COVERS[11]),
+  pt(5, "水彩墨水风格", ["水彩", "淡彩"], "draw", 1900, PROMPT_COVERS[12]),
+  pt(6, "黏土定格动画风插图", ["黏土", "萌趣"], "draw", 1700, PROMPT_COVERS[13]),
+  pt(7, "奶油色调温馨插画", ["奶油色", "治愈"], "draw", 1500, PROMPT_COVERS[14]),
+  pt(8, "极简线条图标", ["极简", "图标"], "draw", 1300, PROMPT_COVERS[15]),
   pt(9, "爆款社交种草文案", ["营销", "文案"], "text", 3400),
   pt(10, "代码审查专家", ["编程", "架构"], "text", 2800),
   pt(11, "周报生成器", ["办公", "效率"], "text", 2200),

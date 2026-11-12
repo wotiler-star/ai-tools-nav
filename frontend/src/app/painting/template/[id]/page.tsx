@@ -138,6 +138,20 @@ export default function Page({ params }: { params: { id: string } }) {
         <span className="text-gray-600">模板详情</span>
       </nav>
 
+      {/* 封面横幅：模板含 cover 时展示，加载失败则隐藏（不破图） */}
+      {t.cover && (
+        <div className="mb-6 overflow-hidden rounded-2xl" style={{ height: 220 }}>
+          <img
+            src={t.cover}
+            alt={t.title}
+            className="h-full w-full object-cover"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).style.display = "none";
+            }}
+          />
+        </div>
+      )}
+
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
           {/* 标题 + 标签 */}
