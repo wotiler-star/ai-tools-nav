@@ -6,6 +6,7 @@ import { Input, Tag, App, Spin } from "antd";
 import { SearchOutlined, FireOutlined, CopyOutlined } from "@ant-design/icons";
 import { AiPrompt, BaseResponsePage } from "@/types";
 import { swrFetcher } from "@/lib/api";
+import { PROMPT_COVERS } from "@/lib/mockData";
 import FavoriteButton from "@/components/FavoriteButton";
 
 const BRAND = "#3874F7";
@@ -111,7 +112,10 @@ export default function PaintingPage() {
             gap: 16
           }}
         >
-          {list.map((p) => (
+          {list.map((p, i) => {
+            const isDraw = /绘画|绘图|图片|图像|设计|插画|二次元|3D|漫|画/.test(p.categoryName || "");
+            const cover = isDraw ? PROMPT_COVERS[i % PROMPT_COVERS.length] : undefined;
+            return (
             <div
               key={p.id}
               onClick={() => onCopy(p)}
@@ -123,9 +127,10 @@ export default function PaintingPage() {
               }}
               className="group hover-brand tool-card"
             >
-              {/* 封面 */}
+              {/* 封面：draw 类配真实图，加载失败回退渐变；text 类保留渐变 + 图标 */}
               <div
                 style={{
+                  position: "relative",
                   height: 130,
                   background: `linear-gradient(135deg, ${colorFromName(
                     p.categoryName || p.title
@@ -135,10 +140,22 @@ export default function PaintingPage() {
                   justifyContent: "center",
                   color: "#fff",
                   fontSize: 30,
-                  fontWeight: 800
+                  fontWeight: 800,
+                  overflow: "hidden"
                 }}
               >
-                <CopyOutlined />
+                {cover && (
+                  <img
+                    src={cover}
+                    alt={p.title}
+                    loading="lazy"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).style.display = "none";
+                    }}
+                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                )}
+                <CopyOutlined style={{ position: "relative" }} />
               </div>
               <div style={{ padding: 14 }}>
                 <h3
@@ -182,7 +199,8 @@ export default function PaintingPage() {
                 </div>
               </div>
             </div>
-          ))}
+          );
+          })}
 
           {list.length === 0 && (
             <div style={{ gridColumn: "1 / -1", textAlign: "center", color: "#9ca3af", padding: 40 }}>

@@ -84,6 +84,7 @@ export interface HomePrompt {
   title: string;
   tags: string[];
   kind: "draw" | "text";
+  cover?: string; // 封面图（可选，逆向自目标站 prompt-media CDN）
 }
 
 /** MCP 服务器（/mcp 页） */

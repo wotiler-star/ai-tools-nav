@@ -296,9 +296,9 @@ function PromptSection({
                       href={`/painting/template/${p.id}`}
                       className="group hover-brand-lift block h-full overflow-hidden rounded-2xl bg-white shadow-sm"
                     >
-                      {/* 封面：接口暂无 cover 字段，先用分类色渐变占位，后续接入真实封面替换 */}
+                      {/* 封面：有 cover 用真实图，加载失败则隐藏 img 让分类渐变透出（不破图） */}
                       <div
-                        className="flex h-32 w-full items-center justify-center text-4xl transition-transform duration-200 group-hover:scale-105"
+                        className="relative flex h-32 w-full items-center justify-center overflow-hidden text-4xl transition-transform duration-200 group-hover:scale-105"
                         style={{
                           background:
                             k === "draw"
@@ -306,7 +306,20 @@ function PromptSection({
                               : "linear-gradient(135deg,#d3e4ff,#a9c6ff)"
                         }}
                       >
-                        <span aria-hidden="true">{k === "draw" ? "🎨" : "✍️"}</span>
+                        {p.cover && (
+                          <img
+                            src={p.cover}
+                            alt={p.title}
+                            loading="lazy"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).style.display = "none";
+                            }}
+                            className="absolute inset-0 h-full w-full object-cover"
+                          />
+                        )}
+                        {!p.cover && (
+                          <span aria-hidden="true">{k === "draw" ? "🎨" : "✍️"}</span>
+                        )}
                       </div>
                       <div className="p-4">
                         <h3 className="line-clamp-1 text-sm font-semibold text-gray-900 hover-brand-title">
@@ -533,7 +546,7 @@ export default async function HomeMagazine() {
     const kind: "draw" | "text" = DRAW_KEYWORDS.some((k) => cat.includes(k))
       ? "draw"
       : "text";
-    return { id: p.id, title: p.title, tags: cat ? [cat] : [], kind };
+    return { id: p.id, title: p.title, tags: cat ? [cat] : [], kind, cover: p.cover };
   });
 
   return (
