@@ -79,6 +79,27 @@ a {
   box-shadow: 0 4px 14px rgba(56, 116, 247, 0.1);
 }
 
+/* AI 知识库导航：目录内的专栏链接 hover 反馈（品牌色 + 浅蓝底） */
+.kb-nav-link {
+  transition: color 0.15s ease, background-color 0.15s ease;
+  border-radius: 6px;
+  padding: 2px 6px;
+  margin: 0 -6px;
+}
+.kb-nav-link:hover {
+  color: #3874f7 !important;
+  background-color: #f1f5ff;
+}
+
+/* AI 知识库导航：精选教程「学习路径推荐」卡片 hover 上浮 */
+.kb-path-link {
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.kb-path-link:hover {
+  background: rgba(255, 255, 255, 0.22) !important;
+  transform: translateY(-1px);
+}
+
 /* 自定义滚动条 */
 ::-webkit-scrollbar {
   width: 8px;
