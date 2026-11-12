@@ -8,6 +8,7 @@ import { AiPrompt, BaseResponsePage } from "@/types";
 import { swrFetcher } from "@/lib/api";
 import { PROMPT_COVERS } from "@/lib/mockData";
 import FavoriteButton from "@/components/FavoriteButton";
+import SafeCover from "@/components/SafeCover";
 
 const BRAND = "#3874F7";
 
@@ -145,13 +146,9 @@ export default function PaintingPage() {
                 }}
               >
                 {cover && (
-                  <img
+                  <SafeCover
                     src={cover}
                     alt={p.title}
-                    loading="lazy"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).style.display = "none";
-                    }}
                     style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
                   />
                 )}

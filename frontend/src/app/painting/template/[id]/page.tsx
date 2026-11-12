@@ -4,6 +4,7 @@ import { PROMPT_TEMPLATES } from "@/lib/mockData";
 import { PAINTING_GALLERY } from "@/lib/paintingGallery";
 import { SITE } from "@/config/site";
 import CopyButton from "@/components/CopyButton";
+import SafeCover from "@/components/SafeCover";
 
 const BRAND = "#1777ff";
 
@@ -141,13 +142,10 @@ export default function Page({ params }: { params: { id: string } }) {
       {/* 封面横幅：模板含 cover 时展示，加载失败则隐藏（不破图） */}
       {t.cover && (
         <div className="mb-6 overflow-hidden rounded-2xl" style={{ height: 220 }}>
-          <img
+          <SafeCover
             src={t.cover}
             alt={t.title}
             className="h-full w-full object-cover"
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).style.display = "none";
-            }}
           />
         </div>
       )}

@@ -2,6 +2,7 @@ import Link from "next/link";
 import RecentTools from "@/components/RecentTools";
 import TabController from "./TabController";
 import ToolCard from "@/components/ToolCard";
+import SafeCover from "@/components/SafeCover";
 import {
   AI_NEWS as MOCK_NEWS,
   AI_POSTS as MOCK_POSTS,
@@ -307,13 +308,9 @@ function PromptSection({
                         }}
                       >
                         {p.cover && (
-                          <img
+                          <SafeCover
                             src={p.cover}
                             alt={p.title}
-                            loading="lazy"
-                            onError={(e) => {
-                              (e.currentTarget as HTMLImageElement).style.display = "none";
-                            }}
                             className="absolute inset-0 h-full w-full object-cover"
                           />
                         )}
