@@ -138,9 +138,13 @@ export default function McpPage() {
                 </div>
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontWeight: 600, fontSize: 15 }} className="hover-brand-title">{m.name}</div>
-                  <Tag color="blue" style={{ marginTop: 2, fontSize: 11 }}>
-                    {m.tag}
-                  </Tag>
+                  <div style={{ marginTop: 4, display: "flex", flexWrap: "wrap", gap: 4 }}>
+                    {(m.tags || [m.tag]).map((t: string) => (
+                      <Tag key={t} color="blue" style={{ margin: 0, fontSize: 11 }}>
+                        {t}
+                      </Tag>
+                    ))}
+                  </div>
                 </div>
               </div>
               <div style={{ fontSize: 13, color: "#4e5969", lineHeight: 1.7, minHeight: 44 }}>

@@ -90,10 +90,11 @@ export interface HomePrompt {
 export interface McpServer {
   id: number;
   name: string;
-  tag: string; // 一级标签，如 data-extraction / AI
-  category: string; // 所属分类
+  tag: string; // 一级标签（= tags[0]，向后兼容）
+  category: string; // 所属主分类（用于分类 Tab 过滤）
   description: string;
-  url?: string; // 官方地址（可选，缺省走搜索兜底）
+  tags?: string[]; // 全部分类标签（多标签，卡片内逐条展示）
+  url?: string; // 官方/详情地址（可选）
   logo?: string; // 官方 logo 地址（可选）
 }
 

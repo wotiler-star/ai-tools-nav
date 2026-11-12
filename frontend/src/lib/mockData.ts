@@ -603,51 +603,54 @@ export const TOOL_TABS: { key: number; label: string }[] = [
   { key: 14, label: "AI应用" }
 ];
 
-// ===== MCP 服务器（/mcp 页，分类对齐真站） =====
+// ===== MCP 服务器（/mcp 页，1:1 对齐 ai.codefather.cn/mcp 真实精选列表 · 2026-11-12） =====
+// category = 主分类（顶部分类 Tab 过滤用）；tags = 卡片内展示的全部标签（多标签）
 export const MCP_CATEGORIES: string[] = [
   "开发工具",
   "研究与数据",
-  "云平台",
-  "数据库",
-  "知识与内容管理",
-  "自主智能体",
-  "分析",
   "安全",
+  "分析",
   "浏览器自动化",
-  "娱乐与媒体",
-  "金融",
-  "通信",
-  "生活管理",
-  "监控",
-  "系统自动化",
-  "项目管理",
-  "云存储",
-  "版本控制"
+  "云平台",
+  "通信"
 ];
 
-function mcp(id: number, name: string, tag: string, category: string, description: string): McpServer {
-  return { id, name, tag, category, description };
+function mcp(
+  id: number,
+  name: string,
+  category: string,
+  description: string,
+  tags: string[],
+  url?: string
+): McpServer {
+  return { id, name, tag: tags[0] || category, category, description, tags, url };
 }
 
 export const MCP_SERVERS: McpServer[] = [
-  mcp(1, "Playwright MCP", "浏览器自动化", "浏览器自动化", "驱动浏览器完成页面访问、截图、表单填写等自动化操作。"),
-  mcp(2, "Context7 MCP", "研究与数据", "研究与数据", "把最新的库文档与代码示例直接注入到 LLM 的上下文中。"),
-  mcp(3, "Notion MCP", "知识与内容管理", "知识与内容管理", "读取、搜索并管理 Notion 页面与数据库内容。"),
-  mcp(4, "GitLab MCP", "版本控制", "版本控制", "查询仓库、合并请求与流水线，辅助代码协作。"),
-  mcp(5, "Chrome DevTools MCP", "浏览器自动化", "浏览器自动化", "通过 DevTools 协议调试页面、抓取性能与网络数据。"),
-  mcp(6, "GitHub MCP", "版本控制", "版本控制", "管理 Issue、PR 与仓库文件，打通 AI 与代码托管。"),
-  mcp(7, "Filesystem MCP", "系统自动化", "系统自动化", "在受控目录内读写文件，作为 Agent 的本地能力。"),
-  mcp(8, "PostgreSQL MCP", "数据库", "数据库", "以只读方式查询数据库，安全地回答数据问题。"),
-  mcp(9, "Slack MCP", "通信", "通信", "收发消息、查询频道，把 AI 接入团队沟通。"),
-  mcp(10, "AWS MCP", "云平台", "云平台", "查询与管理云资源，辅助运维与成本分析。"),
-  mcp(11, "Sentry MCP", "监控", "监控", "拉取错误与性能事件，帮助定位线上问题。"),
-  mcp(12, "Stripe MCP", "金融", "金融", "查询交易、订阅与账单等支付数据。"),
-  mcp(13, "Google Drive MCP", "云存储", "云存储", "检索并读取云端文档，作为知识来源。"),
-  mcp(14, "Puppeteer MCP", "浏览器自动化", "浏览器自动化", "无头浏览器自动化，适合爬取与端到端测试。"),
-  mcp(15, "Jira MCP", "项目管理", "项目管理", "查询与更新任务、看板，辅助研发管理。"),
-  mcp(16, "Elasticsearch MCP", "数据库", "数据库", "全文检索与聚合分析，服务知识问答场景。"),
-  mcp(17, "Fetch MCP", "研究与数据", "研究与数据", "抓取网页并转为可读文本，供模型理解引用。"),
-  mcp(18, "Memory MCP", "自主智能体", "自主智能体", "为 Agent 提供长期记忆存取能力。")
+  mcp(1, "n8n", "开发工具", "用拖拽+代码组合搭建自动化流程，连私有部署和AI集成都安排得明明白白。", ["开发工具", "命令行工具"], "https://ai.codefather.cn/mcp/2010664903835574277"),
+  mcp(2, "MCP Toolbox For Databases", "开发工具", "用自然语言操作数据库，AI写SQL、管表、建索引，开发快到飞起。", ["开发工具"], "https://ai.codefather.cn/mcp/2010664905790119943"),
+  mcp(3, "Context7", "开发工具", "将最新的库文档和代码示例直接获取到 LLM 的 prompts 中。", ["开发工具", "AI"], "https://ai.codefather.cn/mcp/2010664905790119939"),
+  mcp(4, "Bright Data MCP", "研究与数据", "查天气、抓市场数据，AI直接读网页做决策，省时又高效。", ["研究与数据", "scraping"], "https://ai.codefather.cn/mcp/2010664902036217864"),
+  mcp(5, "Apify MCP Server", "浏览器自动化", "让 AI 代理一键调用 Apify 海量现成爬虫，轻松抓取社交、电商、地图等任意网站数据。", ["浏览器自动化"], "https://ai.codefather.cn/mcp/2111533207756259329"),
+  mcp(6, "XcodeBuildMCP", "开发工具", "用AI直接操作Xcode项目，构建、清理、运行模拟器全都能一句话搞定。", ["开发工具", "xcode"], "https://ai.codefather.cn/mcp/2010664904850595847"),
+  mcp(7, "🛡️ A.I.G（AI-Infra-Guard）", "安全", "一键扫描本地MCP服务器，自动揪出配置错误、接口暴露等AI基础设施安全风险。", ["安全"], "https://ai.codefather.cn/mcp/2117939930272405739"),
+  mcp(8, "Dbhub", "分析", "提供一个实现 Model Context Protocol（MCP）服务端接口的通用数据库网关。", ["分析", "AI"], "https://ai.codefather.cn/mcp/2010664903055433737"),
+  mcp(9, "MCP Containers", "开发工具", "几百个MCP服务器一键部署，用Docker跑模型服务省时又省心。", ["开发工具", "智能体"], "https://ai.codefather.cn/mcp/2010664902187212810"),
+  mcp(10, "🪐✨ Jupyter MCP Server", "开发工具", "在Jupyter里和AI实时协作写代码，Claude直接调用本地笔记本太方便了。", ["开发工具", "工具"], "https://ai.codefather.cn/mcp/2010664903109959706"),
+  mcp(11, "GSuite MCP Server", "开发工具", "用于集成 Google Workspace（GSuite）的 MCP 服务端，使 AI 助手能够访问 Gmail、日历及其他 Google 服务。", ["开发工具", "gsuite"], "https://ai.codefather.cn/mcp/2010664904867373084"),
+  mcp(12, "QueryWeaver", "开发工具", "利用图驱动的模式理解，将自然语言问题转换为 SQL 查询。", ["开发工具", "text2sql"], "https://ai.codefather.cn/mcp/2010664903076405257"),
+  mcp(13, "🌳 MCPJungle 🌳", "研究与数据", "统一管理私有MCP工具服务，注册即用、一键下线，让AI代理调用更安全省心。", ["研究与数据", "AI", "智能体"], "https://ai.codefather.cn/mcp/2117939930272404696"),
+  mcp(14, "BioMCP: Biomedical Model Context Protocol", "研究与数据", "查文献、找基因变异、搜临床试验，一个工具全搞定。", ["研究与数据", "bioinformatics"], "https://ai.codefather.cn/mcp/2010664904821235715"),
+  mcp(15, "SonarQube", "开发工具", "实现与 SonarQube 服务端 或 Cloud 的无缝集成，并允许在 agent 上下文中进行代码片段分析。", ["开发工具", "集成"], "https://ai.codefather.cn/mcp/2010664904926093322"),
+  mcp(16, "Kagi MCP server", "开发工具", "用Kagi MCP在Claude里直接调用精准搜索，查资料写代码更高效。", ["开发工具"], "https://ai.codefather.cn/mcp/2010664904921899024"),
+  mcp(17, "Sentry MCP Server", "开发工具", "让 AI 助手直接查 Sentry 错误、分析堆栈、评估影响，发布后自动巡检稳定性，排查故障不用切页面。", ["开发工具", "sentry"], "https://ai.codefather.cn/mcp/2117939930272405804"),
+  mcp(18, "MCP server to deploy code to Google Cloud Run", "云平台", "在AI对话中一键部署应用到Cloud Run，自动处理构建、推送和上线，省去命令行和配置烦恼。", ["云平台", "google-cloud"], "https://ai.codefather.cn/mcp/2117939930272404402"),
+  mcp(19, "Time", "开发工具", "通过 Model Context Protocol (MCP) 服务端为大型语言模型提供时间感知能力。", ["开发工具", "AI"], "https://ai.codefather.cn/mcp/2010664903135125508"),
+  mcp(20, "🚀 monday.com MCP", "研究与数据", "让AI代理安全接入monday.com数据，自动化任务和智能决策一键搞定。", ["研究与数据", "copilot"], "https://ai.codefather.cn/mcp/2010664904842207241"),
+  mcp(21, "Atomic Mail Agentic", "通信", "让 AI 代理自动收发邮件、智能响应，彻底告别手动操作邮件。", ["通信"], "https://ai.codefather.cn/mcp/2101386064513069058"),
+  mcp(22, "Run Model Context Protocol (MCP) servers with AWS Lambda", "云平台", "把MCP服务一键部署到AWS Lambda，轻松实现无服务器化云端运行。", ["云平台"], "https://ai.codefather.cn/mcp/2010664903810408465"),
+  mcp(23, "1MCP - One MCP Server for All", "开发工具", "统一管理多个MCP服务，省资源、免重启、热更新配置，开发调试更省心。", ["开发工具", "unified-mcp-server"], "https://ai.codefather.cn/mcp/2117939930272405849"),
+  mcp(24, "Neon", "分析", "用自然语言直接操作 Neon 数据库，建表、改结构、复制数据一气呵成，告别 SQL 和多工具切换。", ["分析", "AI"], "https://ai.codefather.cn/mcp/2117939930272404462")
 ];
 
 // ===== Skills 指令（/skills 页，分类对齐真站） =====
