@@ -51,10 +51,13 @@ export default function SkillsPage() {
 
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 16px" }}>
         {/* 分类 Tab */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
+        <div role="tablist" aria-label="Skills 分类" style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
           {cats.map((c) => (
             <span
               key={c}
+              role="tab"
+              aria-selected={cat === c}
+              tabIndex={0}
               onClick={() => setCat(c)}
               style={{
                 padding: "6px 14px",
@@ -109,7 +112,7 @@ export default function SkillsPage() {
                   <ThunderboltOutlined />
                 </div>
                 <div style={{ minWidth: 0 }}>
-                  <div style={{ fontWeight: 600, fontSize: 15 }} className="hover-brand-title">{s.name}</div>
+                  <h3 style={{ fontWeight: 600, fontSize: 15, margin: 0 }} className="hover-brand-title">{s.name}</h3>
                   <Tag style={{ marginTop: 2, fontSize: 11 }}>{s.category}</Tag>
                 </div>
               </div>
