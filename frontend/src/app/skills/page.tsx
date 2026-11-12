@@ -2,10 +2,38 @@
 
 import { useMemo, useState } from "react";
 import { Input, Tag } from "antd";
-import { SearchOutlined, ThunderboltOutlined } from "@ant-design/icons";
+import { SearchOutlined, ThunderboltOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { SKILLS, SKILL_CATEGORIES } from "@/lib/mockData";
 
 const BRAND = "#3874F7";
+
+/* 页脚「常见问题」（对齐目标站 /skills FAQ 分区：h1 + h2 + 6×h3） */
+const SKILLS_FAQ = [
+  {
+    q: "什么是 Agent Skills？",
+    a: "Agent Skills 是用来扩展 AI 编程助手能力的一种标准化功能模块，通常通过一个 SKILL.md 文件描述，把特定领域的知识、流程与脚本打包，让助手在需要时按需加载。"
+  },
+  {
+    q: "如何安装 Skills？",
+    a: "Claude Code：添加到 ~/.claude/skills/（个人）或项目内 .claude/skills/（团队）；其他支持 Skills 的工具按其文档放入对应技能目录即可，安装后重启或刷新会话生效。"
+  },
+  {
+    q: "Skills 是如何工作的？",
+    a: "通过统一的集成机制生效。安装后，这些技能会在对话过程中直接对 Claude 可用，Claude 会根据任务语义判断是否需要调用某个技能，并按需读取其中的说明与资源。"
+  },
+  {
+    q: "可以同时使用多个技能吗？",
+    a: "可以。Claude Code 支持同时使用多个技能。技能是模块化的，设计为可以协同工作。例如，你可以让一个技能负责代码规范，另一个负责测试生成，两者在同一会话中配合。"
+  },
+  {
+    q: "Skills 库会持续更新吗？",
+    a: "我们会定期更新 Skills 库，您可以收藏 AI 导航，或关注公众号「程序员鱼皮」，确保您能及时获取最新、最实用的 Agent Skills。"
+  },
+  {
+    q: "如何创建自定义 Skill？",
+    a: "你可以使用官方存储库中的技能创建者指南，创建自定义 Agent Skill 并在 GitHub 上分享。核心是编写清晰的 SKILL.md 描述触发条件、工作流步骤与所需资源。"
+  }
+];
 
 export default function SkillsPage() {
   const [cat, setCat] = useState("全部");
@@ -123,6 +151,54 @@ export default function SkillsPage() {
           ))}
         </div>
       </div>
+
+      {/* ===== 常见问题（对齐目标站 /skills 底部 FAQ 分区） ===== */}
+      <section style={{ maxWidth: 1200, margin: "0 auto", padding: "40px 16px 64px" }}>
+        <h2
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            margin: "0 0 24px",
+            fontSize: 24,
+            fontWeight: 700,
+            color: "#0f172a",
+            lineHeight: "32px"
+          }}
+        >
+          <QuestionCircleOutlined style={{ color: BRAND, fontSize: 22 }} />
+          常见问题
+        </h2>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))",
+            gap: 16
+          }}
+        >
+          {SKILLS_FAQ.map((item, idx) => (
+            <div
+              key={idx}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 10,
+                background: "#fff",
+                border: "1px solid var(--chip-border, #eaecef)",
+                borderRadius: 12,
+                padding: 20
+              }}
+            >
+              <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#1f2937", lineHeight: 1.4 }}>
+                {idx + 1}. {item.q}
+              </h3>
+              <p style={{ margin: 0, fontSize: 15, color: "#4e5969", lineHeight: 1.6 }}>
+                {item.a}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

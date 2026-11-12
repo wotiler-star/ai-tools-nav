@@ -75,6 +75,8 @@ export interface Article {
   id: number;
   title: string;
   cover?: string;
+  /** 摘要/描述（1:1 对齐目标站资源页真实文案，供列表摘要与详情页正文回退） */
+  description?: string;
   category: "tutorial" | "course" | "wiki";
 }
 

@@ -515,24 +515,33 @@ export const AI_NEWS: NewsItem[] = [
 ];
 
 // ===== 精选推荐（资讯区右侧） =====
-// 历史遗留的 /learn 死链已修复：每条编辑精选分别指向真实存在的【具体详情页】
+// 注意：tutorial 详情页 id 已随 1:1 真实数据改为 101–112（原 1–6 会 404），
+// 故此处精选同步指向真实存在的前 6 篇详情页，标题也用目标站真实文案。
 export const NEWS_FEATURED: FeaturedItem[] = [
-  // 对齐目标站颗粒度：每条编辑精选跳转到【具体详情页】，而非列表/分区首页
-  { id: 1, title: "Vibe Coding 零基础入门教程", href: "/resource/learn/1" },
-  { id: 2, title: "AI 编程保姆级实战教程", href: "/resource/learn/2" },
-  { id: 3, title: "主流大模型一手横向实测", href: "/resource/learn/3" },
-  { id: 4, title: "AI 编辑器隐藏高效技巧", href: "/resource/learn/4" },
-  { id: 5, title: "从零学会 AI 编程的正确姿势", href: "/resource/learn/5" },
-  { id: 6, title: "AI 提示词编写实战指南", href: "/resource/learn/6" }
+  { id: 101, title: "12 个超火的 DeepSeek Harness 插件，大肥鱼已经落后 N 个版本了。。。", href: "/resource/learn/101" },
+  { id: 102, title: "刚刚 GPT Images 2.6 发布，一键生成 GIF 动图，表情包自由的时代来了！", href: "/resource/learn/102" },
+  { id: 103, title: "B 站上 DeepSeek 闹鱼灾了，我发起《大肥鱼清除计划》！", href: "/resource/learn/103" },
+  { id: 104, title: "又一个国产版 Codex 神器，也来卷办公了！", href: "/resource/learn/104" },
+  { id: 105, title: "我用 REA 逆向了付费颜色 APP，结果很意外！", href: "/resource/learn/105" },
+  { id: 106, title: "用 AI 全自动做视频，太爽了！开源 AI 视频制作器 + Skill", href: "/resource/learn/106" }
 ];
 
 // ===== 学习教程 / 项目课程 / 知识百科 =====
+// tutorial 分类 1:1 对齐 ai.codefather.cn/resource/learn 真实 12 篇（标题/摘要/封面逆向自 RSC payload）。
+// id 用 101–112 以避开 course(6–9) / wiki(10–12)，保证详情页路由与 React key 不冲突。
 export const ARTICLES: Article[] = [
-  { id: 1, title: "用 AI 十分钟做出一个可运行的小工具", category: "tutorial" },
-  { id: 2, title: "最简单的 AI 应用部署教程，5 分钟拥有 AI 员工", category: "tutorial" },
-  { id: 3, title: "名校公开的 AI 编程课，值得从头学一遍", category: "tutorial" },
-  { id: 4, title: "AI 编程效率的真相：提效还是重构工作流", category: "tutorial" },
-  { id: 5, title: "免费的 AI 应用开发课程，入门首选", category: "tutorial" },
+  { id: 101, title: "12 个超火的 DeepSeek Harness 插件，大肥鱼已经落后 N 个版本了。。。", description: "DeepSeek Harness 精选插件推荐合集，教你怎么发现 DSH 优质插件，带你上手 12 大 DSH 实用必装、效率创意、整活玩法插件，让你的鲸鱼变得更强", cover: "https://pic.code-nav.cn/post_cover/1601072287388278786/thumbnail/aBvmWruJDYaVDea0.jpeg", category: "tutorial" },
+  { id: 102, title: "刚刚 GPT Images 2.6 发布，一键生成 GIF 动图，表情包自由的时代来了！", description: "ChatGPT Images 2.6 终于能直接做 GIF 动图了，首发实战测评，附 AI 绘图提示词", cover: "https://pic.code-nav.cn/post_cover/1601072287388278786/thumbnail/7ZClO4JAsrCLvR9X.webp", category: "tutorial" },
+  { id: 103, title: "B 站上 DeepSeek 闹鱼灾了，我发起《大肥鱼清除计划》！", description: "最近 B 站闹鱼灾了，大批 DeepSeek AI 机器人涌入评论区，我通过 Vibe Coding 搞出《蓝色大肥鱼清除插件》，帮你忽略掉冰冷的 AI 回复，还你一个干净的浏览体验。", cover: "https://pic.code-nav.cn/post_cover/1601072287388278786/Hue20gvsl4uozj7c.webp", category: "tutorial" },
+  { id: 104, title: "又一个国产版 Codex 神器，也来卷办公了！", description: "智谱 ZCode 全新办公模式来了，我第一时间写了保姆级教程，来看看让 100 多个 AI 一起做一个任务是什么体验~", cover: "https://pic.code-nav.cn/post_cover/1601072287388278786/QbGD3xutr4FbK3rO.webp", category: "tutorial" },
+  { id: 105, title: "我用 REA 逆向了付费颜色 APP，结果很意外！", description: "GitHub 爆火的开源项目 REA 真的能逆向一切？软件已死？ 本期先科普什么是逆向工程、什么是 REA，然后实测用 AI 逆向单机安卓游戏和学习 App，看看它到底有没有那么神！希望能缓解学计算机软件、程序员朋友们的…", cover: "https://pic.code-nav.cn/post_cover/1601072287388278786/lN4dJoXRYAe3Sj48.webp", category: "tutorial" },
+  { id: 106, title: "用 AI 全自动做视频，太爽了！开源 AI 视频制作器 + Skill", description: "2 分钟解锁全新 AI 视频创作玩法！一句话让 AI 全自动做出 4K 产品宣传片，我 AI 产品宣传视频制作器开源到了 GitHub。 无论你是想宣传 APP、网站、开源项目的程序员，还是内容创作者，都能让 AI Ag…", cover: "https://pic.code-nav.cn/post_cover/1601072287388278786/SucO1Zftdxcurgkn.webp", category: "tutorial" },
+  { id: 107, title: "DeepSeek 官方偷偷上传 Harness 桌面端安装包，我已经用上了。。附最新下载地址", description: "DeepSeek Harness 官方的桌面端安装包被网友扒出来了，2 分钟讲明白如何使用，体验如何，适合作为 AI 编程工具么？附最新 Windows 和 Mac 双端的下载地址", cover: "https://pic.code-nav.cn/post_cover/1601072287388278786/seHHH9hmu14X0ebp.webp", category: "tutorial" },
+  { id: 108, title: "AI 桌面换装视频火了，1 分钟教你复刻！傻子可懂", description: "分享 1 个万用的 AI 视频复刻思路 + AI 视频复刻 Skills（已开源到 GitHub），保姆级教程，即梦 Seedance 2.5、豆包、MiniMax 等视频生成平台和 API 都适用", cover: "https://pic.code-nav.cn/post_cover/1601072287388278786/3LhltHBXJX6xywAv.webp", category: "tutorial" },
+  { id: 109, title: "全网刷屏的 Jev 模型正式开放！一手实战测评 + 保姆级教程", description: "全网爆火的 Jev 模型是什么？有什么用？怎么使用？怎么接入 AI 编程工具？效果真的好么？傻子可懂的 Jev 保姆级实战教程 + 项目实战测评来啦", cover: "https://pic.code-nav.cn/post_cover/1601072287388278786/Ebp301IOXwB3TJBA.webp", category: "tutorial" },
+  { id: 110, title: "平替 Codex？AI 工具 Qoder 保姆级教程", description: "国产 AI 编程办公工具 Qoder 保姆级教程，安装上手 + 实战项目 + 核心特性全讲解，看看能不能作为 Codex 的平替", cover: "https://pic.code-nav.cn/post_cover/1601072287388278786/ISzH5up6QMleG6dA.webp", category: "tutorial" },
+  { id: 111, title: "DeepSeek 官方竟然偷偷做了 Harness 桌面端，我已经用上了。。", description: "DeepSeek 官方竟然下场给 DSH 做桌面端了，期待一波，可能是未来最好的 AI 编程工具么？2 分钟教你怎么提前用上，吃一波螃蟹", cover: "https://pic.code-nav.cn/post_cover/1601072287388278786/ehS1hzknC6i4bvqL.webp", category: "tutorial" },
+  { id: 112, title: "GPT Images 2.5 首发实测，手绘成图、指哪改哪、也太逼真了！", description: "ChatGPT Images 2.5 发布，10 大玩法实测，顶流的 AI 生图模型到底怎么样？扔掉 PS 吧，人人都是艺术家的时代，真的到来了。", cover: "https://pic.code-nav.cn/post_cover/1601072287388278786/ZanJM6Kip3pOAm15.webp", category: "tutorial" },
   { id: 6, title: "全栈 AI 项目实战：从需求到上线", category: "course" },
   { id: 7, title: "RAG 知识库问答系统开发课", category: "course" },
   { id: 8, title: "AI Agent 智能体项目从 0 到 1", category: "course" },
@@ -1051,9 +1060,12 @@ export { CAT };
 
 // 兼容 LearnFeed / LearnDetail（/resource/learn|course|encyclopedia）引用；
 // 由 ARTICLES 派生并补齐 authorName / content 字段，避免悬空导入导致页面运行时崩溃。
+// 真实文章（tutorial）带 description：列表摘要与详情正文优先用它，避免被通用模板覆盖；
+// 无 description 的旧 course/wiki 条目仍回退到模板文案，保持原有行为。
+// 署名统一保留 toolly 自有品牌，仅内容层 1:1 对齐目标站。
 export const LEARN_POSTS = ARTICLES.map((a) => ({
   ...a,
   authorName: "toolly 编辑部",
-  content: `${a.title}：本文系统梳理核心概念与实操要点，帮助读者快速上手。`,
+  content: a.description || `${a.title}：本文系统梳理核心概念与实操要点，帮助读者快速上手。`,
   createTime: `2024-${String(a.id).padStart(2, "0")}-15`,
 }));
