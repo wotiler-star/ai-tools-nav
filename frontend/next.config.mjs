@@ -27,6 +27,9 @@ const nextConfig = {
   compiler: {
     removeConsole: { exclude: ["error", "warn"] }
   },
+  // 静态页面预渲染超时（默认 60s）：构建机内存紧张（3.6G，与 ES/MySQL/Nacos 同机）时
+  // 静态 worker 明显变慢，60s 不够导致 build 失败（/painting/template/* 超时），调到 300s
+  staticPageGenerationTimeout: 300,
   // 图片 CDN 白名单（收窄，避免任意域名代理隐患）
   images: {
     remotePatterns: [
