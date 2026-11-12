@@ -57,39 +57,40 @@ export default async function NewsPage() {
                 style={{
                   borderRadius: 12,
                   padding: 16,
-                  display: "flex",
-                  gap: 14,
                   cursor: "pointer"
                 }}
               >
-                <div
-                  style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: 8,
-                    flexShrink: 0,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontWeight: 800,
-                    fontSize: 14,
-                    color: "#fff",
-                    background: n.rank <= 3 ? "#ff4d4f" : "#c9cdd4"
-                  }}
-                >
-                  {n.rank}
-                </div>
-                <div style={{ minWidth: 0, flex: 1 }}>
-                  <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8, lineHeight: 1.5 }} className="hover-brand-title">
-                    {n.title}
-                    {n.hot && <FireFilled style={{ color: "#ff4d4f", marginLeft: 8 }} />}
+                <article style={{ display: "flex", gap: 14, width: "100%" }}>
+                  <div
+                    style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: 8,
+                      flexShrink: 0,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontWeight: 800,
+                      fontSize: 14,
+                      color: "#fff",
+                      background: n.rank <= 3 ? "#ff4d4f" : "#c9cdd4"
+                    }}
+                  >
+                    {n.rank}
                   </div>
-                  <div style={{ fontSize: 12, color: "#9ca3af", display: "flex", gap: 14, flexWrap: "wrap" }}>
-                    <span>{n.source || "AI 资讯"}</span>
-                    {n.createTime ? <span>{String(n.createTime).slice(5, 16)}</span> : null}
-                    {typeof n.viewNum === "number" && <span>热度 {n.viewNum.toLocaleString()}</span>}
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    {/* 语义化标题：对齐目标站逐项 heading，提升 SEO/可访问性 */}
+                    <h2 style={{ fontSize: 16, fontWeight: 600, margin: "0 0 8px", lineHeight: 1.5 }} className="hover-brand-title">
+                      {n.title}
+                      {n.hot && <FireFilled style={{ color: "#ff4d4f", marginLeft: 8 }} />}
+                    </h2>
+                    <div style={{ fontSize: 12, color: "#9ca3af", display: "flex", gap: 14, flexWrap: "wrap" }}>
+                      <span>{n.source || "AI 资讯"}</span>
+                      {n.createTime ? <span>{String(n.createTime).slice(5, 16)}</span> : null}
+                      {typeof n.viewNum === "number" && <span>热度 {n.viewNum.toLocaleString()}</span>}
+                    </div>
                   </div>
-                </div>
+                </article>
               </Link>
             ))}
           </div>

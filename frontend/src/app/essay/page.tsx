@@ -151,6 +151,22 @@ export default function EssayPage() {
 
   return (
     <div style={{ maxWidth: 820, margin: "0 auto", padding: "24px 16px" }}>
+      {/* 语义化页面主标题（视觉隐藏，供 SEO/读屏识别，不改变布局） */}
+      <h1
+        style={{
+          position: "absolute",
+          width: 1,
+          height: 1,
+          margin: -1,
+          padding: 0,
+          overflow: "hidden",
+          clip: "rect(0 0 0 0)",
+          whiteSpace: "nowrap",
+          border: 0
+        }}
+      >
+        AI 社区 · 交流讨论
+      </h1>
       {/* 发帖框 */}
       <div
         style={{
@@ -232,10 +248,13 @@ export default function EssayPage() {
           flexWrap: "wrap"
         }}
       >
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <div role="tablist" aria-label="帖子排序" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {TABS.map((t) => (
             <span
               key={t}
+              role="tab"
+              aria-selected={tab === t}
+              tabIndex={0}
               onClick={() => setTab(t)}
               style={{
                 padding: "6px 14px",
@@ -275,59 +294,62 @@ export default function EssayPage() {
               className="group hover-brand block bg-white"
               style={{ borderRadius: 12, padding: 16 }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  marginBottom: 10
-                }}
-              >
-                <Avatar
-                  size={36}
-                  src={p.authorAvatar || undefined}
-                  icon={<UserOutlined />}
-                  style={{ background: "#9ca3af" }}
-                />
-                <div style={{ lineHeight: 1.3 }}>
-                  <div style={{ fontWeight: 600, fontSize: 14 }}>
-                    {p.authorName}
-                    <Tag style={{ marginLeft: 8, fontSize: 11 }} color="default">
-                      {p.authorTag}
-                    </Tag>
+              <article>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    marginBottom: 10
+                  }}
+                >
+                  <Avatar
+                    size={36}
+                    src={p.authorAvatar || undefined}
+                    icon={<UserOutlined />}
+                    style={{ background: "#9ca3af" }}
+                  />
+                  <div style={{ lineHeight: 1.3 }}>
+                    <div style={{ fontWeight: 600, fontSize: 14 }}>
+                      {p.authorName}
+                      <Tag style={{ marginLeft: 8, fontSize: 11 }} color="default">
+                        {p.authorTag}
+                      </Tag>
+                    </div>
+                    <div style={{ fontSize: 12, color: "#9ca3af" }}>{p.createTime}</div>
                   </div>
-                  <div style={{ fontSize: 12, color: "#9ca3af" }}>{p.createTime}</div>
                 </div>
-              </div>
 
-              <div
-                style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}
-                className="hover-brand-title"
-              >
-                {p.title}
-              </div>
-              <div
-                style={{
-                  fontSize: 14,
-                  color: "#4e5969",
-                  lineHeight: 1.7,
-                  marginBottom: 10
-                }}
-              >
-                {p.summary}
-              </div>
+                {/* 语义化标题：对齐目标站帖子卡 heading */}
+                <h2
+                  style={{ fontSize: 16, fontWeight: 700, margin: "0 0 6px" }}
+                  className="hover-brand-title"
+                >
+                  {p.title}
+                </h2>
+                <div
+                  style={{
+                    fontSize: 14,
+                    color: "#4e5969",
+                    lineHeight: 1.7,
+                    marginBottom: 10
+                  }}
+                >
+                  {p.summary}
+                </div>
 
-              <div style={{ display: "flex", gap: 24, color: "#86909c", fontSize: 13 }}>
-                <span style={{ cursor: "pointer" }}>
-                  <LikeOutlined /> {p.likeNum}
-                </span>
-                <span style={{ cursor: "pointer" }}>
-                  <MessageOutlined /> {p.commentNum}
-                </span>
-                <span style={{ cursor: "pointer" }}>
-                  <ShareAltOutlined /> 分享
-                </span>
-              </div>
+                <div style={{ display: "flex", gap: 24, color: "#86909c", fontSize: 13 }}>
+                  <span style={{ cursor: "pointer" }}>
+                    <LikeOutlined /> {p.likeNum}
+                  </span>
+                  <span style={{ cursor: "pointer" }}>
+                    <MessageOutlined /> {p.commentNum}
+                  </span>
+                  <span style={{ cursor: "pointer" }}>
+                    <ShareAltOutlined /> 分享
+                  </span>
+                </div>
+              </article>
             </Link>
           ))}
 

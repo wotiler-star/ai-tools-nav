@@ -39,7 +39,7 @@ export default function LearnPage() {
         <section style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {list.map((t) => (
-              <div
+              <article
                 key={t.id}
                 className="group hover-brand tool-card bg-white rounded-xl"
                 style={{
@@ -66,14 +66,14 @@ export default function LearnPage() {
                   🎓
                 </div>
                 <div style={{ minWidth: 0, flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                  <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 8, lineHeight: 1.5 }} className="hover-brand-title">
+                  <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 8px", lineHeight: 1.5 }} className="hover-brand-title">
                     {t.title}
-                  </div>
+                  </h3>
                   <Tag color="default" style={{ width: "fit-content" }}>
                     来源：{t.source}
                   </Tag>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         </section>
@@ -83,7 +83,7 @@ export default function LearnPage() {
           <div style={{ position: "sticky", top: 84, display: "flex", flexDirection: "column", gap: 16 }}>
             <div style={{ background: "#fff", border: "1px solid #eaecef", borderRadius: 12, padding: 16 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-                <span style={{ fontWeight: 700 }}>推荐教程</span>
+                <h2 style={{ fontWeight: 700, margin: 0, fontSize: 16 }}>推荐教程</h2>
                 <Link href="/library" style={{ fontSize: 12, color: "#9ca3af" }}>
                   更多 <RightOutlined />
                 </Link>
@@ -100,10 +100,10 @@ export default function LearnPage() {
             </div>
 
             <div style={{ background: "#fff", border: "1px solid #eaecef", borderRadius: 12, padding: 16 }}>
-              <div style={{ fontWeight: 700, marginBottom: 12 }}>
+              <h2 style={{ fontWeight: 700, margin: "0 0 12px", fontSize: 16 }}>
                 <FireOutlined style={{ color: "#ff7a45", marginRight: 6 }} />
                 热门工具
-              </div>
+              </h2>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                 {LEARN_HOT_TOOLS.map((name) => (
                   <Link key={name} href="/tool">

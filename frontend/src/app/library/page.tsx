@@ -70,7 +70,7 @@ export default function LibraryPage() {
           flexWrap: "wrap"
         }}
       >
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <div role="tablist" aria-label="专栏分类" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <CatChip label="全部" active={activeCat === 0} onClick={() => setActiveCat(0)} />
           {cats.map((c) => (
             <CatChip
@@ -132,9 +132,9 @@ export default function LibraryPage() {
                 </div>
                 <div style={{ padding: 16 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                    <span style={{ fontWeight: 700, fontSize: 16 }} className="hover-brand-title">
+                    <h3 style={{ fontWeight: 700, fontSize: 16, margin: 0 }} className="hover-brand-title">
                       {c.title}
-                    </span>
+                    </h3>
                     {c.needVip === 1 ? (
                       <Tag color="gold">会员</Tag>
                     ) : (
@@ -207,6 +207,9 @@ export default function LibraryPage() {
 function CatChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
     <span
+      role="tab"
+      aria-selected={active}
+      tabIndex={0}
       onClick={onClick}
       style={{
         padding: "7px 16px",

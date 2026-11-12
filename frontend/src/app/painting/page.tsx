@@ -63,10 +63,13 @@ export default function PaintingPage() {
       </div>
 
       {/* 分类 Tab */}
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: 20, flexWrap: "wrap", gap: 8 }}>
+      <div role="tablist" aria-label="提示词分类" style={{ display: "flex", justifyContent: "center", marginBottom: 20, flexWrap: "wrap", gap: 8 }}>
         {categories.map((c) => (
           <span
             key={c}
+            role="tab"
+            aria-selected={cat === c}
+            tabIndex={0}
             onClick={() => setCat(c)}
             style={{
               padding: "6px 16px",
@@ -138,12 +141,12 @@ export default function PaintingPage() {
                 <CopyOutlined />
               </div>
               <div style={{ padding: 14 }}>
-                <div
-                  style={{ fontWeight: 600, fontSize: 15, marginBottom: 8 }}
+                <h3
+                  style={{ fontWeight: 600, fontSize: 15, margin: "0 0 8px" }}
                   className="hover-brand-title"
                 >
                   {p.title}
-                </div>
+                </h3>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
                   <Tag color="blue" style={{ margin: 0, fontSize: 12 }}>
                     {p.categoryName || "通用"}
