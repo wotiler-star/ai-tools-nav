@@ -145,7 +145,9 @@ function ToolSection({
                 .filter((x) => x.categoryId === t.key)
                 .slice(0, 9)
                 .map((tool) => (
-                  <ToolCard key={tool.id} tool={tool} />
+                  <article key={tool.id}>
+                    <ToolCard tool={tool} />
+                  </article>
                 ))}
             </div>
           </div>
@@ -166,11 +168,11 @@ function NewsSection({ news }: { news: NewsItem[] }) {
     <section>
       <SectionHead icon="🌟" title="AI 资讯" moreHref="/news" />
       <div className="rounded-2xl bg-white p-2 shadow-sm">
-        <ul className="m-0 list-none p-0">
+        <div className="m-0 list-none p-0">
           {news.slice(0, 10).map((n) => {
             const top = n.rank <= 3;
             return (
-              <li
+              <article
                 key={n.id}
                 className="group flex transform-gpu cursor-pointer items-center gap-3 rounded-lg border-b border-gray-50 px-3 py-3 transition-all duration-200 last:border-0 hover:bg-[var(--list-row-hover)] hover:pl-4 hover:shadow-sm"
               >
@@ -190,10 +192,10 @@ function NewsSection({ news }: { news: NewsItem[] }) {
                   </span>
                   {n.hot && <span>🔥</span>}
                 </Link>
-              </li>
+              </article>
             );
           })}
-        </ul>
+        </div>
       </div>
     </section>
   );
@@ -209,11 +211,11 @@ function HotArticlesSection({
     <section>
       <SectionHead icon="🔥" title="热门文章" moreHref="/essay" />
       <div className="rounded-2xl bg-white p-2 shadow-sm">
-        <ul className="m-0 list-none p-0">
+        <div className="m-0 list-none p-0">
           {articles.map((a, i) => {
             const top = i < 3;
             return (
-              <li
+              <article
                 key={a.id}
                 className="group flex transform-gpu cursor-pointer items-center gap-3 rounded-lg border-b border-gray-50 px-3 py-3 transition-all duration-200 last:border-0 hover:bg-[var(--list-row-hover)] hover:pl-4 hover:shadow-sm"
               >
@@ -233,10 +235,10 @@ function HotArticlesSection({
                 <span className="flex-shrink-0 text-xs tabular-nums text-gray-400 transition-colors duration-200 hover-brand-title">
                   {a.viewNum} 阅读
                 </span>
-              </li>
+              </article>
             );
           })}
-        </ul>
+        </div>
       </div>
     </section>
   );
@@ -289,40 +291,41 @@ function PromptSection({
                 .filter((p) => p.kind === k)
                 .slice(0, 8)
                 .map((p) => (
-                  <Link
-                    key={p.id}
-                    href={`/painting/template/${p.id}`}
-                    className="group hover-brand-lift block overflow-hidden rounded-2xl bg-white shadow-sm"
-                  >
-                    {/* 封面：接口暂无 cover 字段，先用分类色渐变占位，后续接入真实封面替换 */}
-                    <div
-                      className="flex h-32 w-full items-center justify-center text-4xl transition-transform duration-200 group-hover:scale-105"
-                      style={{
-                        background:
-                          k === "draw"
-                            ? "linear-gradient(135deg,#ffd9ea,#ffb6cf)"
-                            : "linear-gradient(135deg,#d3e4ff,#a9c6ff)"
-                      }}
+                  <article key={p.id}>
+                    <Link
+                      href={`/painting/template/${p.id}`}
+                      className="group hover-brand-lift block h-full overflow-hidden rounded-2xl bg-white shadow-sm"
                     >
-                      <span aria-hidden="true">{k === "draw" ? "🎨" : "✍️"}</span>
-                    </div>
-                    <div className="p-4">
-                      <h3 className="line-clamp-1 text-sm font-semibold text-gray-900 hover-brand-title">
-                        {stripEmojiPrefix(p.title)}
-                      </h3>
-                      <div className="mt-2 flex flex-wrap gap-1">
-                        {p.tags.map((t) => (
-                          <span
-                            key={t}
-                            className="rounded px-1.5 py-0.5 text-xs"
-                            style={{ background: "var(--chip-bg)", color: "var(--chip-text)" }}
-                          >
-                            #{t}
-                          </span>
-                        ))}
+                      {/* 封面：接口暂无 cover 字段，先用分类色渐变占位，后续接入真实封面替换 */}
+                      <div
+                        className="flex h-32 w-full items-center justify-center text-4xl transition-transform duration-200 group-hover:scale-105"
+                        style={{
+                          background:
+                            k === "draw"
+                              ? "linear-gradient(135deg,#ffd9ea,#ffb6cf)"
+                              : "linear-gradient(135deg,#d3e4ff,#a9c6ff)"
+                        }}
+                      >
+                        <span aria-hidden="true">{k === "draw" ? "🎨" : "✍️"}</span>
                       </div>
-                    </div>
-                  </Link>
+                      <div className="p-4">
+                        <h3 className="line-clamp-1 text-sm font-semibold text-gray-900 hover-brand-title">
+                          {stripEmojiPrefix(p.title)}
+                        </h3>
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {p.tags.map((t) => (
+                            <span
+                              key={t}
+                              className="rounded px-1.5 py-0.5 text-xs"
+                              style={{ background: "var(--chip-bg)", color: "var(--chip-text)" }}
+                            >
+                              #{t}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </Link>
+                  </article>
                 ))}
             </div>
           </div>
@@ -334,7 +337,7 @@ function PromptSection({
         <div className="mb-3 font-semibold text-gray-900">推荐内容</div>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {recommends.map((r) => (
-            <div
+            <article
               key={r.id}
               className="group hover-brand flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-700"
             >
@@ -347,7 +350,7 @@ function PromptSection({
               <span className="line-clamp-1 text-gray-700 hover-brand-title">
                 {r.title}
               </span>
-            </div>
+            </article>
           ))}
         </div>
       </div>
@@ -391,7 +394,7 @@ function ArticleSection({ articles }: { articles: Article[] }) {
                     .filter((a) => a.category === t.key)
                     .slice(0, 6)
                     .map((a) => (
-                      <div
+                      <article
                         key={a.id}
                         className="group hover-brand-lift flex cursor-pointer gap-3 rounded-2xl bg-white p-4 shadow-sm"
                       >
@@ -409,7 +412,7 @@ function ArticleSection({ articles }: { articles: Article[] }) {
                             toolly · 精选
                           </div>
                         </div>
-                      </div>
+                      </article>
                     ))}
                 </div>
               </div>
@@ -581,36 +584,37 @@ export default async function HomeMagazine() {
           <SectionHead title="精选推荐" />
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
             {featuredTools.map((t, idx) => (
-              <Link
-                key={t.id}
-                href={`/tool/${t.id}`}
-                className="group hover-brand-lift block overflow-hidden rounded-2xl bg-white shadow-sm"
-              >
-                {/* 真实封面：工具 logo（第一方资源），无 logo 时退化品牌图标，不再用渐变占位 */}
-                <div
-                  className="flex h-28 w-full items-center justify-center overflow-hidden transition-transform duration-200 group-hover:scale-105"
-                  style={{ background: "var(--surface)", borderBottom: "1px solid var(--chip-border)" }}
+              <article key={t.id}>
+                <Link
+                  href={`/tool/${t.id}`}
+                  className="group hover-brand-lift block h-full overflow-hidden rounded-2xl bg-white shadow-sm"
                 >
-                  {t.logo ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={t.logo}
-                      alt={t.name}
-                      loading="lazy"
-                      style={{ width: 56, height: 56, objectFit: "contain" }}
-                    />
-                  ) : (
-                    <span className="text-3xl" aria-hidden="true">
-                      {BANNER_ICONS[idx % BANNER_ICONS.length]}
-                    </span>
-                  )}
-                </div>
-                <div className="p-3">
-                  <h3 className="line-clamp-2 text-sm font-semibold text-gray-900 hover-brand-title">
-                    {t.name}
-                  </h3>
-                </div>
-              </Link>
+                  {/* 真实封面：工具 logo（第一方资源），无 logo 时退化品牌图标，不再用渐变占位 */}
+                  <div
+                    className="flex h-28 w-full items-center justify-center overflow-hidden transition-transform duration-200 group-hover:scale-105"
+                    style={{ background: "var(--surface)", borderBottom: "1px solid var(--chip-border)" }}
+                  >
+                    {t.logo ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={t.logo}
+                        alt={t.name}
+                        loading="lazy"
+                        style={{ width: 56, height: 56, objectFit: "contain" }}
+                      />
+                    ) : (
+                      <span className="text-3xl" aria-hidden="true">
+                        {BANNER_ICONS[idx % BANNER_ICONS.length]}
+                      </span>
+                    )}
+                  </div>
+                  <div className="p-3">
+                    <h3 className="line-clamp-2 text-sm font-semibold text-gray-900 hover-brand-title">
+                      {t.name}
+                    </h3>
+                  </div>
+                </Link>
+              </article>
             ))}
           </div>
         </section>
@@ -635,30 +639,31 @@ export default async function HomeMagazine() {
             {/* 对齐目标站：单列紧凑条目（头像 + 作者·时间 + 标题 + 摘要），仅展示 3-4 条 */}
             <div className="grid grid-cols-1 gap-3">
               {posts.slice(0, 4).map((p) => (
-                <Link
-                  key={p.id}
-                  href={`/essay/${p.id}`}
-                  className="group hover-brand-lift flex gap-3 rounded-2xl bg-white p-4 shadow-sm"
-                >
-                  <span
-                    className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-base"
-                    aria-hidden="true"
+                <article key={p.id}>
+                  <Link
+                    href={`/essay/${p.id}`}
+                    className="group hover-brand-lift flex h-full gap-3 rounded-2xl bg-white p-4 shadow-sm"
                   >
-                    👤
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <div className="mb-1 flex items-center gap-2 text-xs text-gray-400">
-                      <span className="font-medium text-gray-700">{p.authorName}</span>
-                      <span>· {String(p.createTime || "").slice(5, 16)}</span>
+                    <span
+                      className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-base"
+                      aria-hidden="true"
+                    >
+                      👤
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-1 flex items-center gap-2 text-xs text-gray-400">
+                        <span className="font-medium text-gray-700">{p.authorName}</span>
+                        <span>· {String(p.createTime || "").slice(5, 16)}</span>
+                      </div>
+                      <h3 className="line-clamp-1 font-semibold text-gray-900 hover-brand-title">
+                        {p.title}
+                      </h3>
+                      <div className="mt-0.5 line-clamp-1 text-sm text-gray-500">
+                        {p.content}
+                      </div>
                     </div>
-                    <h3 className="line-clamp-1 font-semibold text-gray-900 hover-brand-title">
-                      {p.title}
-                    </h3>
-                    <div className="mt-0.5 line-clamp-1 text-sm text-gray-500">
-                      {p.content}
-                    </div>
-                  </div>
-                </Link>
+                  </Link>
+                </article>
               ))}
             </div>
           </section>
