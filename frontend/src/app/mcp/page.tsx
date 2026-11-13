@@ -227,16 +227,11 @@ export default function McpPage() {
         </div>
 
         {/* ===== 分类 tag 目录（19 个真实分类，链接化 + ARIA tab） ===== */}
-        <div
-          role="tablist"
-          aria-label="MCP 分类"
-          style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}
-        >
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
           {cats.map((c) => (
             <Link
               key={c}
-              role="tab"
-              aria-selected={cat === c}
+              aria-current={cat === c ? "true" : undefined}
               href={c === "全部" ? "/mcp?tab=featured&current=1" : `/mcp?tag=${encodeURIComponent(c)}&tab=latest&current=1`}
               onClick={(e) => {
                 e.preventDefault();
@@ -251,8 +246,6 @@ export default function McpPage() {
 
         {/* ===== 精选 / 最新 排序 tab ===== */}
         <div
-          role="tablist"
-          aria-label="MCP 排序方式"
           style={{
             display: "flex",
             alignItems: "center",
@@ -265,8 +258,7 @@ export default function McpPage() {
         >
           <div style={{ display: "flex", gap: 6 }}>
             <Link
-              role="tab"
-              aria-selected={tab === "featured"}
+              aria-current={tab === "featured" ? "true" : undefined}
               href="/mcp?tab=featured&current=1"
               onClick={(e) => {
                 e.preventDefault();
@@ -289,8 +281,7 @@ export default function McpPage() {
               <FireOutlined /> 精选
             </Link>
             <Link
-              role="tab"
-              aria-selected={tab === "latest"}
+              aria-current={tab === "latest" ? "true" : undefined}
               href="/mcp?tab=latest&current=1"
               onClick={(e) => {
                 e.preventDefault();
