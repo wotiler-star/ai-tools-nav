@@ -1,11 +1,29 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Input, Tag } from "antd";
-import { SearchOutlined, ApiOutlined, QuestionCircleOutlined } from "@ant-design/icons";
-import { MCP_SERVERS, MCP_CATEGORIES } from "@/lib/mockData";
+import { useEffect, useMemo, useState } from "react";
+import { Input, Tag, Button, Empty } from "antd";
+import Link from "next/link";
+import {
+  SearchOutlined,
+  ApiOutlined,
+  QuestionCircleOutlined,
+  RightOutlined,
+  LeftOutlined,
+  FireOutlined,
+  ClockCircleOutlined
+} from "@ant-design/icons";
+import { MCP_SERVERS } from "@/lib/mockData";
 
 const BRAND = "#3874F7";
+const PAGE_SIZE = 24;
+
+/* 目标站 /mcp 顶部 19 个分类 tag —— REA v6.7.0 2026-11-13 实测 AX 树 / RSC payload 取得，
+   非臆造。分类名真实存在；本地 24 条精选覆盖其中 7 类，其余点击后显示空态而非编造条目。 */
+const TARGET_TAGS: string[] = [
+  "开发工具", "研究与数据", "云平台", "数据库", "知识与内容管理", "自主智能体",
+  "分析", "安全", "浏览器自动化", "娱乐与媒体", "金融", "通信", "生活管理", "监控",
+  "系统自动化", "搜索", "项目管理", "云存储", "版本控制"
+];
 
 /* 页脚「常见问题」（对齐目标站目录页底部 FAQ，文案沿用旧版 /mcp） */
 const MCP_FAQ = [
@@ -35,25 +53,108 @@ const MCP_FAQ = [
   }
 ];
 
+type SortTab = "featured" | "latest";
+
 export default function McpPage() {
   const [cat, setCat] = useState("全部");
+  const [tab, setTab] = useState<SortTab>("featured");
   const [kw, setKw] = useState("");
+  const [appliedKw, setAppliedKw] = useState("");
+  const [current, setCurrent] = useState(1);
 
-  const cats = ["全部", ...MCP_CATEGORIES];
+  const cats = useMemo(() => ["全部", ...TARGET_TAGS], []);
+  const coveredCount = useMemo(
+    () => new Set(MCP_SERVERS.map((m) => m.category)).size,
+    []
+  );
+
+  // 首屏读取 URL 查询参数（不用 useSearchParams，避免静态生成阶段要求 Suspense 边界）
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search);
+    const t = p.get("tag");
+    const s = p.get("tab");
+    const c = Number(p.get("current"));
+    if (t && cats.includes(t)) setCat(t);
+    if (s === "latest" || s === "featured") setTab(s);
+    if (Number.isFinite(c) && c > 0) setCurrent(c);
+    const k = p.get("keyword");
+    if (k) {
+      setKw(k);
+      setAppliedKw(k);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const syncUrl = (next: { tag?: string; tab?: SortTab; current?: number; keyword?: string }) => {
+    const p = new URLSearchParams();
+    const tagVal = next.tag ?? cat;
+    const tabVal = next.tab ?? tab;
+    const curVal = next.current ?? current;
+    const kwVal = next.keyword ?? appliedKw;
+    if (tagVal !== "全部") p.set("tag", tagVal);
+    p.set("tab", tabVal);
+    p.set("current", String(curVal));
+    if (kwVal) p.set("keyword", kwVal);
+    window.history.replaceState(null, "", `/mcp?${p.toString()}`);
+  };
 
   const list = useMemo(() => {
     let arr = MCP_SERVERS;
-    if (cat !== "全部") arr = arr.filter((m) => m.category === cat);
-    if (kw.trim()) {
-      const k = kw.trim();
-      arr = arr.filter((m) => m.name.includes(k) || m.description.includes(k));
+    if (cat !== "全部") {
+      arr = arr.filter(
+        (m) => m.category === cat || (m.tags || []).includes(cat)
+      );
     }
-    return arr;
-  }, [cat, kw]);
+    if (appliedKw.trim()) {
+      const k = appliedKw.trim().toLowerCase();
+      arr = arr.filter(
+        (m) =>
+          m.name.toLowerCase().includes(k) ||
+          m.description.toLowerCase().includes(k) ||
+          (m.tags || []).some((t) => t.toLowerCase().includes(k))
+      );
+    }
+    // 最新：按收录顺序倒序（本地数据无发布时间字段，不伪造时间排序）
+    return tab === "latest" ? arr.slice().reverse() : arr;
+  }, [cat, tab, appliedKw]);
+
+  const totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+  const page = Math.min(current, totalPages);
+  const shown = list.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const pickCat = (c: string) => {
+    setCat(c);
+    setCurrent(1);
+    syncUrl({ tag: c, current: 1 });
+  };
+  const pickTab = (t: SortTab) => {
+    setTab(t);
+    setCurrent(1);
+    syncUrl({ tab: t, current: 1 });
+  };
+  const doSearch = () => {
+    setAppliedKw(kw);
+    setCurrent(1);
+    syncUrl({ keyword: kw, current: 1 });
+  };
+
+  const chipBase = (active: boolean): React.CSSProperties => ({
+    padding: "6px 14px",
+    borderRadius: 999,
+    fontSize: 13,
+    cursor: "pointer",
+    fontWeight: active ? 700 : 500,
+    color: active ? "#fff" : "#4e5969",
+    background: active ? BRAND : "#fff",
+    border: `1px solid ${active ? BRAND : "#eaecef"}`,
+    textDecoration: "none",
+    display: "inline-block",
+    lineHeight: 1.5
+  });
 
   return (
     <div>
-      {/* Hero */}
+      {/* ===== Hero：h1 + 标语 + 搜索框 + 搜索按钮（对齐目标站） ===== */}
       <div
         style={{
           background: "linear-gradient(135deg,#eaf1fe,#f7faff)",
@@ -67,95 +168,324 @@ export default function McpPage() {
         <p style={{ color: "#6b7280", marginBottom: 20 }}>
           持续更新优质 MCP，重塑你的 AI 工作流
         </p>
-        <Input
-          allowClear
-          value={kw}
-          onChange={(e) => setKw(e.target.value)}
-          placeholder="搜索 MCP 服务器"
-          prefix={<SearchOutlined style={{ color: "#bbb" }} />}
-          style={{ maxWidth: 460, borderRadius: 999, height: 44 }}
-        />
+        <div style={{ display: "flex", justifyContent: "center", gap: 8 }}>
+          <Input
+            allowClear
+            value={kw}
+            onChange={(e) => setKw(e.target.value)}
+            onPressEnter={doSearch}
+            placeholder="搜索 MCP 服务器"
+            prefix={<SearchOutlined style={{ color: "#bbb" }} />}
+            style={{ maxWidth: 400, borderRadius: 999, height: 44 }}
+          />
+          <Button
+            type="primary"
+            icon={<SearchOutlined />}
+            onClick={doSearch}
+            style={{ height: 44, borderRadius: 999, paddingInline: 20 }}
+          >
+            搜索
+          </Button>
+        </div>
       </div>
 
       <div style={{ maxWidth: 1200, margin: "24px auto 0", padding: "24px 16px 0" }}>
-        {/* 分类 Tab */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
-          {cats.map((c) => (
-            <span
-              key={c}
-              onClick={() => setCat(c)}
-              style={{
-                padding: "6px 14px",
-                borderRadius: 999,
-                fontSize: 13,
-                cursor: "pointer",
-                fontWeight: cat === c ? 700 : 500,
-                color: cat === c ? "#fff" : "#4e5969",
-                background: cat === c ? BRAND : "#fff",
-                border: `1px solid ${cat === c ? BRAND : "#eaecef"}`
-              }}
-            >
-              {c}
-            </span>
-          ))}
-        </div>
-
-        {/* MCP 卡片网格 */}
+        {/* ===== 统计条（真实数据，不照抄目标站 9201 全库量） ===== */}
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-            gap: 16
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            flexWrap: "wrap",
+            background: "#f8faff",
+            border: "1px solid #e6ecff",
+            borderRadius: 12,
+            padding: "12px 16px",
+            marginBottom: 18,
+            fontSize: 13,
+            color: "#4e5969"
           }}
         >
-          {list.map((m) => (
-            <div
-              key={m.id}
-              className="group hover-brand tool-card"
-              style={{
-                background: "#fff",
-                borderRadius: 12,
-                padding: 16,
-                cursor: "pointer"
+          <span>
+            共 <b style={{ color: BRAND }}>{MCP_SERVERS.length}</b> 个精选 MCP · 覆盖{" "}
+            <b style={{ color: BRAND }}>{coveredCount}</b> 个主题分类 · 最近更新 2026-11-12
+          </span>
+          <Link
+            href="/mcp?tab=latest"
+            onClick={(e) => {
+              e.preventDefault();
+              setTab("latest");
+              setCat("全部");
+              setCurrent(1);
+              syncUrl({ tag: "全部", tab: "latest", current: 1 });
+            }}
+            style={{ color: BRAND, fontWeight: 600, textDecoration: "none" }}
+          >
+            看看新内容 →
+          </Link>
+        </div>
+
+        {/* ===== 分类 tag 目录（19 个真实分类，链接化 + ARIA tab） ===== */}
+        <div
+          role="tablist"
+          aria-label="MCP 分类"
+          style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}
+        >
+          {cats.map((c) => (
+            <Link
+              key={c}
+              role="tab"
+              aria-selected={cat === c}
+              href={c === "全部" ? "/mcp?tab=featured&current=1" : `/mcp?tag=${encodeURIComponent(c)}&tab=latest&current=1`}
+              onClick={(e) => {
+                e.preventDefault();
+                pickCat(c);
               }}
+              style={chipBase(cat === c)}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                <div
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 10,
-                    background: "#eaf1fe",
-                    color: BRAND,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 20,
-                    flexShrink: 0
-                  }}
-                >
-                  <ApiOutlined />
-                </div>
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontWeight: 600, fontSize: 15 }} className="hover-brand-title">{m.name}</div>
-                  <div style={{ marginTop: 4, display: "flex", flexWrap: "wrap", gap: 4 }}>
-                    {(m.tags || [m.tag]).map((t: string) => (
-                      <Tag key={t} color="blue" style={{ margin: 0, fontSize: 11 }}>
-                        {t}
-                      </Tag>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div style={{ fontSize: 13, color: "#4e5969", lineHeight: 1.7, minHeight: 44 }}>
-                {m.description}
-              </div>
-            </div>
+              {c}
+            </Link>
           ))}
         </div>
+
+        {/* ===== 精选 / 最新 排序 tab ===== */}
+        <div
+          role="tablist"
+          aria-label="MCP 排序方式"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            marginBottom: 20,
+            borderBottom: "1px solid #eaecef",
+            paddingBottom: 10
+          }}
+        >
+          <div style={{ display: "flex", gap: 6 }}>
+            <Link
+              role="tab"
+              aria-selected={tab === "featured"}
+              href="/mcp?tab=featured&current=1"
+              onClick={(e) => {
+                e.preventDefault();
+                pickTab("featured");
+              }}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
+                padding: "6px 14px",
+                borderRadius: 8,
+                fontSize: 14,
+                fontWeight: tab === "featured" ? 700 : 500,
+                color: tab === "featured" ? BRAND : "#86909c",
+                background: tab === "featured" ? "#eef3ff" : "#fff",
+                border: `1px solid ${tab === "featured" ? BRAND : "#eaecef"}`,
+                textDecoration: "none"
+              }}
+            >
+              <FireOutlined /> 精选
+            </Link>
+            <Link
+              role="tab"
+              aria-selected={tab === "latest"}
+              href="/mcp?tab=latest&current=1"
+              onClick={(e) => {
+                e.preventDefault();
+                pickTab("latest");
+              }}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
+                padding: "6px 14px",
+                borderRadius: 8,
+                fontSize: 14,
+                fontWeight: tab === "latest" ? 700 : 500,
+                color: tab === "latest" ? BRAND : "#86909c",
+                background: tab === "latest" ? "#eef3ff" : "#fff",
+                border: `1px solid ${tab === "latest" ? BRAND : "#eaecef"}`,
+                textDecoration: "none"
+              }}
+            >
+              <ClockCircleOutlined /> 最新
+            </Link>
+          </div>
+          <span style={{ fontSize: 12, color: "#c9cdd4" }}>
+            {tab === "latest" ? "按收录顺序倒序" : "编辑精选顺序"} · 当前 {list.length} 条
+          </span>
+        </div>
+
+        {/* ===== MCP 卡片网格（article + 详情链接 + h3 标题） ===== */}
+        {shown.length === 0 ? (
+          <Empty description={`「${cat}」暂无精选 MCP，试试其他分类`} style={{ padding: 60 }}>
+            <Link
+              href="/mcp?tab=featured&current=1"
+              onClick={(e) => {
+                e.preventDefault();
+                pickCat("全部");
+              }}
+              style={{ color: BRAND, textDecoration: "none" }}
+            >
+              查看全部 {MCP_SERVERS.length} 个精选 →
+            </Link>
+          </Empty>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+              gap: 16
+            }}
+          >
+            {shown.map((m) => (
+              <article key={m.id} style={{ height: "100%" }}>
+                <Link
+                  href={`/mcp/${m.id}`}
+                  className="group hover-brand tool-card"
+                  style={{
+                    display: "block",
+                    height: "100%",
+                    background: "#fff",
+                    borderRadius: 12,
+                    padding: 16,
+                    border: "1px solid #eaecef",
+                    textDecoration: "none",
+                    color: "inherit"
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                    <div
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 10,
+                        background: "#eaf1fe",
+                        color: BRAND,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 20,
+                        flexShrink: 0
+                      }}
+                    >
+                      <ApiOutlined />
+                    </div>
+                    <div style={{ minWidth: 0 }}>
+                      <h3
+                        className="hover-brand-title"
+                        style={{ fontWeight: 600, fontSize: 15, margin: 0, lineHeight: 1.4 }}
+                      >
+                        {m.name}
+                      </h3>
+                      <div style={{ marginTop: 4, display: "flex", flexWrap: "wrap", gap: 4 }}>
+                        {(m.tags || [m.tag]).map((t: string) => (
+                          <Tag key={t} color="blue" style={{ margin: 0, fontSize: 11 }}>
+                            {t}
+                          </Tag>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 13, color: "#4e5969", lineHeight: 1.7, minHeight: 44 }}>
+                    {m.description}
+                  </div>
+                </Link>
+              </article>
+            ))}
+          </div>
+        )}
+
+        {/* ===== 分页器（真实页数，不照抄目标站 31 页） ===== */}
+        <nav aria-label="MCP 分页" style={{ margin: "24px 0 8px", display: "flex", alignItems: "center", gap: 12 }}>
+          <ul
+            style={{
+              listStyle: "none",
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              margin: 0,
+              padding: 0
+            }}
+          >
+            <li>
+              <button
+                disabled={page <= 1}
+                aria-label="上一页"
+                style={{
+                  border: "1px solid #eaecef",
+                  background: "#fff",
+                  borderRadius: 8,
+                  width: 32,
+                  height: 32,
+                  color: page <= 1 ? "#c9cdd4" : "#4e5969",
+                  cursor: page <= 1 ? "not-allowed" : "pointer"
+                }}
+              >
+                <LeftOutlined />
+              </button>
+            </li>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <li key={p}>
+                <Link
+                  href={`/mcp?tab=${tab}&current=${p}`}
+                  aria-current={p === page ? "page" : undefined}
+                  aria-label={`第 ${p} 页`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrent(p);
+                    syncUrl({ current: p });
+                  }}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: 32,
+                    height: 32,
+                    borderRadius: 8,
+                    fontSize: 13,
+                    fontWeight: p === page ? 700 : 500,
+                    color: p === page ? "#fff" : "#4e5969",
+                    background: p === page ? BRAND : "#fff",
+                    border: `1px solid ${p === page ? BRAND : "#eaecef"}`,
+                    textDecoration: "none"
+                  }}
+                >
+                  {p}
+                </Link>
+              </li>
+            ))}
+            <li>
+              <button
+                disabled={page >= totalPages}
+                aria-label="下一页"
+                onClick={() => {
+                  setCurrent(page + 1);
+                  syncUrl({ current: page + 1 });
+                }}
+                style={{
+                  border: "1px solid #eaecef",
+                  background: "#fff",
+                  borderRadius: 8,
+                  width: 32,
+                  height: 32,
+                  color: page >= totalPages ? "#c9cdd4" : "#4e5969",
+                  cursor: page >= totalPages ? "not-allowed" : "pointer"
+                }}
+              >
+                <RightOutlined />
+              </button>
+            </li>
+          </ul>
+          <span style={{ fontSize: 12, color: "#86909c" }}>
+            共 {totalPages} 页 · {list.length} 条
+          </span>
+        </nav>
       </div>
 
-      {/* ===== 常见问题（填补目录页底部，对齐目标站 /mcp FAQ） ===== */}
+      {/* ===== 常见问题（对齐目标站 /mcp FAQ：h2 + 6×h3） ===== */}
       <section style={{ maxWidth: 1200, margin: "0 auto", padding: "40px 16px 64px" }}>
         <h2
           style={{
@@ -180,7 +510,7 @@ export default function McpPage() {
           }}
         >
           {MCP_FAQ.map((item, idx) => (
-            <div
+            <article
               key={idx}
               style={{
                 display: "flex",
@@ -198,7 +528,7 @@ export default function McpPage() {
               <p style={{ margin: 0, fontSize: 15, color: "#4e5969", lineHeight: 1.6 }}>
                 {item.a}
               </p>
-            </div>
+            </article>
           ))}
         </div>
       </section>
