@@ -10,6 +10,7 @@ import {
   ARTICLES as MOCK_ARTICLES,
   HOT_ARTICLES as MOCK_HOT_ARTICLES,
   HOME_PROMPTS as MOCK_PROMPTS,
+  PROMPT_COVERS,
   HOT_SEARCHES,
   RECOMMENDS,
   TOOL_TABS as MOCK_TOOL_TABS
@@ -290,7 +291,7 @@ function PromptSection({
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
               {prompts
                 .filter((p) => p.kind === k)
-                .slice(0, 8)
+                .slice(0, 12)
                 .map((p) => (
                   <article key={p.id}>
                     <Link
@@ -375,6 +376,10 @@ function ArticleSection({ articles }: { articles: Article[] }) {
     { key: "course", label: "AI 项目课程" },
     { key: "wiki", label: "AI 知识百科" }
   ];
+  // 课程/百科历史数据无封面，用教程真实封面循环兜底，保证三个面板都带配图
+  const fallbackCovers = articles
+    .filter((a) => a.cover)
+    .map((a) => a.cover as string);
   return (
     <section>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
@@ -403,27 +408,39 @@ function ArticleSection({ articles }: { articles: Article[] }) {
                   {articles
                     .filter((a) => a.category === t.key)
                     .slice(0, 6)
-                    .map((a) => (
+                    .map((a, i) => {
+                      const cover = a.cover || fallbackCovers[i % fallbackCovers.length];
+                      return (
                       <article
                         key={a.id}
                         className="group hover-brand-lift flex cursor-pointer gap-3 rounded-2xl bg-white p-4 shadow-sm"
                       >
+                        {/* 真实封面：1:1 对齐目标站「教程/课程/百科卡片均带配图」 */}
                         <div
-                          className="flex h-16 w-24 flex-shrink-0 items-center justify-center rounded-lg text-2xl"
+                          className="relative flex h-16 w-24 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg text-2xl"
                           style={{ background: "var(--tint-blue)" }}
                         >
-                          📘
+                          {cover ? (
+                            <SafeCover
+                              src={cover}
+                              alt={a.title}
+                              className="absolute inset-0 h-full w-full object-cover"
+                            />
+                          ) : (
+                            <span aria-hidden="true">📘</span>
+                          )}
                         </div>
                         <div className="flex flex-col justify-center">
-                          <div className="line-clamp-2 font-medium text-gray-900 hover-brand-title">
+                          <h3 className="line-clamp-2 font-medium text-gray-900 hover-brand-title">
                             {a.title}
-                          </div>
+                          </h3>
                           <div className="mt-2 text-xs text-gray-400">
                             toolly · 精选
                           </div>
                         </div>
                       </article>
-                    ))}
+                      );
+                    })}
                 </div>
               </div>
             ))}
@@ -495,7 +512,8 @@ export default async function HomeMagazine() {
     const rec = tools.filter((t) => t.isRecommended);
     const hot = tools.filter((t) => !t.isRecommended && t.isHot);
     const rest = tools.filter((t) => !t.isRecommended && !t.isHot);
-    return [...rec, ...hot, ...rest].slice(0, 6);
+    // 目标站首页「精选推荐」为 12 张带封面的工具卡，这里对齐数量与结构（grid 自动折行）
+    return [...rec, ...hot, ...rest].slice(0, 12);
   })();
 
   // 分类 Tab：实时分类（按 sort 排序），失败回退 mock
@@ -538,12 +556,15 @@ export default async function HomeMagazine() {
   const DRAW_KEYWORDS = ["绘画", "绘图", "图片", "图像", "设计", "插画", "二次元", "3D", "漫", "画"];
   const homePrompts: HomePrompt[] = (
     promptsRaw?.records?.length ? promptsRaw.records : MOCK_PROMPTS
-  ).map((p: any) => {
+  ).map((p: any, i: number) => {
     const cat = p.categoryName || "";
     const kind: "draw" | "text" = DRAW_KEYWORDS.some((k) => cat.includes(k))
       ? "draw"
       : "text";
-    return { id: p.id, title: p.title, tags: cat ? [cat] : [], kind, cover: p.cover };
+    // 后端 AiPrompt 无 cover 字段：按索引补真实封面，避免线上首页全退化成 emoji 占位，
+    // 与目标站「每张提示词卡都带配图」的颗粒度对齐。
+    const cover = p.cover || PROMPT_COVERS[i % PROMPT_COVERS.length];
+    return { id: p.id, title: p.title, tags: cat ? [cat] : [], kind, cover };
   });
 
   return (

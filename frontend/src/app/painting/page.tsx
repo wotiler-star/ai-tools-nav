@@ -1,211 +1,43 @@
-"use client";
+// 提示词页改为服务端取数：把首屏卡片作为 SWR fallbackData 注入客户端交互组件，
+// 让 <h3>/分类 tab/卡片直接进入原始 HTML（对齐目标站 SSR 直出），
+// 同时保留分类筛选、搜索、一键复制、收藏等客户端能力。
+import { PROMPT_TEMPLATES } from "@/lib/mockData";
+import { serverFetch, type PageResult } from "@/lib/serverApi";
+import type { AiPrompt, BaseResponsePage } from "@/types";
+import PaintingGallery from "./PaintingGallery";
 
-import { useMemo, useState } from "react";
-import useSWR from "swr";
-import { Input, Tag, App, Spin } from "antd";
-import { SearchOutlined, FireOutlined, CopyOutlined } from "@ant-design/icons";
-import { AiPrompt, BaseResponsePage } from "@/types";
-import { swrFetcher } from "@/lib/api";
-import { PROMPT_COVERS } from "@/lib/mockData";
-import FavoriteButton from "@/components/FavoriteButton";
-import SafeCover from "@/components/SafeCover";
+export const dynamic = "force-dynamic";
 
-const BRAND = "#3874F7";
-
-function colorFromName(name: string): string {
-  let h = 0;
-  for (const c of name) h = (h * 31 + c.charCodeAt(0)) % 360;
-  return `hsl(${h}, 60%, 62%)`;
+/** 后端不可用时的兜底：复用提示词模板 mock，保证首屏永远不是空 Spin */
+function fallbackRecords(): AiPrompt[] {
+  return PROMPT_TEMPLATES.map((p) => ({
+    id: p.id,
+    title: p.title,
+    content: `${p.tags.join("、")}风格的${p.title}，一键复制即可使用。`,
+    categoryName: p.kind === "draw" ? "AI绘画" : "文案写作",
+    useCount: p.useCount
+  }));
 }
 
-export default function PaintingPage() {
-  const { message } = App.useApp();
-  const [cat, setCat] = useState("全部");
-  const [kw, setKw] = useState("");
+export default async function PaintingPage() {
+  const page = await serverFetch<PageResult<AiPrompt>>("/ai_prompt/list/page", {
+    current: 1,
+    pageSize: 50
+  });
+  const records =
+    page?.records && page.records.length ? page.records : fallbackRecords();
 
-  const { data, isLoading } = useSWR<BaseResponsePage<AiPrompt>>(
-    "/ai_prompt/list/page?current=1&pageSize=50",
-    swrFetcher
-  );
-
-  const records = useMemo(() => data?.data?.records || [], [data]);
-
-  const categories = useMemo(() => {
-    const set = new Set<string>();
-    records.forEach((r) => r.categoryName && set.add(r.categoryName));
-    return ["全部", ...Array.from(set)];
-  }, [records]);
-
-  const list = useMemo(() => {
-    let base = records;
-    if (cat !== "全部") base = base.filter((p) => p.categoryName === cat);
-    if (kw.trim()) {
-      const q = kw.trim();
-      base = base.filter((p) => p.title.includes(q) || (p.content || "").includes(q));
-    }
-    return base;
-  }, [records, cat, kw]);
-
-  const onCopy = async (p: AiPrompt) => {
-    const text = p.content || "";
-    try {
-      await navigator.clipboard.writeText(text);
-      message.success(`已复制「${p.title}」提示词`);
-    } catch {
-      message.info(text);
+  const initialData: BaseResponsePage<AiPrompt> = {
+    code: 0,
+    message: "ok",
+    data: {
+      records,
+      total: page?.total || records.length,
+      size: 50,
+      current: 1,
+      pages: 1
     }
   };
 
-  return (
-    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 16px" }}>
-      {/* 标题 */}
-      <div style={{ textAlign: "center", marginBottom: 20 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 800, marginBottom: 6 }}>AI 提示词大全</h1>
-        <p style={{ color: "#6b7280" }}>精选高质量提示词，一键复制复用</p>
-      </div>
-
-      {/* 分类 Tab */}
-      <div role="tablist" aria-label="提示词分类" style={{ display: "flex", justifyContent: "center", marginBottom: 20, flexWrap: "wrap", gap: 8 }}>
-        {categories.map((c) => (
-          <span
-            key={c}
-            role="tab"
-            aria-selected={cat === c}
-            tabIndex={0}
-            onClick={() => setCat(c)}
-            style={{
-              padding: "6px 16px",
-              borderRadius: 999,
-              fontSize: 14,
-              cursor: "pointer",
-              fontWeight: cat === c ? 700 : 500,
-              color: cat === c ? "#fff" : "#4e5969",
-              background: cat === c ? BRAND : "#fff",
-              border: `1px solid ${cat === c ? BRAND : "#eaecef"}`
-            }}
-          >
-            {c}
-          </span>
-        ))}
-      </div>
-
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
-        <Input
-          allowClear
-          value={kw}
-          onChange={(e) => setKw(e.target.value)}
-          placeholder="搜索提示词"
-          prefix={<SearchOutlined style={{ color: "#bbb" }} />}
-          style={{ maxWidth: 420, borderRadius: 999 }}
-        />
-      </div>
-
-      {/* 模板网格 */}
-      {isLoading ? (
-        <div style={{ textAlign: "center", padding: 40 }}>
-          <Spin />
-        </div>
-      ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-            gap: 16
-          }}
-        >
-          {list.map((p, i) => {
-            const isDraw = /绘画|绘图|图片|图像|设计|插画|二次元|3D|漫|画/.test(p.categoryName || "");
-            const cover = isDraw ? PROMPT_COVERS[i % PROMPT_COVERS.length] : undefined;
-            return (
-            <div
-              key={p.id}
-              onClick={() => onCopy(p)}
-              style={{
-                background: "#fff",
-                borderRadius: 12,
-                overflow: "hidden",
-                cursor: "pointer"
-              }}
-              className="group hover-brand tool-card"
-            >
-              {/* 封面：draw 类配真实图，加载失败回退渐变；text 类保留渐变 + 图标 */}
-              <div
-                style={{
-                  position: "relative",
-                  height: 130,
-                  background: `linear-gradient(135deg, ${colorFromName(
-                    p.categoryName || p.title
-                  )}, #ffffff)`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#fff",
-                  fontSize: 30,
-                  fontWeight: 800,
-                  overflow: "hidden"
-                }}
-              >
-                {cover && (
-                  <SafeCover
-                    src={cover}
-                    alt={p.title}
-                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-                  />
-                )}
-                <CopyOutlined style={{ position: "relative" }} />
-              </div>
-              <div style={{ padding: 14 }}>
-                <h3
-                  style={{ fontWeight: 600, fontSize: 15, margin: "0 0 8px" }}
-                  className="hover-brand-title"
-                >
-                  {p.title}
-                </h3>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
-                  <Tag color="blue" style={{ margin: 0, fontSize: 12 }}>
-                    {p.categoryName || "通用"}
-                  </Tag>
-                </div>
-                <div
-                  style={{
-                    fontSize: 12,
-                    color: "#9ca3af",
-                    display: "-webkit-box",
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                    lineHeight: 1.5,
-                    marginBottom: 8
-                  }}
-                >
-                  {p.content}
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    fontSize: 12,
-                    color: "#9ca3af"
-                  }}
-                >
-                  <span>
-                    <FireOutlined style={{ color: "#ff7a45" }} /> 使用 {p.useCount}
-                  </span>
-                  <FavoriteButton targetType="prompt" targetId={p.id} style={{ fontSize: 12 }} size={12} />
-                </div>
-              </div>
-            </div>
-          );
-          })}
-
-          {list.length === 0 && (
-            <div style={{ gridColumn: "1 / -1", textAlign: "center", color: "#9ca3af", padding: 40 }}>
-              暂无提示词
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
+  return <PaintingGallery initialData={initialData} />;
 }
