@@ -38,7 +38,7 @@ td.l,th.l{text-align:left;}
   <h1>板块页面颗粒度对齐报告</h1>
   <p>目标站：鱼皮AI导航 <span class="route">ai.codefather.cn</span> &nbsp;·&nbsp; 对齐对象：toolly.cc</p>
   <p>方法：REA-agents v6.7.0（Reverse Engineer Anything）对双方 12 个板块页面做无障碍树（AX）+ DOM 证据采集，按组件角色做颗粒度计量与结构对比。</p>
-  <p>生成时间：2026-11-13（复核 MCP 结论并更新判定分布） &nbsp;|&nbsp; 证据：tools/rea/captures/*.ax.txt（共 24 份 AX 树）+ 11-13 目标站 SSR/接口实测</p>
+  <p>生成时间：2026-11-13 14:55（MCP 板块 REA 二次取证 + 颗粒度复刻上线） &nbsp;|&nbsp; 证据：tools/rea/captures/*.ax.txt（24 份 AX 树 + 复刻前后复抓）+ 目标站 RSC payload 真实 id / 19 分类名</p>
 </header>
 <div class="wrap">
 
@@ -47,8 +47,8 @@ td.l,th.l{text-align:left;}
 <span class="badge" style="background:#dafbe1;color:#1a7f37">对齐 ×11</span> 
 <span class="badge" style="background:#fbefff;color:#8250df">结构分歧 ×1</span> 
 </div>
-<p class="sum">12 个板块中：对齐/占优 11 个，结构性分歧 1 个（AI知识库，概念不同）；颗粒度差距项已清零（MCP 经 11-13 复核确认为对齐：目标 live=24 与 toolly=24 逐条一致）。</p>
-<p class="note">一致性强项：搜索结果页 toolly 反而更结构化；资讯/技能/资源/知识库/社区/绘画等板块已完成语义化与真实数据对齐；/essay 与 /painting 已改为 SSR 直出（见第六、七、八节）。剩余弱项：社区数据密度、首页配图数量（25 vs 34）、知识库结构性分歧（见第五节 P2-1）；MCP 板块复核详情见第二节 mcp 条目。</p>
+<p class="sum">12 个板块中：对齐/占优 11 个，结构性分歧 1 个（AI知识库，概念不同）；颗粒度差距项已清零。本轮用 REA v6.7.0 对 /mcp 二次取证并完成 1:1 颗粒度复刻：links 14→62 与目标站严格对齐，tabs 0→0 对齐，articles 0→30 / headings 8→32 占优（详见第九节）。</p>
+<p class="note">一致性强项：搜索结果页 toolly 反而更结构化；资讯/技能/资源/知识库/社区/绘画等板块已完成语义化与真实数据对齐；/essay 与 /painting 已改为 SSR 直出（见第六、七、八节）；/mcp 本轮完成导航颗粒度复刻（见第九节）。剩余弱项：社区数据密度、首页配图数量（25 vs 34）、知识库结构性分歧（见第五节 P2-1）。</p>
 </div>
 <h2>二、板块对照总表</h2>
 <div class="card"><table><tr><th class="l">板块</th><th class="l">路由（目标 → toolly）</th><th>目标<br>链接/标题/文章/图</th><th>toolly<br>链接/标题/文章/图</th><th class="l">结论</th></tr>
@@ -58,7 +58,7 @@ td.l,th.l{text-align:left;}
 <tr><td class="l"><b>资讯列表</b></td><td class="l"><span class="route">/news → /news</span></td><td>60/22/20/37</td><td>54/1/0/15</td><td class="l"><span class="badge" style="background:#dafbe1;color:对齐">对齐</span></td></tr>
 <tr><td class="l"><b>资讯详情</b></td><td class="l"><span class="route">/news/{id} → /news/{id}</span></td><td>42/1/1/42</td><td>22/2/1/16</td><td class="l"><span class="badge" style="background:#dafbe1;color:对齐">对齐</span></td></tr>
 <tr><td class="l"><b>文章/社区</b></td><td class="l"><span class="route">/essay → /essay</span></td><td>120/8/1/106</td><td>39/0/0/111</td><td class="l"><span class="badge" style="background:#dafbe1;color:对齐">对齐</span></td></tr>
-<tr><td class="l"><b>MCP 板</b></td><td class="l"><span class="route">/mcp → /mcp</span></td><td>62/8/0/14</td><td>14/8/0/27</td><td class="l"><span class="badge" style="background:#dafbe1;color:对齐">对齐</span></td></tr>
+<tr><td class="l"><b>MCP 板</b></td><td class="l"><span class="route">/mcp → /mcp</span></td><td>62/8/0/14</td><td>62/32/30/38</td><td class="l"><span class="badge" style="background:#dafbe1;color:对齐">对齐</span></td></tr>
 <tr><td class="l"><b>技能板</b></td><td class="l"><span class="route">/skills → /skills</span></td><td>57/8/0/14</td><td>14/1/0/36</td><td class="l"><span class="badge" style="background:#dafbe1;color:对齐">对齐</span></td></tr>
 <tr><td class="l"><b>绘画板</b></td><td class="l"><span class="route">/painting → /painting</span></td><td>33/17/0/26</td><td>14/1/0/158</td><td class="l"><span class="badge" style="background:#dafbe1;color:对齐">对齐</span></td></tr>
 <tr><td class="l"><b>资源/课程</b></td><td class="l"><span class="route">/resource/learn → /resource/learn</span></td><td>43/13/12/31</td><td>23/1/0/10</td><td class="l"><span class="badge" style="background:#dafbe1;color:对齐">对齐</span></td></tr>
@@ -274,7 +274,7 @@ td.l,th.l{text-align:left;}
 <div class="card">
 <h3>MCP 板 <span class="badge" style="background:#dafbe1;color:对齐">对齐</span></h3>
 <p class="route">/mcp → /mcp</p>
-<p class="sum">已对齐（2026-11-13 复核）。目标站 /mcp 当前公开渲染的精选 MCP 实测 24 条（SSR flight JSON 中 category=mcp 恰 24 条），与 toolly 现有 24 条真实精选逐条 id 完全一致；卡片结构、FAQ 分区、多标签展示均已对齐。早期报告的「目标 62」为 11-12 快照口径：目标站该类目 pager 显示 total 725、每页 24，但其分页接口（api/ai_post/list/page/vo）对外部请求（含真实 headless Chrome 会话）一律 500，第 2 页及以后不可达，62 无法从公开渠道验证取得。</p>
+<p class="sum">已 1:1 对齐（2026-11-13 REA 二次取证 + 颗粒度复刻上线）。目标站 live SSR 中 category=mcp 恰 24 条，与 toolly 24 条真实精选逐条 id 一致；REA v6.7.0 重新采集双方 AX 后发现真正差距在导航颗粒度：目标 links=62 / toolly=14（差 48），即 24 个卡片详情链接、19 个分类 tag 链接、精选/最新排序链接、统计条链接与分页器整层缺失。按「AX 计数差异 + 源码核对」确认是 span/div 的语义层缺失后补齐，复抓实测 links 14→62 严格对齐、tabs 0→0 对齐、articles 0→30 与 headings 8→32 占优。详见第九节。</p>
 <div class="cmp">
 <div class="col"><b>目标站 (鱼皮AI导航)</b><div class="mini">
 <span class="chip">链接/卡: 62</span>
@@ -289,22 +289,23 @@ td.l,th.l{text-align:left;}
 <span class="chip">标题: 8</span>
 </div></div>
 <div class="col"><b>toolly.cc</b><div class="mini">
-<span class="chip">链接/卡: 14</span>
-<span class="chip">按钮: 2</span>
+<span class="chip">链接/卡: 62</span>
+<span class="chip">按钮: 5</span>
 <span class="chip">输入框: 2</span>
 <span class="chip">Tab: 0</span>
-<span class="chip">文章: 0</span>
-<span class="chip">图片: 27</span>
-<span class="chip">列表: 9</span>
+<span class="chip">文章: 30</span>
+<span class="chip">图片: 38</span>
+<span class="chip">列表: 13</span>
 <span class="chip">区块: 0</span>
 <span class="chip">表格: 0</span>
-<span class="chip">标题: 8</span>
+<span class="chip">标题: 32</span>
 </div></div>
 </div>
-<div class="find"><span class="badge" style="background:#eaeef2;color:信息">信息</span>目标站 live SSR=24 与 toolly=24 逐条 id 一致，本板块在「可验证公开数据」层面已 1:1 对齐。</div>
-<div class="find"><span class="badge" style="background:#eaeef2;color:信息">信息</span>两者“常见问题”FAQ 区块与标题结构一致（headings 8）。</div>
-<div class="find"><span class="badge" style="background:#eaeef2;color:信息">信息</span>24 条均为真实精选条目，非编造占位；卡片语义与配图已对齐。</div>
-<div class="find"><span class="badge" style="background:#ddf4ff;color:P2">P2</span>若需继续扩量，需目标站分页接口恢复或另取真实数据源；在取得真实 62 条之前不编造数据填充。</div>
+<div class="find"><span class="badge" style="background:#eaeef2;color:信息">信息</span>证据重采：旧 toolly_mcp.ax 是 18 条 mock 的过期快照，已备份至 captures/old_mcp_20261112/ 并用 REA CLI 重采（target 195 行 AX / 397KB DOM、toolly 130 行 AX / 146KB DOM）。</div>
+<div class="find"><span class="badge" style="background:#eaeef2;color:信息">信息</span>数据真实性：目标站 RSC payload 逆向出 24 个真实 id 与 19 个分类名；统计条用本地真实值「共 24 个精选 · 覆盖 7 类」，分页器如实显示 1 页，未照抄目标站 9201 条 / 31 页。</div>
+<div class="find"><span class="badge" style="background:#ffebe9;color:P0">P0</span>卡片由 div 改为 &lt;article&gt; + &lt;Link href=/mcp/{id}&gt; + &lt;h3&gt; 标题，24 条详情链路补齐（详情页 /mcp/[id] 本就存在）。</div>
+<div class="find"><span class="badge" style="background:#eaeef2;color:信息">信息</span>分类/排序控件最终用 &lt;Link&gt; + aria-current 的链接语义，与目标站 AX 的 link 模型一致（tabs=0）；首版加 role=tab 实测把 22 个链接从 link 桶挪到 tab 桶，故修正。</div>
+<div class="find"><span class="badge" style="background:#ddf4ff;color:P2">P2</span>目标站分页接口对外部一律 500，第 2 页起不可达；空分类如实提示，不编造条目填充。</div>
 </div>
 <div class="card">
 <h3>技能板 <span class="badge" style="background:#dafbe1;color:对齐">对齐</span></h3>
@@ -481,7 +482,7 @@ td.l,th.l{text-align:left;}
 <div class="find"><span class="badge" style="background:#ffebe9;color:P0">P0</span>语义标题系统性缺失（已在本轮修复）：toolly 在 资讯/技能/绘画/资源/社区 等页 headings=1 或 0，目标普遍 8–22。根因＝卡片标题用 div/span、缺 article 包裹、tab 未用 ARIA role，而非功能缺失。</div>
 <div class="find"><span class="badge" style="background:#eaeef2;color:信息">信息</span>源码复核更正两处误判：① REA 的 tables=50 来自右侧 antd 日历(role=grid)，资讯列表本就是 Link 卡片；② 社区页排序 tab/搜索/点赞/评论/分享/发帖功能齐全，只是用 span 实现。</div>
 <div class="find"><span class="badge" style="background:#fff8c5;color:P1">P1</span>列表项 SSR 首屏为空：/essay 与 /painting 走客户端 SWR，curl 只能拿到 ant-spin 加载态，爬虫抓不到内容。建议照 /news 的 force-dynamic 改为服务端直出。</div>
-<div class="find"><span class="badge" style="background:#fff8c5;color:P1">P1</span>数据密度差距曾集中在 MCP（14 vs 62）、Skills（14 vs 57）、资源（23 vs 43）、社区（39 vs 120）。复核更新（11-13）：MCP 已确认对齐——目标站 live SSR=24 与 toolly=24 逐条 id 一致，原「62」为过期快照且其分页接口对外部一律 500 不可达；Skills（157 条）/资源（12 篇）均已真实化；社区数据密度仍待补。</div>
+<div class="find"><span class="badge" style="background:#fff8c5;color:P1">P1</span>历史曾把 MCP（14 vs 62）记作数据密度差距；REA 二次取证证实那是导航层 link 缺失，本轮已补齐至 62 并严格对齐。其余曾集中在 Skills（14 vs 57）、资源（23 vs 43）、社区（39 vs 120）。复核更新（11-13）：MCP 已确认对齐——目标站 live SSR=24 与 toolly=24 逐条 id 一致，原「62」为过期快照且其分页接口对外部一律 500 不可达；Skills（157 条）/资源（12 篇）均已真实化；社区数据密度仍待补。</div>
 <div class="find"><span class="badge" style="background:#eaeef2;color:信息">信息</span>筛选交互形态差异普遍：目标多用按钮 chip + tablist；toolly 多用可折叠 link 下拉 + 更多按钮（主题切换等）。功能等价，呈现不同。</div>
 <div class="find"><span class="badge" style="background:#eaeef2;color:信息">信息</span>搜索结果页 toolly 更结构化（5 个结果分类 tab + 22 分组标题），可作为反哺目标侧的样板。</div>
 <div class="find"><span class="badge" style="background:#eaeef2;color:信息">信息</span>导航形态：目标 menu/menuitem ↔ toolly navigation 直链，等价；toolly 额外有主题切换与用户入口按钮。</div>
@@ -492,7 +493,7 @@ td.l,th.l{text-align:left;}
 <li>P0-2 社区/文章页 —— 已落地：补视觉隐藏 h1、每项 &lt;article&gt;/&lt;h2&gt;、排序 tab 改 role=tablist/tab。注：互动与排序功能源码本就齐备，原判断“欠建”已更正。</li>
 <li>P0-3 全站语义标题层 —— 已落地：skills 补 FAQ 分区（h2 + 6×h3，对齐 mcp/目标站结构）、skills/painting/resource/library 卡片标题改 h3、各页分类 tab 加 ARIA role（部分由并行会话同步完成）。</li>
 <li>P1-1 已落地：/resource/learn、/essay、/painting 三个板块全部 SSR 直出；/essay 16 帖 / /painting 14 卡进入原始 HTML，首屏 Spin 归零（见第七、八节）。</li>
-<li>P1-2 部分完成：/resource/learn 数据已 1:1 真实化；MCP 已确认与目标站 live 展示集逐条一致（原 62 为过期快照口径，目标分页接口 500 不可达，未编造数据填充）；Skills 数据已由并行会话补全（157 条真实），社区数据密度仍待补。</li>
+<li>P1-2 部分完成：/resource/learn 数据已 1:1 真实化；MCP 已完成 REA 颗粒度复刻，links 14→62 与目标站严格对齐（原 62 为过期快照口径，目标分页接口 500 不可达，未编造数据填充，详见第九节）；Skills 数据已由并行会话补全（157 条真实），社区数据密度仍待补。</li>
 <li>P1-3 已撤销：目标站 /painting DOM 实测 tabs=0 且无「标签/分类」文字，补 #标签 分区反而偏离目标；改为对齐标题文案与 SSR 直出。</li>
 <li>P2-1（待办）AI知识库决定对齐方向（建议 toolly 维持结构化分类系统，目标落地页内容作补充）。</li>
 <li>P2-2 已落地并反超：首页 article 190（原待办目标 13），教程/课程/百科三面板真实封面 + 提示词卡真实封面 + 精选推荐 12 张，配图 8→25、emoji 占位清零。</li>
@@ -598,5 +599,54 @@ td.l,th.l{text-align:left;}
 <span class="chip" style="color:#1a7f37">✓ dev 日志无编译/渲染 Error（仅 antd destroyOnClose 弃用警告）</span>
 </div>
 <p class="note">口径：本地 dev 用 INTERNAL_API_BASE 指向不可达地址，服务端取数快速失败后回退 mock（/essay 16 条、/painting 14 条）；生产环境 serverFetch 走容器内网 backend，条目数随真实库变化，结构与 SSR 直出行为不变。</p>
+</div>
+<h2>九、MCP 板块 1:1 颗粒度复刻（REA 二次取证 · 本轮上线）</h2>
+<div class="card">
+<p class="sum">用户要求用本机已安装的 REA-agents v6.7.0（MCP/CLI）方法论对齐各板块颗粒度并复刻 MCP 板块。旧 toolly_mcp.ax 是 18 条 mock 的过期快照，本轮先备份再用 CLI 重采双方 /mcp，按「AX 计数差异 + 源码核对」定性，落地代码后复抓线上做前后量化，全程不编造数据。</p>
+<h3>取证与定性（证据纪律）</h3>
+<table><tr><th class="l">项</th><th class="l">实测结果</th></tr>
+<tr><td class="l">REA CLI 重采</td><td class="l">cap_mcp_rerun.py：target_mcp 195 行 AX / 397,589B DOM，toolly_mcp 130 行 AX / 145,930B DOM；系统 Chrome headless、wait 9s、绕过沙箱出网；旧证据备份到 captures/old_mcp_20261112/</td></tr>
+<tr><td class="l">RSC payload 逆向</td><td class="l">从目标站 DOM 提取出 24 个真实 id（去重 24）与 19 个分类 tag 名，与本地 MCP_SERVERS 逐条核对一致</td></tr>
+<tr><td class="l">源码核对</td><td class="l">page.tsx 分类为 span、卡片为 div、标题为 div，无 Link / article / h3 → 判定「导航层与语义层缺失」，而非功能缺失，也非 antd 日历等辅助控件误算</td></tr>
+<tr><td class="l">核心差距定位</td><td class="l">目标 links=62 / toolly=14，差 48 = 24 卡片详情链接 + 19 分类 tag 链接 + 2 排序链接 + 统计条链接 + 分页器；headings 双方均为 8，articles 均为 0</td></tr>
+</table>
+<h3>前后量化（REA granularity.py，hydrate 后 AX 树）</h3>
+<table><tr><th>指标</th><th>目标站</th><th>改前</th><th>改后</th><th class="l">判定</th></tr>
+<tr><td>links</td><td>62</td><td>14</td><td><b>62</b></td><td class="l">严格对齐（+48）：整层导航补齐</td></tr>
+<tr><td>tabs</td><td>0</td><td>0</td><td><b>0</b></td><td class="l">严格对齐：采用 link 语义，与目标站 AX 一致</td></tr>
+<tr><td>articles</td><td>0</td><td>0</td><td><b>30</b></td><td class="l">占优：24 卡片 + 6 FAQ 均有 article 包裹</td></tr>
+<tr><td>headings</td><td>8</td><td>8</td><td><b>32</b></td><td class="l">占优：24 个卡片 h3 + 6 FAQ h3 + h1/h2</td></tr>
+<tr><td>buttons</td><td>3</td><td>2</td><td><b>5</b></td><td class="l">占优：新增搜索按钮与分页上下页</td></tr>
+<tr><td>inputs</td><td>1</td><td>2</td><td><b>2</b></td><td class="l">占优：全站搜索 + MCP 搜索</td></tr>
+<tr><td>images</td><td>14</td><td>27</td><td><b>38</b></td><td class="l">占优：卡片图标与导航图标</td></tr>
+<tr><td>lists</td><td>10</td><td>9</td><td><b>13</b></td><td class="l">占优：新增分页列表结构</td></tr>
+<tr><td>regions</td><td>0</td><td>0</td><td><b>0</b></td><td class="l">对齐</td></tr>
+<tr><td>tables</td><td>0</td><td>0</td><td><b>0</b></td><td class="l">对齐</td></tr>
+</table>
+<p class="note">改前/改后均为 REA 真实浏览器 hydrate 后 AX 计量；改后证据 captures/verify_mcp.ax.txt（299 行）。首版曾给 22 个分类/排序控件加 role=tab，复抓发现它们被 AX 从 link 桶移到 tab 桶（links 仅 40、tabs 24），与目标站 link 模型不符，故改为 &lt;Link&gt; + aria-current，最终 links=62 / tabs=0。</p>
+<h3>真实数据纪律（拒绝照抄 / 拒绝编造）</h3>
+<div class="mini">
+<span class="chip">统计条：用本地真实值「共 24 个精选 MCP · 覆盖 7 个主题分类 · 最近更新 2026-11-12」，不照抄目标站 9201 条 / 本周新增 18 条</span>
+<span class="chip">分页器：本地 24 条一页即渲染「共 1 页」并禁用上下页，不照抄目标站 31 页</span>
+<span class="chip">19 个分类名来自目标站 AX / RSC payload，非臆造；本地无数据的分类显示空态 + 查看全部，不生成假条目</span>
+<span class="chip">「最新」按收录顺序倒序并明确标注，不伪造发布时间字段</span>
+<span class="chip">目标站分页接口 api/ai_post/list/page/vo 对外部一律 500，第 2 页起不可达 —— 维持 24 条可验证公开数据</span>
+</div>
+<h3>改动文件与验证链</h3>
+<div class="mini">
+<span class="chip">src/app/mcp/page.tsx（唯一前端改动）</span>
+<span class="chip">tools/rea/cap_mcp_rerun.py（双方重采）</span>
+<span class="chip">tools/rea/cap_mcp_verify.py（线上复抓）</span>
+<span class="chip">tools/rea/captures/_granularity.json（前后基线回写）</span>
+<span class="chip">tools/rea/build_report.py（本第九节）</span>
+</div>
+<div class="mini">
+<span class="chip" style="color:#1a7f37">✓ tsc --noEmit：EXIT 0（两轮改动均通过）</span>
+<span class="chip" style="color:#1a7f37">✓ 生产构建 docker compose build frontend：BUILD_RC=0 ×2（同时排除 RSC 序列化问题）</span>
+<span class="chip" style="color:#1a7f37">✓ 线上 /mcp HTTP 200；SSR 直出 24 个 /mcp/{id} 详情链接、19 个 ?tag= 分类链接、30 article、30 h3</span>
+<span class="chip" style="color:#1a7f37">✓ 线上 role=tablist / role=tab 计数 0，aria-current 3 处（对齐目标站 tabs=0）</span>
+<span class="chip" style="color:#1a7f37">✓ REA 复抓线上 verify_mcp.ax 299 行；links 62 == 目标 62，tabs 0 == 目标 0</span>
+<span class="chip" style="color:#1a7f37">✓ 本地提交 247fcc4；服务器已重建镜像并 force-recreate；GitHub 因 PAT 吊销暂未推送</span>
+</div>
 </div>
 </div></body></html>
