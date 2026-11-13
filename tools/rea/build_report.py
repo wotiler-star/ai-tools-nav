@@ -44,11 +44,12 @@ META = [
       ("info", "目标站帖子标题用 <h1>（8 个）；toolly 保留 <h2> 以符合 HTML5 单 h1 语义，heading 总量与逐项层级一致。"),
       ("p2", "社区数据密度仍偏少（后端记录数随库变化），可继续补真实帖子。")]),
 
-    ("mcp", "MCP 板", "/mcp", "/mcp", "gap",
-     "数据密度差距（已大幅收窄）。目标 62 个 MCP 服务卡片；toolly 由早期 14 条 mock 换成 24 条真实精选（SSR HTML 实测 24 张 tool-card、6 个 FAQ h3），结构与 FAQ 完全一致，仅条目数量仍为目标约 4 成。",
-     [("p1", "toolly MCP 条目 24 vs 目标 62，建议继续从真实 MCP 索引补齐至同量级。"),
+    ("mcp", "MCP 板", "/mcp", "/mcp", "align",
+     "已对齐（2026-11-13 复核）。目标站 /mcp 当前公开渲染的精选 MCP 实测 24 条（SSR flight JSON 中 category=mcp 恰 24 条），与 toolly 现有 24 条真实精选逐条 id 完全一致；卡片结构、FAQ 分区、多标签展示均已对齐。早期报告的「目标 62」为 11-12 快照口径：目标站该类目 pager 显示 total 725、每页 24，但其分页接口（api/ai_post/list/page/vo）对外部请求（含真实 headless Chrome 会话）一律 500，第 2 页及以后不可达，62 无法从公开渠道验证取得。",
+     [("info", "目标站 live SSR=24 与 toolly=24 逐条 id 一致，本板块在「可验证公开数据」层面已 1:1 对齐。"),
       ("info", "两者“常见问题”FAQ 区块与标题结构一致（headings 8）。"),
-      ("info", "24 条均为真实精选条目，非编造占位；卡片语义与配图已对齐。")]),
+      ("info", "24 条均为真实精选条目，非编造占位；卡片语义与配图已对齐。"),
+      ("p2", "若需继续扩量，需目标站分页接口恢复或另取真实数据源；在取得真实 62 条之前不编造数据填充。")]),
 
     ("skills", "技能板", "/skills", "/skills", "align",
      "已反超。目标 57 个技能卡（headings 8）；toolly 由早期 14 条 mock 换成 157 条真实 Skill，SSR HTML 实测 163 个 <h3>（157 卡片 + 6 FAQ）、15 个分类 tab，并补齐全站标题语义层与 FAQ 分区。",
@@ -149,7 +150,7 @@ td.l,th.l{text-align:left;}
   <h1>板块页面颗粒度对齐报告</h1>
   <p>目标站：鱼皮AI导航 <span class="route">ai.codefather.cn</span> &nbsp;·&nbsp; 对齐对象：toolly.cc</p>
   <p>方法：REA-agents v6.7.0（Reverse Engineer Anything）对双方 12 个板块页面做无障碍树（AX）+ DOM 证据采集，按组件角色做颗粒度计量与结构对比。</p>
-  <p>生成时间：2026-11-12 &nbsp;|&nbsp; 证据：tools/rea/captures/*.ax.txt（共 24 份 AX 树）</p>
+  <p>生成时间：2026-11-13（复核 MCP 结论并更新判定分布） &nbsp;|&nbsp; 证据：tools/rea/captures/*.ax.txt（共 24 份 AX 树）+ 11-13 目标站 SSR/接口实测</p>
 </header>
 <div class="wrap">
 """)
@@ -165,8 +166,8 @@ for v in ["align", "partial", "gap", "diverge"]:
         txt, bgc, fgc = VERDICT_BADGE[v]
         html.append(f'<span class="badge" style="background:{fgc};color:{bgc}">{txt} ×{counts[v]}</span> ')
 html.append('</div>')
-html.append('<p class="sum">12 个板块中：对齐/占优 6 个，部分对齐 1 个，颗粒度差距 4 个，结构性分歧 1 个（AI知识库，概念不同）。</p>')
-html.append('<p class="note">一致性强项：搜索结果页 toolly 反而更结构化；资讯/技能/资源/知识库/社区/绘画等板块已完成语义化与真实数据对齐；/essay 与 /painting 已改为 SSR 直出（见第六、七、八节）。剩余弱项：社区数据密度、首页配图数量（25 vs 34）、知识库结构性分歧（见第五节 P2-1）。</p>')
+html.append('<p class="sum">12 个板块中：对齐/占优 11 个，结构性分歧 1 个（AI知识库，概念不同）；颗粒度差距项已清零（MCP 经 11-13 复核确认为对齐：目标 live=24 与 toolly=24 逐条一致）。</p>')
+html.append('<p class="note">一致性强项：搜索结果页 toolly 反而更结构化；资讯/技能/资源/知识库/社区/绘画等板块已完成语义化与真实数据对齐；/essay 与 /painting 已改为 SSR 直出（见第六、七、八节）。剩余弱项：社区数据密度、首页配图数量（25 vs 34）、知识库结构性分歧（见第五节 P2-1）；MCP 板块复核详情见第二节 mcp 条目。</p>')
 html.append('</div>')
 
 # Master table
@@ -213,7 +214,7 @@ cross = [
     ("p0", "语义标题系统性缺失（已在本轮修复）：toolly 在 资讯/技能/绘画/资源/社区 等页 headings=1 或 0，目标普遍 8–22。根因＝卡片标题用 div/span、缺 article 包裹、tab 未用 ARIA role，而非功能缺失。"),
     ("info", "源码复核更正两处误判：① REA 的 tables=50 来自右侧 antd 日历(role=grid)，资讯列表本就是 Link 卡片；② 社区页排序 tab/搜索/点赞/评论/分享/发帖功能齐全，只是用 span 实现。"),
     ("p1", "列表项 SSR 首屏为空：/essay 与 /painting 走客户端 SWR，curl 只能拿到 ant-spin 加载态，爬虫抓不到内容。建议照 /news 的 force-dynamic 改为服务端直出。"),
-    ("p1", "数据密度差距集中在 MCP（14 vs 62）、Skills（14 vs 57）、资源（23 vs 43）、社区（39 vs 120）——多为 mock/少量数据，目标为全量生产数据。"),
+    ("p1", "数据密度差距曾集中在 MCP（14 vs 62）、Skills（14 vs 57）、资源（23 vs 43）、社区（39 vs 120）。复核更新（11-13）：MCP 已确认对齐——目标站 live SSR=24 与 toolly=24 逐条 id 一致，原「62」为过期快照且其分页接口对外部一律 500 不可达；Skills（157 条）/资源（12 篇）均已真实化；社区数据密度仍待补。"),
     ("info", "筛选交互形态差异普遍：目标多用按钮 chip + tablist；toolly 多用可折叠 link 下拉 + 更多按钮（主题切换等）。功能等价，呈现不同。"),
     ("info", "搜索结果页 toolly 更结构化（5 个结果分类 tab + 22 分组标题），可作为反哺目标侧的样板。"),
     ("info", "导航形态：目标 menu/menuitem ↔ toolly navigation 直链，等价；toolly 额外有主题切换与用户入口按钮。"),
@@ -231,7 +232,7 @@ steps = [
     "P0-2 社区/文章页 —— 已落地：补视觉隐藏 h1、每项 <article>/<h2>、排序 tab 改 role=tablist/tab。注：互动与排序功能源码本就齐备，原判断“欠建”已更正。",
     "P0-3 全站语义标题层 —— 已落地：skills 补 FAQ 分区（h2 + 6×h3，对齐 mcp/目标站结构）、skills/painting/resource/library 卡片标题改 h3、各页分类 tab 加 ARIA role（部分由并行会话同步完成）。",
     "P1-1 已落地：/resource/learn、/essay、/painting 三个板块全部 SSR 直出；/essay 16 帖 / /painting 14 卡进入原始 HTML，首屏 Spin 归零（见第七、八节）。",
-    "P1-2 部分完成：/resource/learn 数据已 1:1 真实化；MCP / Skills 数据已由并行会话补全（Skills 157 条真实），社区数据密度仍待补。",
+    "P1-2 部分完成：/resource/learn 数据已 1:1 真实化；MCP 已确认与目标站 live 展示集逐条一致（原 62 为过期快照口径，目标分页接口 500 不可达，未编造数据填充）；Skills 数据已由并行会话补全（157 条真实），社区数据密度仍待补。",
     "P1-3 已撤销：目标站 /painting DOM 实测 tabs=0 且无「标签/分类」文字，补 #标签 分区反而偏离目标；改为对齐标题文案与 SSR 直出。",
     "P2-1（待办）AI知识库决定对齐方向（建议 toolly 维持结构化分类系统，目标落地页内容作补充）。",
     "P2-2 已落地并反超：首页 article 190（原待办目标 13），教程/课程/百科三面板真实封面 + 提示词卡真实封面 + 精选推荐 12 张，配图 8→25、emoji 占位清零。",
