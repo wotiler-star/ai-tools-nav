@@ -87,6 +87,7 @@ export interface HomePrompt {
   tags: string[];
   kind: "draw" | "text";
   cover?: string; // 封面图（可选，逆向自目标站 prompt-media CDN）
+  href?: string; // 真实详情页链接（绘图卡指向 gallery 真实 id）
 }
 
 /** MCP 服务器（/mcp 页） */

@@ -15,6 +15,7 @@ import {
   RECOMMENDS,
   TOOL_TABS as MOCK_TOOL_TABS
 } from "@/lib/mockData";
+import { PAINTING_GALLERY } from "@/lib/paintingGallery";
 import type {
   NewsItem,
   AiPost,
@@ -278,7 +279,7 @@ function PromptSection({
           href="/painting"
           className="text-sm text-gray-500 hover:text-[#3874F7]"
         >
-          全部提示词
+          全部绘图提示词
         </Link>
       </div>
       <div className="tab-panels">
@@ -295,7 +296,7 @@ function PromptSection({
                 .map((p) => (
                   <article key={p.id}>
                     <Link
-                      href={`/painting/template/${p.id}`}
+                      href={p.href ?? `/painting/template/${p.id}`}
                       className="group hover-brand-lift block h-full overflow-hidden rounded-2xl bg-white shadow-sm"
                     >
                       {/* 封面：有 cover 用真实图，加载失败则隐藏 img 让分类渐变透出（不破图） */}
@@ -317,6 +318,12 @@ function PromptSection({
                         )}
                         {!p.cover && (
                           <span aria-hidden="true">{k === "draw" ? "🎨" : "✍️"}</span>
+                        )}
+                        {/* 目标站绘卡片左上「模板」角标 */}
+                        {k === "draw" && p.cover && (
+                          <span className="absolute left-1.5 top-1.5 rounded bg-black/55 px-1.5 py-0.5 text-[10px] font-medium text-white">
+                            模板
+                          </span>
                         )}
                       </div>
                       <div className="p-4">
@@ -552,20 +559,49 @@ export default async function HomeMagazine() {
     href: `/essay/${p.id}`
   }));
 
-  // 首页提示词：实时提示词归一化为 绘图/文字（按 categoryName 判断）
+  // 首页提示词：1:1 对齐目标站 ai.codefather.cn
+  // 目标站「AI 绘图提示词」卡用的是真实图库条目（标题/tags/封面），且封面是第一方本地资源；
+  // 后端 AiPrompt 的 cover 走外链 CDN 会被拦（线上退化为渐变占位），故 draw 卡改用 PAINTING_GALLERY。
+  // 目标站首页 draw 卡顺序（REA 证据 2026-11-18）：吉伊卡哇→城市窗外→关键角色→复古怀旧→简约手绘→黏土定格
+  const DRAW_HOME_ORDER = [
+    "吉伊卡哇风格科普插画",
+    "城市窗外风景照",
+    "关键角色人物关系图",
+    "复古怀旧手绘插画",
+    "简约手绘涂鸦风插画",
+    "黏土定格动画风科普插图"
+  ];
+  const orderedDraw = DRAW_HOME_ORDER.map((t) => PAINTING_GALLERY.find((g) => g.title === t)).filter(
+    (g): g is (typeof PAINTING_GALLERY)[number] => !!g
+  );
+  const drawCards: HomePrompt[] = orderedDraw.map((g, i) => ({
+    id: 1000 + i,
+    title: g.title,
+    tags: g.tags,
+    kind: "draw",
+    cover: g.cover,
+    href: `/painting/template/${g.id}`
+  }));
   const DRAW_KEYWORDS = ["绘画", "绘图", "图片", "图像", "设计", "插画", "二次元", "3D", "漫", "画"];
-  const homePrompts: HomePrompt[] = (
+  const textCards: HomePrompt[] = (
     promptsRaw?.records?.length ? promptsRaw.records : MOCK_PROMPTS
-  ).map((p: any, i: number) => {
-    const cat = p.categoryName || "";
-    const kind: "draw" | "text" = DRAW_KEYWORDS.some((k) => cat.includes(k))
-      ? "draw"
-      : "text";
-    // 后端 AiPrompt 无 cover 字段：按索引补真实封面，避免线上首页全退化成 emoji 占位，
-    // 与目标站「每张提示词卡都带配图」的颗粒度对齐。
-    const cover = p.cover || PROMPT_COVERS[i % PROMPT_COVERS.length];
-    return { id: p.id, title: p.title, tags: cat ? [cat] : [], kind, cover };
-  });
+  )
+    .map((p: any, i: number) => {
+      const cat = p.categoryName || "";
+      const kind: "draw" | "text" = DRAW_KEYWORDS.some((k) => cat.includes(k))
+        ? "draw"
+        : "text";
+      return { p, cat, kind, i };
+    })
+    .filter((x) => x.kind === "text")
+    .map(({ p, cat, i }) => ({
+      id: p.id,
+      title: p.title,
+      tags: cat ? [cat] : [],
+      kind: "text" as const,
+      cover: p.cover || PROMPT_COVERS[i % PROMPT_COVERS.length]
+    }));
+  const homePrompts: HomePrompt[] = [...drawCards, ...textCards];
 
   return (
     <div className="pb-10">

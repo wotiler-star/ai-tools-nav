@@ -482,12 +482,13 @@ export const AI_PROMPTS: AiPrompt[] = [
 ];
 
 // ===== 首页热门搜索词 =====
-// 对齐目标站：热门搜索固定 4 个（原 5 个）
+// 1:1 对齐目标站 ai.codefather.cn 首页 Hot Searches（REA 证据 2026-11-18）：
+// 零基础AI编程课 / AI学习路线 / AI项目 / OpencClaw 中文网
 export const HOT_SEARCHES: string[] = [
-  "Vibe Coding 教程",
-  "AI 学习路线",
-  "AI 项目",
-  "AI 编程"
+  "零基础AI编程课",
+  "AI学习路线",
+  "AI项目",
+  "OpencClaw 中文网"
 ];
 
 // ===== AI 资讯榜单（首页 1-10） =====
