@@ -16,7 +16,7 @@ const BRAND = "#3874F7";
 const PAGE_SIZE = 24;
 
 /* 目标站 /mcp 顶部 19 个分类 tag —— REA v6.7.0 2026-11-13 实测 AX 树 / RSC payload 取得。
-   MCP_SERVERS 于 2026-11-19 采集目标站 tab=featured 前 5 页共 120 条真实条目（evidence/mcp_20261119），
+   MCP_SERVERS 于 2026-11-19 采集目标站 tab=featured 前 20 页共 480 条真实条目（evidence/mcp_20261119），
    分类取 tags 中首个命中这 19 类的中文标签，确保分类 tab 过滤正确。 */
 const TARGET_TAGS: string[] = [
   "开发工具", "研究与数据", "云平台", "数据库", "知识与内容管理", "自主智能体",
