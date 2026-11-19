@@ -8,9 +8,7 @@ import {
   ApiOutlined,
   QuestionCircleOutlined,
   RightOutlined,
-  LeftOutlined,
-  FireOutlined,
-  ClockCircleOutlined
+  LeftOutlined
 } from "@ant-design/icons";
 import { MCP_SERVERS } from "@/lib/mockData";
 
@@ -174,7 +172,7 @@ export default function McpPage() {
             value={kw}
             onChange={(e) => setKw(e.target.value)}
             onPressEnter={doSearch}
-            placeholder="搜索 MCP 服务器"
+            placeholder="搜索 MCP"
             prefix={<SearchOutlined style={{ color: "#bbb" }} />}
             style={{ maxWidth: 400, borderRadius: 999, height: 44 }}
           />
@@ -278,7 +276,7 @@ export default function McpPage() {
                 textDecoration: "none"
               }}
             >
-              <FireOutlined /> 精选
+              精选
             </Link>
             <Link
               aria-current={tab === "latest" ? "true" : undefined}
@@ -301,7 +299,7 @@ export default function McpPage() {
                 textDecoration: "none"
               }}
             >
-              <ClockCircleOutlined /> 最新
+              最新
             </Link>
           </div>
           <span style={{ fontSize: 12, color: "#c9cdd4" }}>
