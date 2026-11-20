@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import type { ReactNode } from "react";
 import { useParams } from "next/navigation";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
@@ -24,9 +23,8 @@ export default function McpDetailPage() {
 
   const tool = MCP_SERVERS.find((t: McpServer) => t.id === id);
 
-  useEffect(() => {
-    if (tool) document.title = `${tool.name} - ${tool.description} ｜ ${SITE.name}`;
-  }, [tool]);
+  // title/description 由 server layout generateMetadata 提供（爬虫可见）；
+  // 不再在此用 document.title 覆盖，避免水合后把真实标题换成拼接口径。
 
   if (!tool) {
     return (
