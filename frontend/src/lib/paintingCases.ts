@@ -1,0 +1,48 @@
+// 自动生成：craft-anything Study 采集 ai.codefather.cn/painting 首屏 40 条真实绘图案例
+// SSR initialData 取证 2026-11-20；封面用第一方 /painting/covers/*.webp 轮换（CDN 外链被拦）
+export interface PaintingCase {
+  id: string; title: string; description: string; tags: string[]; models: string[]; cover: string;
+}
+
+export const PAINTING_CASES: PaintingCase[] = [
+  { id: "2119522046441504770", title: "手机风街拍人像", description: "生成自然真实的手机随手拍风格人像，适合城市街头日常场景，保留真实噪点和镜头畸变", tags: ["街拍人像", "人像写真", "城市街景", "时尚人像", "生活摄影"], models: ["GPT-Image-2"], cover: "/painting/covers/2019252488308727809.webp" },
+  { id: "1610518142000300034", title: "", description: "", tags: [], models: [], cover: "/painting/covers/2019252503362084865.webp" },
+  { id: "2117903200341232535", title: "汉服森林女神人像", description: "生成竖版电影感古风人像，展现身着华美汉服的仙女立于阳光斑驳的古老森林中。", tags: ["汉服", "人像写真", "奇幻场景", "古风", "时尚人像"], models: ["GPT-Image-2"], cover: "/painting/covers/2019252505496985602.webp" },
+  { id: "1610518142000300034", title: "", description: "", tags: [], models: [], cover: "/painting/covers/2019252508080676865.webp" },
+  { id: "2119525459145342978", title: "东亚女性街拍写真", description: "生成真实自然的街头人像照片，适合用于时尚宣传或社交媒体配图。", tags: ["街拍人像", "时尚人像", "人像写真", "户外摄影", "东亚形象"], models: ["GPT-Image-2"], cover: "/painting/covers/2019252510844723201.webp" },
+  { id: "1610518142000300034", title: "", description: "", tags: [], models: [], cover: "/painting/covers/2019252518314778625.webp" },
+  { id: "2119525694781341697", title: "夜景豪车人像写真", description: "生成夜间豪车后座中亚洲女性的电影感人像，突出戏剧性光影与城市虚化背景", tags: ["人像写真", "时尚人像", "夜景摄影"], models: ["GPT-Image-2"], cover: "/painting/covers/2019385611935752194.webp" },
+  { id: "1610518142000300034", title: "", description: "", tags: [], models: [], cover: "/painting/covers/2019385617052803074.webp" },
+  { id: "2122223704703275009", title: "西游记主题艺术海报", description: "以孙悟空侧影为轮廓，内嵌取经队伍、花果山、雷音寺等经典场景的水墨水彩风格艺术海报。", tags: ["西游记", "艺术海报", "水墨风", "角色插画", "奇幻场景"], models: ["GPT-Image-2"], cover: "/painting/covers/2019385617069580290.webp" },
+  { id: "1610518142000300034", title: "", description: "", tags: [], models: [], cover: "/painting/covers/2019385617090551810.webp" },
+  { id: "2119524246186180610", title: "科幻机甲女帝三联画", description: "生成垂直构图的三位未来风机械女帝角色立绘，适用于科幻游戏或小说概念设计。", tags: ["角色设计", "科幻", "机甲", "人像写真", "动漫风"], models: ["GPT-Image-2"], cover: "/painting/covers/2019719224531922946.webp" },
+  { id: "1610518142000300034", title: "", description: "", tags: [], models: [], cover: "/painting/covers/2022598493075410946.webp" },
+  { id: "2119523264085704706", title: "电影感人像写真", description: "生成高细节、柔焦浅景深的室内女性特写人像，突出皮肤质感与自然光影，适合高端杂志风格。", tags: ["人像写真", "时尚人像", "电影感", "室内人像"], models: ["GPT-Image-2"], cover: "/painting/covers/2022602305727107073.webp" },
+  { id: "1610518142000300034", title: "", description: "", tags: [], models: [], cover: "/painting/covers/2022608810538962945.webp" },
+  { id: "2117903200341232346", title: "校园纪实人像生成", description: "生成超写实的校园场景中学生自然神态人像，突出真实光影、皮肤质感与学术氛围。", tags: ["人像写真", "校园", "纪实摄影", "学生", "写实"], models: ["GPT-Image-2"], cover: "/painting/covers/2029034498657701890.webp" },
+  { id: "1610518142000300034", title: "", description: "", tags: [], models: [], cover: "/painting/covers/2029474118331547649.webp" },
+  { id: "2119526187423318017", title: "蓝玫瑰时尚人像海报", description: "生成高端时尚人像海报，含特写肖像、蓝背景、玫瑰发饰、眼部特写 inset 和中英双语浪漫文案。", tags: ["时尚人像", "海报设计", "人像写真", "中文文案", "浪漫风格"], models: ["GPT-Image-2"], cover: "/painting/covers/2029477847420125186.webp" },
+  { id: "1610518142000300034", title: "", description: "", tags: [], models: [], cover: "/painting/covers/2029479859582943234.webp" },
+  { id: "2119525654436331521", title: "仙侠风古船人像", description: "生成东方仙侠风格的女性角色立绘，置身晨雾古船场景，突出清雅气质与山水意境", tags: ["仙侠", "古风", "人像", "山水", "写真"], models: ["GPT-Image-2"], cover: "/painting/covers/2049687595629277185.webp" },
+  { id: "1610518142000300034", title: "", description: "", tags: [], models: [], cover: "/painting/covers/2049749827033518082.webp" },
+  { id: "2119526514780356610", title: "古风墨金妆人像", description: "生成高端古风人像，突出墨色金粉与茶玫瑰色妆容、华服及暗木厅堂背景。", tags: ["古风", "人像写真", "妆容设计", "汉服", "东方美学"], models: ["GPT-Image-2"], cover: "/painting/covers/2019252488308727809.webp" },
+  { id: "1610518142000300034", title: "", description: "", tags: [], models: [], cover: "/painting/covers/2019252503362084865.webp" },
+  { id: "2122223703059107842", title: "时尚杂志封面人像生成", description: "生成带可定制文字排版的写实风女性时尚杂志封面，适用于品牌宣传或内容创作。", tags: ["时尚大片", "人像写真", "平面设计"], models: ["GPT-Image-2"], cover: "/painting/covers/2019252505496985602.webp" },
+  { id: "1610518142000300034", title: "", description: "", tags: [], models: [], cover: "/painting/covers/2019252508080676865.webp" },
+  { id: "2119516450082340866", title: "夏日猫形云人像写真", description: "生成日本海滨坡道上女子仰望巨型猫形积云的超现实人像摄影，突出人物与云朵的尺度对比和夏日氛围。", tags: ["人像写真", "奇幻场景", "时尚人像", "旅行插画"], models: ["GPT-Image-2"], cover: "/painting/covers/2019252510844723201.webp" },
+  { id: "1610518142000300034", title: "", description: "", tags: [], models: [], cover: "/painting/covers/2019252518314778625.webp" },
+  { id: "2117903200341230949", title: "中式角色设定海报", description: "为原创角色生成含肖像、表情、动作、配色与简介的温暖风格中文角色设定海报", tags: ["角色设计", "人设海报", "中式美学", "生活博主", "配色方案"], models: ["GPT-Image-2"], cover: "/painting/covers/2019385611935752194.webp" },
+  { id: "1610518142000300034", title: "", description: "", tags: [], models: [], cover: "/painting/covers/2019385617052803074.webp" },
+  { id: "2117903200341229754", title: "电商饮料主图生成", description: "生成8K超写实饮料广告图，突出桃橙色易拉罐与新鲜桃子，适用于电商平台主图设计。", tags: ["电商", "饮料", "产品图", "食品摄影", "广告"], models: ["Nano Banana Pro"], cover: "/painting/covers/2019385617069580290.webp" },
+  { id: "1610518142000300034", title: "", description: "", tags: [], models: [], cover: "/painting/covers/2019385617090551810.webp" },
+  { id: "2122223662537936898", title: "浮空城夜袭刺客插画", description: "生成超精细奇幻插画： hooded 刺客持发光武士刀蹲踞古寺屋顶，俯瞰云海浮空城与满月夜景。", tags: ["奇幻场景", "角色设定", "艺术海报"], models: ["Nano Banana Pro"], cover: "/painting/covers/2019719224531922946.webp" },
+  { id: "1610518142000300034", title: "", description: "", tags: [], models: [], cover: "/painting/covers/2022598493075410946.webp" },
+  { id: "2119525934699724801", title: "水彩Q版剑士少女插画", description: "生成竖版幻想风水彩插画，主角为手持武士刀的Q版女学生，配蓝灵与纸灯笼，适合故事书封面或角色设定图。", tags: ["角色设计", "水彩", "Q版", "日系", "幻想"], models: ["GPT-Image-2"], cover: "/painting/covers/2022602305727107073.webp" },
+  { id: "1610518142000300034", title: "", description: "", tags: [], models: [], cover: "/painting/covers/2022608810538962945.webp" },
+  { id: "2117903200341231802", title: "银河列车教室插画", description: "生成日系动漫风格的奇幻教室场景，少女影子化作银河列车在地面星河中穿行", tags: ["动漫插画", "奇幻场景", "教室", "银河", "少女"], models: ["GPT-Image-2"], cover: "/painting/covers/2029034498657701890.webp" },
+  { id: "1610518142000300034", title: "", description: "", tags: [], models: [], cover: "/painting/covers/2029474118331547649.webp" },
+  { id: "2117903200341230993", title: "动漫角色设定图生成", description: "生成包含多角度姿势、表情、剪影和服装细节的高精度动漫角色参考图，适用于角色设计与动画前期开发。", tags: ["角色设计", "动漫", "角色设定", "服装细节", "姿势参考"], models: ["GPT-Image-2"], cover: "/painting/covers/2029477847420125186.webp" },
+  { id: "1610518142000300034", title: "", description: "", tags: [], models: [], cover: "/painting/covers/2029479859582943234.webp" },
+  { id: "2119525835143725057", title: "复古漫画风沙漠观象台", description: "生成垂直构图的 retro manga 风科幻插画，展现两名少女驾车穿越布满卫星天线的异星沙漠，上空悬着倒置未来城市。", tags: ["漫画插画", "科幻场景", "沙漠景观", "角色设定", "复古风格"], models: ["GPT-Image-2"], cover: "/painting/covers/2049687595629277185.webp" },
+  { id: "1610518142000300034", title: "", description: "", tags: [], models: [], cover: "/painting/covers/2049749827033518082.webp" },
+];
