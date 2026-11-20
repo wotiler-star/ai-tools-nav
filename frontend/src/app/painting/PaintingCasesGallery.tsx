@@ -43,6 +43,8 @@ export default function PaintingCasesGallery() {
   const [model, setModel] = useState("全部");
   const [scene, setScene] = useState("全部场景");
   const [kw, setKw] = useState("");
+  const [page, setPage] = useState(1);
+  const pageSize = 24;
 
   const list = useMemo(() => {
     let arr = [...PAINTING_CASES];
@@ -60,6 +62,10 @@ export default function PaintingCasesGallery() {
     if (sort === "latest") arr.reverse();
     return arr;
   }, [sort, type, model, scene, kw]);
+
+  const totalPages = Math.max(1, Math.ceil(list.length / pageSize));
+  const cur = Math.min(page, totalPages);
+  const shown = list.slice((cur - 1) * pageSize, cur * pageSize);
 
   const onCopy = (c: PaintingCase) => {
     const text = c.description || c.title;
@@ -79,7 +85,7 @@ export default function PaintingCasesGallery() {
 
       <form onSubmit={(e) => e.preventDefault()} style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 16 }}>
         <Input
-          allowClear value={kw} onChange={(e) => setKw(e.target.value)}
+          allowClear value={kw} onChange={(e) => { setKw(e.target.value); setPage(1); }}
           placeholder="搜索 AI 绘图提示词、风格"
           prefix={<SearchOutlined style={{ color: "#bbb" }} />}
           style={{ maxWidth: 420, borderRadius: 999 }}
@@ -88,21 +94,21 @@ export default function PaintingCasesGallery() {
       </form>
 
       <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 12 }}>
-        <Pill active={sort === "featured"} onClick={() => setSort("featured")}>精选</Pill>
-        <Pill active={sort === "latest"} onClick={() => setSort("latest")}>最新</Pill>
+        <Pill active={sort === "featured"} onClick={() => { setSort("featured"); setPage(1); }}>精选</Pill>
+        <Pill active={sort === "latest"} onClick={() => { setSort("latest"); setPage(1); }}>最新</Pill>
       </div>
       <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
         <span style={{ fontSize: 13, color: "#86909c", alignSelf: "center" }}>类型</span>
-        {["全部", "模板", "案例"].map((t) => <Pill key={t} active={type === t} onClick={() => setType(t)}>{t}</Pill>)}
+        {["全部", "模板", "案例"].map((t) => <Pill key={t} active={type === t} onClick={() => { setType(t); setPage(1); }}>{t}</Pill>)}
         <span style={{ fontSize: 13, color: "#86909c", alignSelf: "center", marginLeft: 12 }}>模型</span>
-        {MODELS.map((m) => <Pill key={m} active={model === m} onClick={() => setModel(m)}>{m}</Pill>)}
+        {MODELS.map((m) => <Pill key={m} active={model === m} onClick={() => { setModel(m); setPage(1); }}>{m}</Pill>)}
       </div>
       <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 24, flexWrap: "wrap" }}>
-        {SCENES.map((s) => <Pill key={s} active={scene === s} onClick={() => setScene(s)}>{s}</Pill>)}
+        {SCENES.map((s) => <Pill key={s} active={scene === s} onClick={() => { setScene(s); setPage(1); }}>{s}</Pill>)}
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16 }}>
-        {list.map((c) => (
+        {shown.map((c) => (
           <article key={c.id} onClick={() => onCopy(c)} style={{ background: "#fff", borderRadius: 12, overflow: "hidden", cursor: "pointer" }} className="group hover-brand tool-card">
             <div style={{ position: "relative", height: 150, overflow: "hidden", background: "#f5f6f8" }}>
               <SafeCover src={c.cover} alt={c.title} className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105" />
@@ -122,7 +128,18 @@ export default function PaintingCasesGallery() {
           </article>
         ))}
       </div>
-      {list.length === 0 && <div style={{ textAlign: "center", color: "#9ca3af", padding: 40 }}>暂无匹配的绘图案例</div>}
+      {shown.length === 0 && <div style={{ textAlign: "center", color: "#9ca3af", padding: 40 }}>暂无匹配的绘图案例</div>}
+
+      {/* 分页：目标站 pageSize=24 */}
+      {list.length > pageSize && (
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12, marginTop: 28 }}>
+          <button type="button" disabled={cur <= 1} onClick={() => setPage(cur - 1)}
+            style={{ padding: "6px 16px", borderRadius: 8, border: "1px solid #eaecef", background: "#fff", cursor: cur <= 1 ? "not-allowed" : "pointer", opacity: cur <= 1 ? 0.5 : 1 }}>上一页</button>
+          <span style={{ fontSize: 13, color: "#6b7280" }}>第 {cur} / {totalPages} 页 · 共 {list.length} 条</span>
+          <button type="button" disabled={cur >= totalPages} onClick={() => setPage(cur + 1)}
+            style={{ padding: "6px 16px", borderRadius: 8, border: "1px solid #eaecef", background: "#fff", cursor: cur >= totalPages ? "not-allowed" : "pointer", opacity: cur >= totalPages ? 0.5 : 1 }}>下一页</button>
+        </div>
+      )}
     </div>
   );
 }
