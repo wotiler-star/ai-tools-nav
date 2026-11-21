@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Input, Tag } from "antd";
-import { SearchOutlined, CopyOutlined } from "@ant-design/icons";
+import { SearchOutlined, CopyOutlined, EyeOutlined } from "@ant-design/icons";
 import { App } from "antd";
 import { PAINTING_CASES, type PaintingCase } from "@/lib/paintingCases";
 import SafeCover from "@/components/SafeCover";
@@ -67,7 +67,9 @@ export default function PaintingCasesGallery() {
   const cur = Math.min(page, totalPages);
   const shown = list.slice((cur - 1) * pageSize, cur * pageSize);
 
-  const onCopy = (c: PaintingCase) => {
+  const onCopy = (e: React.MouseEvent, c: PaintingCase) => {
+    e.preventDefault();
+    e.stopPropagation();
     const text = c.description || c.title;
     if (navigator.clipboard?.writeText) {
       navigator.clipboard.writeText(text).then(() => message.success(`已复制「${c.title}」提示词`)).catch(() => message.info(text));
@@ -109,7 +111,7 @@ export default function PaintingCasesGallery() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16 }}>
         {shown.map((c) => (
-          <article key={c.id} onClick={() => onCopy(c)} style={{ background: "#fff", borderRadius: 12, overflow: "hidden", cursor: "pointer" }} className="group hover-brand tool-card">
+          <Link key={c.id} href={`/painting/template/${c.id}`} style={{ background: "#fff", borderRadius: 12, overflow: "hidden", display: "block", textDecoration: "none" }} className="group hover-brand tool-card">
             <div style={{ position: "relative", height: 150, overflow: "hidden", background: "#f5f6f8" }}>
               <SafeCover src={c.cover} alt={c.title} className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105" />
               <span style={{ position: "absolute", left: 8, top: 8, background: "rgba(0,0,0,.55)", color: "#fff", fontSize: 11, borderRadius: 4, padding: "2px 6px" }}>案例</span>
@@ -121,11 +123,12 @@ export default function PaintingCasesGallery() {
               </div>
               <div style={{ fontSize: 12, color: "#9ca3af", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{c.description}</div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10, fontSize: 12, color: "#9ca3af" }}>
-                <span><CopyOutlined /> 复制提示词</span>
+                <span><EyeOutlined /> 查看详情</span>
+                <span onClick={(e) => onCopy(e, c)} title="复制提示词" style={{ cursor: "pointer", padding: "0 4px" }}><CopyOutlined /></span>
                 <FavoriteButton targetType="prompt" targetId={Number(c.id.slice(-6))} size={12} />
               </div>
             </div>
-          </article>
+          </Link>
         ))}
       </div>
       {shown.length === 0 && <div style={{ textAlign: "center", color: "#9ca3af", padding: 40 }}>暂无匹配的绘图案例</div>}

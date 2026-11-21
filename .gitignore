@@ -56,6 +56,9 @@ runtime/
 *.trace.db
 data/
 uploads/
+# 详情页静态数据（Server Component 读取，需随源码部署）
+!frontend/data/
+!frontend/data/*.json
 
 # ---------- IDE / 系统 ----------
 .idea/

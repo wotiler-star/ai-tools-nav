@@ -1,7 +1,22 @@
+import fs from "fs";
+import path from "path";
 import type { Metadata } from "next";
 import { SITE } from "@/config/site";
 import { ESSAY_ARTICLES } from "@/lib/essayArticles";
-import EssayArticleDetail from "./EssayArticleDetail";
+import EssayArticleDetail, { type PostDetail } from "./EssayArticleDetail";
+
+// 详情全文在服务端 JSON（不进客户端 bundle）
+type DetailMap = Record<string, PostDetail>;
+let detailCache: DetailMap | null = null;
+function getDetail(id: string): PostDetail {
+  if (!detailCache) {
+    try {
+      const file = path.join(process.cwd(), "data", "post-details.json");
+      detailCache = JSON.parse(fs.readFileSync(file, "utf-8")) as DetailMap;
+    } catch { detailCache = {}; }
+  }
+  return detailCache[id] || {};
+}
 
 // /essay 详情页：列表已切换为 666 条真实文章（ESSAY_ARTICLES），详情必须同源。
 // 旧实现走 /ai_post/get（社区帖表），19 位真实文章 id 查不到 → 标题/正文兜底、SEO 全错、列表→详情断链。
@@ -74,7 +89,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 
   return (
     <>
-      <EssayArticleDetail article={article} />
+      <EssayArticleDetail article={article} detail={getDetail(params.id)} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
