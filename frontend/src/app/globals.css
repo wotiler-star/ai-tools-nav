@@ -546,3 +546,8 @@ body {
 @media (min-width: 768px) and (max-width: 1199px) {
   .header-search { display: none !important; }
 }
+
+/* /tool 独立左侧栏：窄屏隐藏，避免横向溢出（桌面端贴页面左缘、上下留白） */
+@media (max-width: 1023px) {
+  .tool-sidebar { display: none !important; }
+}

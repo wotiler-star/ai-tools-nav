@@ -223,28 +223,28 @@ export default function ToolCatalog({
         </div>
       </div>
 
-      {/* 内容区：左侧 sticky 分类侧边栏 + 右侧工具网格（SSR 直出，children 注入） */}
+      {/* 内容区：左侧分类侧边栏独立放在页面最左侧（上下留白，不随内容容器对齐）+ 右侧工具网格 */}
       <div
         style={{
-          maxWidth: 1200,
-          margin: "0 auto",
-          padding: "20px 20px 60px",
           display: "flex",
-          gap: 24,
-          alignItems: "flex-start"
+          alignItems: "flex-start",
+          gap: 20
         }}
       >
+        {/* 侧栏：独立于 1200 内容容器，贴页面左缘；上 24px / 下 60px 留白 */}
         <aside
+          className="tool-sidebar"
           style={{
             position: "sticky",
             top: sideTop,
             width: 120,
             flexShrink: 0,
+            margin: "24px 0 60px 16px",
             background: "var(--surface)",
             border: "1px solid var(--chip-border)",
             borderRadius: 12,
             padding: "10px 6px",
-            maxHeight: `calc(100vh - ${sideTop + 16}px)`,
+            maxHeight: `calc(100vh - ${sideTop + 76}px)`,
             overflowY: "auto"
           }}
         >
@@ -260,20 +260,35 @@ export default function ToolCatalog({
           ))}
         </aside>
 
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ marginBottom: 16 }}>
-            <h2
+        <div
+          style={{
+            flex: 1,
+            minWidth: 0,
+            display: "flex",
+            justifyContent: "center"
+          }}
+        >
+          <div style={{ maxWidth: 1200, width: "100%" }}>
+            <div
               style={{
-                fontSize: 22,
-                fontWeight: 800,
-                margin: 0,
-                color: "var(--text-1)"
+                padding: "20px 20px 0"
               }}
             >
-              {filteredTitle}
-            </h2>
+              <div style={{ marginBottom: 16 }}>
+                <h2
+                  style={{
+                    fontSize: 22,
+                    fontWeight: 800,
+                    margin: 0,
+                    color: "var(--text-1)"
+                  }}
+                >
+                  {filteredTitle}
+                </h2>
+              </div>
+            </div>
+            <div style={{ padding: "0 20px 60px" }}>{children}</div>
           </div>
-          {children}
         </div>
       </div>
     </div>
