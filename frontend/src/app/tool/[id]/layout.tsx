@@ -19,14 +19,14 @@ export async function generateMetadata({
   const tool = await serverGet<ToolSEO>(`/ai_tool/get`, { id: params.id });
   if (!tool || !tool.name) {
     return {
-      title: `AI 工具详情｜${SITE.name}`,
+      title: "AI 工具详情",
       description: `在 ${SITE.name} 浏览与发现优质 AI 工具、功能特点与使用方式。`
     };
   }
   const desc = `${tool.name}——${tool.description || ""} 功能、特点与使用方式，尽在 ${SITE.name}。`;
   const slug = tool.id ?? params.id;
   return {
-    title: `${tool.name}｜${SITE.name}`,
+    title: tool.name,
     description: desc,
     keywords: [tool.name, ...(tool.tags || []), "AI工具", SITE.name],
     alternates: { canonical: `/tool/${slug}` },

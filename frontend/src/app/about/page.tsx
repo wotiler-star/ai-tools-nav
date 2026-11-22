@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SITE } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: `关于本站｜${SITE.name}`,
+  title: "关于本站",
   description: SITE.description,
   alternates: { canonical: `/about` }
 };

@@ -16,7 +16,7 @@ export async function generateMetadata({
   const cat = list?.find((c) => String(c.id) === String(params.id));
   const name = cat?.name || "分类";
   return {
-    title: `${name} 工具｜${SITE.name}`,
+    title: `${name} 工具`,
     description: `收录「${name}」分类下的优质 AI 工具，功能、特点与直达链接——${SITE.name}。`,
     alternates: { canonical: `/category/${params.id}` },
     openGraph: {
