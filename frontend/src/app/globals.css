@@ -551,3 +551,9 @@ body {
 @media (max-width: 1023px) {
   .tool-sidebar { display: none !important; }
 }
+
+/* /tool 工具卡网格：1:1 对齐目标站截图（fnd_L1 桌面 6 列）；窄屏 auto-fill 降列 */
+.tool-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+@media (min-width: 1200px) {
+  .tool-grid { grid-template-columns: repeat(6, 1fr); }
+}

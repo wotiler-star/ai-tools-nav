@@ -28,9 +28,6 @@ const sectionTitleStyle: React.CSSProperties = {
 
 const gridStyle: React.CSSProperties = {
   display: "grid",
-  // 1:1 对齐目标站截图：桌面端 6 列（fnd_L1：截图内容区 6 列、间隔 270px、卡宽≈255px）
-  // 独立侧栏后内容区约 1016px，minmax(150px,1fr) 恰好得到 6 列；窄屏自动降列
-  gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
   gap: 12
 };
 
@@ -125,7 +122,7 @@ export default function ToolGrid({
               </div>
             )}
 
-            <div style={gridStyle}>
+            <div className="tool-grid" style={gridStyle}>
               {items.map((tool) => {
                 const haystack = `${tool.name} ${tool.description} ${(
                   tool.tags || []
