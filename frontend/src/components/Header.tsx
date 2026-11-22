@@ -61,6 +61,9 @@ export default function Header() {
   const { loginUser, setLoginUser, openLoginModal } = useAppStore();
   const { theme, toggle } = useTheme();
   const isMobile = useMediaQuery("(max-width: 767px)");
+  // 中等宽度下隐藏桌面「全站搜索」框，给右上角登录/注册让位
+  // （对齐目标站：中等宽度下导航+登录同屏可见，无全站搜索框）
+  const isNarrow = useMediaQuery("(max-width: 1199px)");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [navHover, setNavHover] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -466,9 +469,11 @@ export default function Header() {
             )}
           </nav>
 
-          <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
-            <SearchBox />
-          </div>
+          {!isNarrow && (
+            <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+              <SearchBox />
+            </div>
+          )}
 
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {rightCluster}

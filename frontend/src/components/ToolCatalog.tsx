@@ -75,6 +75,8 @@ export default function ToolCatalog({
   }, [categories, sideTop]);
 
   const shownCat = activeCat || highlightCat;
+  // 侧栏单独用：无 URL 参数时默认高亮第一个分类（对齐目标站截图里 AI写作 激活）
+  const sideActiveCat = activeCat || categories[0]?.id || 0;
   const activeCatName =
     categories.find((c) => c.id === activeCat)?.name || "";
   const filteredTitle = activeTag
@@ -236,47 +238,32 @@ export default function ToolCatalog({
           style={{
             position: "sticky",
             top: sideTop,
-            width: 220,
+            width: 120,
             flexShrink: 0,
             background: "var(--surface)",
             border: "1px solid var(--chip-border)",
             borderRadius: 12,
-            padding: 12,
+            padding: "10px 6px",
             maxHeight: `calc(100vh - ${sideTop + 16}px)`,
             overflowY: "auto"
           }}
         >
-          <div
-            style={{
-              fontSize: 13,
-              fontWeight: 700,
-              color: "var(--text-2)",
-              margin: "4px 8px 10px"
-            }}
-          >
-            分类导航
-          </div>
-          <Link
-            href="/tool"
-            style={sideCatStyle(activeCat === 0 && !activeTag)}
-          >
-            全部
-          </Link>
+          {/* 1:1 对齐目标站截图：侧栏只列 14 个一级分类，无「分类导航」标题、无「全部」项 */}
           {categories.map((c) => (
             <div key={c.id}>
               <Link
                 href={`/tool?cat=${c.id}`}
-                style={sideCatStyle(shownCat === c.id && !activeTag)}
+                style={sideCatStyle(sideActiveCat === c.id && !activeTag)}
               >
                 {c.name}
               </Link>
-              {shownCat === c.id && (c.tags || []).length > 0 && (
-                <div style={{ margin: "2px 0 6px 10px" }}>
+              {sideActiveCat === c.id && (c.tags || []).length > 0 && (
+                <div style={{ margin: "2px 0 6px 6px" }}>
                   {c.tags!.map((t) => (
                     <Link
                       key={t}
                       href={`/tool?cat=${c.id}&tag=${encodeURIComponent(t)}`}
-                      style={sideTagStyle(activeTag === t && shownCat === c.id)}
+                      style={sideTagStyle(activeTag === t && sideActiveCat === c.id)}
                     >
                       {t}
                     </Link>
