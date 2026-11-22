@@ -248,29 +248,15 @@ export default function ToolCatalog({
             overflowY: "auto"
           }}
         >
-          {/* 1:1 对齐目标站截图：侧栏只列 14 个一级分类，无「分类导航」标题、无「全部」项 */}
+          {/* 1:1 对齐目标站截图：侧栏只列 14 个一级分类，无标题/全部项/子标签展开 */}
           {categories.map((c) => (
-            <div key={c.id}>
-              <Link
-                href={`/tool?cat=${c.id}`}
-                style={sideCatStyle(sideActiveCat === c.id && !activeTag)}
-              >
-                {c.name}
-              </Link>
-              {sideActiveCat === c.id && (c.tags || []).length > 0 && (
-                <div style={{ margin: "2px 0 6px 6px" }}>
-                  {c.tags!.map((t) => (
-                    <Link
-                      key={t}
-                      href={`/tool?cat=${c.id}&tag=${encodeURIComponent(t)}`}
-                      style={sideTagStyle(activeTag === t && sideActiveCat === c.id)}
-                    >
-                      {t}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+            <Link
+              key={c.id}
+              href={`/tool?cat=${c.id}`}
+              style={sideCatStyle(sideActiveCat === c.id && !activeTag)}
+            >
+              {c.name}
+            </Link>
           ))}
         </aside>
 

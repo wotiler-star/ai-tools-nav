@@ -470,7 +470,7 @@ export default function Header() {
           </nav>
 
           {!isNarrow && (
-            <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+            <div className="header-search" style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
               <SearchBox />
             </div>
           )}

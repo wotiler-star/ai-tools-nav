@@ -541,3 +541,8 @@ body {
     transform: rotate(360deg);
   }
 }
+
+/* 中等宽度下隐藏顶部「全站搜索」框，给右上角登录/注册让位（对齐目标站截图，SSR 即生效不依赖水合） */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .header-search { display: none !important; }
+}
