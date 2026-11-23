@@ -28,7 +28,8 @@ const sectionTitleStyle: React.CSSProperties = {
 
 const gridStyle: React.CSSProperties = {
   display: "grid",
-  gap: 12
+  // 1:1 对齐目标站（fnd_L10）：网格 gap 16px；6 列由 .tool-grid CSS 断点控制
+  gap: 16
 };
 
 export default function ToolGrid({

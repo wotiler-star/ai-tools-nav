@@ -16,85 +16,50 @@ export default function ToolCard({ tool }: { tool: AiTool }) {
   return (
     <Link
       href={`/tool/${tool.id}`}
-      className="group hover-brand-lift block rounded-lg bg-white"
-      style={{ height: "100%" }}
+      className="group hover-brand-lift tool-card"
     >
-      <div
-        style={{
-          padding: 12,
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          gap: 8
-        }}
-      >
-        {tool.logo ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={tool.logo}
-            alt={tool.name}
-            width={40}
-            height={40}
-            loading="lazy"
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 10,
-              objectFit: "cover",
-              flexShrink: 0
-            }}
-          />
-        ) : (
-          <div
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 10,
-              background: colorFromName(tool.name),
-              color: "#fff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 18,
-              fontWeight: 700,
-              flexShrink: 0
-            }}
-          >
-            {tool.name.charAt(0)}
-          </div>
-        )}
-        <div style={{ minWidth: 0, flex: 1 }}>
-          {/*
-            工具名用 h3：卡片在板块 h2 之下，构成 h1→h2→h3 的正确层级，便于搜索引擎与
-            读屏软件理解结构。显式 margin:0 + fontSize/fontWeight 抵消 h3 默认样式，保持视觉不变。
-          */}
-          <h3
-            className="hover-brand-title"
-            style={{
-              margin: 0,
-              fontWeight: 600,
-              fontSize: 14,
-              color: "var(--text-1)",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis"
-            }}
-          >
-            {tool.name}
-          </h3>
-          <div
-            style={{
-              marginTop: 3,
-              fontSize: 12,
-              color: "var(--text-3)",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis"
-            }}
-          >
-            {tool.description}
-          </div>
+      {tool.logo ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={tool.logo}
+          alt={tool.name}
+          width={40}
+          height={40}
+          loading="lazy"
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: "50%",
+            objectFit: "cover",
+            flexShrink: 0
+          }}
+        />
+      ) : (
+        <div
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: "50%",
+            background: colorFromName(tool.name),
+            color: "#fff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 18,
+            fontWeight: 700,
+            flexShrink: 0
+          }}
+        >
+          {tool.name.charAt(0)}
         </div>
+      )}
+      <div className="tool-card-text">
+        {/*
+          工具名用 h3：卡片在板块 h2 之下，构成 h1→h2→h3 的正确层级，便于搜索引擎与
+          读屏软件理解结构。样式与 1:1 对齐目标站：14px/500/#000。
+        */}
+        <h3 className="hover-brand-title tool-card-name">{tool.name}</h3>
+        <div className="tool-card-desc">{tool.description}</div>
       </div>
     </Link>
   );
