@@ -547,9 +547,10 @@ body {
   .header-search { display: none !important; }
 }
 
-/* /tool 独立左侧栏：窄屏隐藏，避免横向溢出（桌面端贴页面左缘、上下留白） */
-@media (max-width: 1023px) {
-  .tool-sidebar { display: none !important; }
+/* /tool 左侧分类导航：对齐目标站响应式——仅 >=1600px 宽屏显示（craft 引擎多宽度实测：1440 隐藏/1600+ 显示） */
+.tool-sidebar { display: none; }
+@media (min-width: 1600px) {
+  .tool-sidebar { display: block !important; }
 }
 
 /* /tool 工具卡网格：1:1 对齐目标站线上（tailwind grid-cols-2 / md:4 / lg:5） */

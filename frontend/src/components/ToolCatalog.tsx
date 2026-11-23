@@ -63,6 +63,24 @@ export default function ToolCatalog({
         AI 工具大全
       </h1>
 
+      {/*
+        左侧分类导航栏（对齐目标站实测：position:fixed; left:0; top:50%; translateY(-50%);
+        width:109px; 透明背景无边框; 仅 ≥1600px 宽屏显示）。
+        之前误删——目标站侧栏是响应式的，1440px 隐藏、≥1600px 显示（craft 引擎多宽度实测 ev_ 证据）。
+      */}
+      <aside className="tool-sidebar" style={{ position: "fixed", left: 0, top: "50%",
+        transform: "translateY(-50%)", zIndex: 10, width: 109, padding: "0 0 0 8px" }}>
+        {categories.map((c) => (
+          <Link
+            key={c.id}
+            href={`/tool?cat=${c.id}`}
+            style={sideCatStyle(activeCat === c.id && !activeTag)}
+          >
+            {c.name}
+          </Link>
+        ))}
+      </aside>
+
       {/* 顶部导航区：搜索框 + 分类 tab + 全局标签云（sticky） */}
       <div
         style={{
@@ -185,3 +203,21 @@ function cloudChipStyle(active: boolean): React.CSSProperties {
   };
 }
 
+
+/* 左侧固定分类导航项：对齐目标站（纯文字、小号、激活蓝色，无背景框） */
+function sideCatStyle(active: boolean): React.CSSProperties {
+  return {
+    display: "block",
+    width: "100%",
+    textAlign: "left",
+    padding: "4px 0",
+    color: active ? BRAND : "#4b5563",
+    fontSize: 12,
+    fontWeight: active ? 600 : 400,
+    textDecoration: "none",
+    lineHeight: 1.5,
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis"
+  };
+}
