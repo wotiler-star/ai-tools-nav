@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { Input, Tag } from "antd";
 import { SearchOutlined, ThunderboltOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { SKILLS, SKILL_CATEGORIES } from "@/lib/mockData";
@@ -112,14 +113,16 @@ export default function SkillsPage() {
           }}
         >
           {list.map((s) => (
-            <div
+            <Link
               key={s.id}
+              href={`/skills/${s.id}`}
               className="group hover-brand tool-card"
               style={{
                 background: "#fff",
                 borderRadius: 12,
                 padding: 16,
-                cursor: "pointer"
+                cursor: "pointer",
+                textDecoration: "none"
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
@@ -147,7 +150,7 @@ export default function SkillsPage() {
               <div style={{ fontSize: 13, color: "#4e5969", lineHeight: 1.7, minHeight: 44 }}>
                 {s.description}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

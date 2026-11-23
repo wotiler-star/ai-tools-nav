@@ -73,7 +73,7 @@ export default function ToolCatalog({
         {categories.map((c) => (
           <Link
             key={c.id}
-            href={`/tool?cat=${c.id}`}
+            href={`/tool/all/${encodeURIComponent(c.name)}`}
             style={sideCatStyle(activeCat === c.id && !activeTag)}
           >
             {c.name}
@@ -108,7 +108,7 @@ export default function ToolCatalog({
               return (
                 <Link
                   key={c.id}
-                  href={`/tool?cat=${c.id}`}
+                  href={`/tool/all/${encodeURIComponent(c.name)}`}
                   style={navTabStyle(catActive)}
                 >
                   {c.name}
