@@ -46,13 +46,26 @@ export default function ToolGrid({
   activeTag?: string;
 }) {
   const kw = keyword.trim().toLowerCase();
+  const tag = activeTag.trim();
 
+  // 卡片是否匹配当前筛选（与下方渲染共用，保证「分组可见性」与「卡片可见性」一致）
+  const isVisible = (t: AiTool) => {
+    const haystack = `${t.name} ${t.description} ${(t.tags || []).join(" ")}`.toLowerCase();
+    const matchKw = !kw || haystack.includes(kw);
+    const matchCat = activeCat === 0 || t.categoryId === activeCat;
+    const matchTag = !tag || (t.tags || []).includes(tag);
+    return matchKw && matchCat && matchTag;
+  };
+
+  // 分组收敛：选中 cat 时只渲染该分类分区；keyword/tag 筛选时跳过没有任何可见卡片的分区。
+  // 修复 ?cat=N 时顶部 tab 高亮正确、正文却仍列出全部分区标题+空卡片的 bug。
   const groups = categories
+    .filter((c) => activeCat === 0 || c.id === activeCat)
     .map((c) => ({
       cat: c,
       items: tools.filter((t) => t.categoryId === c.id)
     }))
-    .filter((g) => g.items.length > 0);
+    .filter((g) => g.items.length > 0 && g.items.some(isVisible));
 
   return (
     <div>
@@ -128,10 +141,7 @@ export default function ToolGrid({
                 const haystack = `${tool.name} ${tool.description} ${(
                   tool.tags || []
                 ).join(" ")}`.toLowerCase();
-                const matchKw = !kw || haystack.includes(kw);
-                const matchCat = activeCat === 0 || tool.categoryId === activeCat;
-                const matchTag = !activeTag || (tool.tags || []).includes(activeTag);
-                const visible = matchKw && matchCat && matchTag;
+                const visible = isVisible(tool);
                 return (
                   <div
                     key={tool.id}
