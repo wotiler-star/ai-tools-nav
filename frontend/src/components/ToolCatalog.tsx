@@ -84,7 +84,7 @@ export default function ToolCatalog({
     : activeCatName || "全部 AI 工具";
 
   return (
-    <div style={{ background: "#f5f6f8", minHeight: "100vh" }}>
+    <div style={{ background: "#fff", minHeight: "100vh" }}>
       <h1
         style={{
           position: "absolute",
@@ -108,7 +108,7 @@ export default function ToolCatalog({
           position: "sticky",
           top: 64,
           zIndex: 20,
-          background: "rgba(245,246,248,0.92)",
+          background: "rgba(255,255,255,0.94)",
           backdropFilter: "blur(8px)",
           borderBottom: "1px solid #eef0f2"
         }}
@@ -240,10 +240,10 @@ export default function ToolCatalog({
             width: 120,
             flexShrink: 0,
             margin: "24px 0 60px 16px",
-            background: "var(--surface)",
-            border: "1px solid var(--chip-border)",
-            borderRadius: 12,
-            padding: "10px 6px",
+            background: "#f5f5f5",
+            border: "none",
+            borderRadius: 8,
+            padding: "8px 4px",
             maxHeight: `calc(100vh - ${sideTop + 76}px)`,
             overflowY: "auto"
           }}
