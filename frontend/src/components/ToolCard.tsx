@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AiTool } from "@/types";
+import { TOOL_REAL_IDS } from "@/lib/toolRealIds";
 
 function colorFromName(name: string): string {
   let h = 0;
@@ -15,7 +16,7 @@ function colorFromName(name: string): string {
 export default function ToolCard({ tool }: { tool: AiTool }) {
   return (
     <Link
-      href={`/tool/${tool.id}`}
+      href={`/tool/${TOOL_REAL_IDS[String(tool.id)] || tool.id}`}
       className="group hover-brand-lift tool-card"
     >
       {tool.logo ? (

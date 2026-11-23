@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import { serverGet } from "@/lib/server-api";
+import { TOOL_NUM_IDS } from "@/lib/toolRealIds";
 import { SITE } from "@/config/site";
+
+// 目标站真实 19 位 id → 本站数字 id 取数；对外 slug 仍用 URL 传入值（SEO 可对照目标站）
+function resolveId(routeId: string): string {
+  return /^\d{19}$/.test(routeId) ? (TOOL_NUM_IDS[routeId] || "0") : routeId;
+}
 
 interface ToolSEO {
   id?: string | number;
@@ -16,7 +22,7 @@ export async function generateMetadata({
 }: {
   params: { id: string };
 }): Promise<Metadata> {
-  const tool = await serverGet<ToolSEO>(`/ai_tool/get`, { id: params.id });
+  const tool = await serverGet<ToolSEO>(`/ai_tool/get`, { id: resolveId(params.id) });
   if (!tool || !tool.name) {
     return {
       title: "AI 工具详情",
@@ -24,7 +30,7 @@ export async function generateMetadata({
     };
   }
   const desc = `${tool.name}——${tool.description || ""} 功能、特点与使用方式，尽在 ${SITE.name}。`;
-  const slug = tool.id ?? params.id;
+  const slug = params.id; // 对外 URL 保持目标站 19 位 id（可对照），数字 id 也原样保留
   return {
     title: tool.name,
     description: desc,
@@ -46,8 +52,8 @@ export default async function ToolDetailLayout({
   children: React.ReactNode;
   params: { id: string };
 }) {
-  const tool = await serverGet<ToolSEO>(`/ai_tool/get`, { id: params.id });
-  const slug = tool?.id ?? params.id;
+  const tool = await serverGet<ToolSEO>(`/ai_tool/get`, { id: resolveId(params.id) });
+  const slug = params.id;
   const jsonLd =
     tool && tool.name
       ? {

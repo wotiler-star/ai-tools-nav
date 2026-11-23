@@ -14,6 +14,7 @@ import Markdown from "@/components/Markdown";
 import { getRelatedReviews } from "@/lib/reviews";
 import { addRecent } from "@/lib/recentTools";
 import { CATEGORIES, AI_TOOLS } from "@/lib/mockData";
+import { TOOL_REAL_IDS } from "@/lib/toolRealIds";
 import { AiTool } from "@/types";
 
 interface ToolDetail extends AiTool {
@@ -352,7 +353,7 @@ export default function ToolDetailClient({ id, tool, latest }: Props) {
             {latest.map((t) => (
               <Link
                 key={t.id}
-                href={`/tool/${t.id}`}
+                href={`/tool/${TOOL_REAL_IDS[String(t.id)] || t.id}`}
                 className="tool-side-item"
                 style={sideItemStyle}
               >
@@ -369,7 +370,7 @@ export default function ToolDetailClient({ id, tool, latest }: Props) {
             {related.map((t) => (
               <Link
                 key={t.id}
-                href={`/tool/${t.id}`}
+                href={`/tool/${TOOL_REAL_IDS[String(t.id)] || t.id}`}
                 className="tool-side-item"
                 style={sideItemStyle}
               >

@@ -3,6 +3,7 @@ import RecentTools from "@/components/RecentTools";
 import TabController from "./TabController";
 import ToolCard from "@/components/ToolCard";
 import SafeCover from "@/components/SafeCover";
+import { TOOL_REAL_IDS } from "@/lib/toolRealIds";
 import {
   AI_NEWS as MOCK_NEWS,
   AI_POSTS as MOCK_POSTS,
@@ -653,7 +654,7 @@ export default async function HomeMagazine() {
             {featuredTools.map((t, idx) => (
               <article key={t.id}>
                 <Link
-                  href={`/tool/${t.id}`}
+                  href={`/tool/${TOOL_REAL_IDS[String(t.id)] || t.id}`}
                   className="group hover-brand-lift block h-full overflow-hidden rounded-2xl bg-white shadow-sm"
                 >
                   {/* 真实封面：工具 logo（第一方资源），无 logo 时退化品牌图标，不再用渐变占位 */}

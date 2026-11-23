@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Calendar } from "antd";
 import type { Dayjs } from "dayjs";
 import { AiTool, AiPost, NewsItem } from "@/types";
+import { TOOL_REAL_IDS } from "@/lib/toolRealIds";
 
 /* ============================================================
  * /news 资讯列表客户端组件 —— 由服务端 news/page.tsx 注入 mock 数据（SSR 首屏即含内容）。
@@ -275,7 +276,7 @@ export default function NewsFeed({
                 {(hotTools.length ? hotTools : []).map((t) => (
                   <Link
                     key={t.id}
-                    href={`/tool/${t.id}`}
+                    href={`/tool/${TOOL_REAL_IDS[String(t.id)] || t.id}`}
                     className="news-tool-item"
                     title={t.name}
                   >

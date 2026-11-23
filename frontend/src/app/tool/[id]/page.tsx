@@ -18,6 +18,7 @@ import ToolCard from "@/components/ToolCard";
 import FavoriteButton from "@/components/FavoriteButton";
 import { addRecent } from "@/lib/recentTools";
 import { CATEGORIES } from "@/lib/mockData";
+import { TOOL_NUM_IDS } from "@/lib/toolRealIds";
 import { SITE } from "@/config/site";
 import { AiTool, BaseResponse } from "@/types";
 
@@ -28,12 +29,15 @@ interface ToolDetail extends AiTool {
 
 export default function ToolDetailPage() {
   const params = useParams();
-  const id = Number(params.id);
+  const routeId = String(params.id);
+  // 支持目标站真实 19 位 id：自动映射到本站数字 id 查后端；数字 id 原样兼容旧链接。
+  const isRealId = /^\d{19}$/.test(routeId);
+  const id = isRealId ? Number(TOOL_NUM_IDS[routeId] || 0) : Number(routeId);
   const { msg, show } = useToast();
   const isMobile = useMediaQuery("(max-width: 767px)");
 
   const { data, isLoading } = useSWR<BaseResponse<ToolDetail>>(
-    `/ai_tool/get?id=${id}`,
+    id ? `/ai_tool/get?id=${id}` : null,
     swrFetcher
   );
 
