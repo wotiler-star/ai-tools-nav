@@ -604,3 +604,6 @@ body {
   text-overflow: ellipsis;
   line-height: 1.4;
 }
+
+/* /tool 卡片容器：1:1 对齐目标站网格自带浅灰圆角容器（fnd_L11） */
+.tool-grid { background: #f4f4f5; padding: 16px; border-radius: 6px; }
