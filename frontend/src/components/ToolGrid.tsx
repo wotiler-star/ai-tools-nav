@@ -69,6 +69,20 @@ export default function ToolGrid({
 
   return (
     <div>
+      {groups.length === 0 && (
+        <div style={{ textAlign: "center", padding: "72px 16px", color: "var(--text-3)" }}>
+          <div style={{ fontSize: 16, fontWeight: 600, color: "var(--text-2)", marginBottom: 8 }}>
+            {keyword.trim()
+              ? `没有找到与「${keyword.trim()}」相关的工具`
+              : activeTag
+                ? `「${activeTag}」标签下暂无工具`
+                : "该分类暂无工具"}
+          </div>
+          <Link href="/tool" style={{ color: "#3874F7", fontSize: 14, textDecoration: "none" }}>
+            查看全部 AI 工具 →
+          </Link>
+        </div>
+      )}
       {groups.map(({ cat, items }) => {
         const tagChips =
           cat.cloudCount && cat.cloudCount > 0
