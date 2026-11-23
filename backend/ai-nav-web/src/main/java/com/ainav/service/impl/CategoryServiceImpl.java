@@ -26,29 +26,32 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     public List<Category> listOrdered() {
         List<Category> categories = list(new LambdaQueryWrapper<Category>().orderByAsc(Category::getSort));
 
-        // 统计每个标签在 ai_tool 表中的命中数（tags 为逗号分隔字符串）。
-        // 只查 tags 列，避免把 589 条工具的整行拉进内存。
-        Map<String, Integer> tagHits = new HashMap<>();
+        // 按「分类内」统计标签命中数：前端的标签链接是 /tool?cat=该类&tag=该标签（双重筛选），
+        // 所以全站命中但本分类 0 命中的标签同样是死链，必须按 categoryId 分组统计。
+        // 只查 category_id + tags 两列，避免把 589 条工具的整行拉进内存。
+        Map<Long, Map<String, Integer>> catTagHits = new HashMap<>();
         List<AiTool> tools = aiToolMapper.selectList(
-                new LambdaQueryWrapper<AiTool>().select(AiTool::getTags));
+                new LambdaQueryWrapper<AiTool>().select(AiTool::getCategoryId, AiTool::getTags));
         for (AiTool tool : tools) {
             String raw = tool.getTags();
             if (raw == null || raw.isEmpty()) continue;
+            Map<String, Integer> hits = catTagHits.computeIfAbsent(tool.getCategoryId(), k -> new HashMap<>());
             for (String tag : raw.split(",")) {
                 String t = tag.trim();
-                if (!t.isEmpty()) tagHits.merge(t, 1, Integer::sum);
+                if (!t.isEmpty()) hits.merge(t, 1, Integer::sum);
             }
         }
 
-        // 标签云只保留至少命中 1 个工具的标签；cloudCount 同步收敛，
+        // 标签云只保留本分类内至少命中 1 个工具的标签；cloudCount 同步收敛，
         // 避免「展示 N 个」却只有 M<N 个可用标签导致前端出现点开即空的死链。
         for (Category c : categories) {
             String raw = c.getTags();
             if (raw == null || raw.isEmpty()) continue;
+            Map<String, Integer> hits = catTagHits.getOrDefault(c.getId(), java.util.Collections.emptyMap());
             List<String> kept = Arrays.stream(raw.split(","))
                     .map(String::trim)
                     .filter(t -> !t.isEmpty())
-                    .filter(t -> tagHits.getOrDefault(t, 0) > 0)
+                    .filter(t -> hits.getOrDefault(t, 0) > 0)
                     .collect(Collectors.toList());
             c.setTags(String.join(",", kept));
             if (c.getCloudCount() != null) {
