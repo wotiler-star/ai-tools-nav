@@ -57,13 +57,16 @@ export default function ToolCatalog({
       </h1>
 
       {/*
-        左侧分类导航栏（对齐目标站实测：position:fixed; left:0; top:50%; translateY(-50%);
-        width:109px; 透明背景无边框; 仅 ≥1600px 宽屏显示）。
-        之前误删——目标站侧栏是响应式的，1440px 隐藏、≥1600px 显示（craft 引擎多宽度实测 ev_ 证据）。
+        左侧分类导航栏——1:1 对齐目标站实测（浏览器 getComputedStyle 2026-11-24）：
+        外层 fixed left:0/top:50%/translateY(-50%)，内层 nav 为 rounded-lg(8px) + shadow
+        双层阴影 + overflow:hidden 的卡片容器（这就是红框里看到的「边框」效果），width:109;
+        选中项蓝字 #1777ff / 蓝底 #e6f4ff、14px/600、高 40px、padding 0 16px；仅 ≥1600px 显示。
       */}
       <div className="tool-sidebar" style={{ position: "fixed", left: 0, top: "50%",
-        transform: "translateY(-50%)", zIndex: 10, width: 109, padding: "0 0 0 8px" }}>
-        <nav aria-label="工具分类导航" role="navigation" className="tool-sidebar-nav">
+        transform: "translateY(-50%)", zIndex: 10, width: 109 }}>
+        <nav aria-label="工具分类导航" role="navigation" className="tool-sidebar-nav"
+          style={{ borderRadius: 8, overflow: "hidden", background: "#fff",
+            boxShadow: "rgba(0,0,0,.1) 0 1px 3px 0, rgba(0,0,0,.1) 0 1px 2px -1px" }}>
           {categories.map((c) => (
             <Link
               key={c.id}
@@ -241,16 +244,22 @@ function ChevronDown() {
 
 /* 左侧固定分类导航项：对齐目标站（纯文字、小号、激活蓝色，无背景框） */
 function sideCatStyle(active: boolean): React.CSSProperties {
+  // 1:1 目标站 antd 竖排菜单项：选中蓝字#1777ff/蓝底#e6f4ff、14px/600、高40px、padding 0 16px
   return {
-    display: "block",
+    display: "flex",
+    alignItems: "center",
     width: "100%",
+    height: 40,
+    marginBottom: 4,
+    boxSizing: "border-box",
     textAlign: "left",
-    padding: "4px 0",
-    color: active ? BRAND : "#4b5563",
-    fontSize: 12,
+    padding: "0 16px",
+    color: active ? "#1777ff" : "#4b5563",
+    background: active ? "#e6f4ff" : "transparent",
+    fontSize: 14,
     fontWeight: active ? 600 : 400,
     textDecoration: "none",
-    lineHeight: 1.5,
+    lineHeight: "40px",
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis"
