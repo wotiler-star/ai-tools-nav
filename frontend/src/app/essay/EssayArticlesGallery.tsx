@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Input, Tag } from "antd";
+import { Input } from "antd";
 import { SearchOutlined, EyeOutlined, LikeOutlined, MessageOutlined } from "@ant-design/icons";
 import { ESSAY_ARTICLES, type EssayArticle } from "@/lib/essayArticles";
 import SafeCover from "@/components/SafeCover";
@@ -81,24 +81,36 @@ export default function EssayArticlesGallery({ initialPage = 1 }: { initialPage?
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: 18 }}>
         {shown.map((a) => (
-          <article key={a.id} className="group hover-brand tool-card" style={{ background: "#fff", borderRadius: 12, overflow: "hidden" }}>
-            <Link href={`/essay/${a.id}`} style={{ textDecoration: "none" }}>
+          <article key={a.id} className="group hover-brand tool-card" style={{ background: "#fff", borderRadius: 12, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+            <Link href={`/essay/${a.id}`} style={{ textDecoration: "none", display: "block" }}>
               <div style={{ position: "relative", height: 160, overflow: "hidden", background: "#f5f6f8" }}>
                 <SafeCover src={a.cover} alt={a.title} className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105" />
               </div>
-              <div style={{ padding: 16 }}>
+              <div style={{ padding: "16px 16px 0" }}>
                 <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 8px", lineHeight: 1.5 }} className="hover-brand-title">{a.title}</h2>
                 <p style={{ fontSize: 13, color: "#6b7280", margin: "0 0 10px", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.description}</p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
-                  {a.tags.slice(0, 4).map((t) => <Tag key={t} color="blue" style={{ margin: 0, fontSize: 11 }}>#{t}</Tag>)}
-                </div>
-                <div style={{ display: "flex", gap: 14, fontSize: 12, color: "#9ca3af" }}>
-                  <span><EyeOutlined /> {formatCount(a.viewCount)}</span>
-                  <span><LikeOutlined /> {a.likeNum}</span>
-                  <span><MessageOutlined /> {a.commentNum}</span>
-                </div>
               </div>
             </Link>
+            {/* 话题层：目标站 tag 是 /tag/{tag} 链接（a.tagItem），非纯展示 chip */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, padding: "0 16px 10px" }}>
+              {a.tags.slice(0, 5).map((t) => (
+                <Link key={t} href={`/tag/${encodeURIComponent(t)}`}
+                  style={{ fontSize: 11, color: BRAND, textDecoration: "none", background: "#eef4ff", borderRadius: 4, padding: "2px 8px" }}>#{t}</Link>
+              ))}
+            </div>
+            {/* 作者层：目标站作者头像是 /user/{id} 链接，这里用真实作者数据 + onError 兜底 */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, padding: "0 16px 12px", marginTop: "auto" }}>
+              <Link href={`/user/${a.author?.id || ""}`} style={{ display: "flex", alignItems: "center", gap: 6, textDecoration: "none", color: "#4e5969", fontSize: 12, minWidth: 0 }}>
+                <img src={a.author?.avatar || ""} alt={a.author?.name || ""} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                  style={{ width: 22, height: 22, borderRadius: "50%", objectFit: "cover", background: "#f0f1f3", flexShrink: 0 }} />
+                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.author?.name || "佚名"}</span>
+              </Link>
+              <div style={{ display: "flex", gap: 12, fontSize: 12, color: "#9ca3af", flexShrink: 0 }}>
+                <span><EyeOutlined /> {formatCount(a.viewCount)}</span>
+                <span><LikeOutlined /> {a.likeNum}</span>
+                <span><MessageOutlined /> {a.commentNum}</span>
+              </div>
+            </div>
           </article>
         ))}
       </div>
