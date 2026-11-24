@@ -4,7 +4,7 @@
 import PaintingCasesGallery from "./PaintingCasesGallery";
 
 export const metadata = {
-  title: "AI绘图提示词模板大全 - NanoBanana/SD/Midjourney提示词库 | toolly",
+  title: "AI绘图提示词模板大全 - NanoBanana/SD/Midjourney提示词库",
   description: "精选 AI 绘图提示词模板和案例，复制即可使用"
 };
 

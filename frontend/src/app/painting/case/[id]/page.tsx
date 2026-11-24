@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   if (!item) return { title: { absolute: `案例未找到｜${SITE.name}` } };
   const desc = `${item.title}——${item.tags.map((t) => "#" + t).join(" ")}。${item.description}`;
   return {
-    title: { absolute: `${item.title} - AI绘图案例与提示词｜鱼皮AI导航` },
+    title: { absolute: `${item.title} - AI绘图案例与提示词 | ${SITE.name}` },
     description: desc.slice(0, 160),
     keywords: [...item.tags, "AI绘图案例", "AI绘图提示词"].join(","),
     alternates: { canonical: `/painting/case/${item.id}` },
