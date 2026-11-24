@@ -553,6 +553,12 @@ body {
   .tool-sidebar { display: block !important; }
 }
 
+/* /tool 顶部分类 antd 风格下拉：hover / focus-within 展开子菜单（对齐目标站 6 个带 ▾ 分类） */
+.tool-top-menu li.has-sub:hover > .tool-submenu,
+.tool-top-menu li.has-sub:focus-within > .tool-submenu { display: block !important; }
+.tool-submenu-item:hover,
+.tool-submenu-item:focus { background: #f5f8ff; color: #3874F7; }
+
 /* /tool 工具卡网格：1:1 对齐目标站线上（tailwind grid-cols-2 / md:4 / lg:5） */
 .tool-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media (min-width: 768px) {

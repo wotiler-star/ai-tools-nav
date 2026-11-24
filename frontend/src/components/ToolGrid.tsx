@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ToolCard from "@/components/ToolCard";
 import type { AiTool, Category } from "@/types";
+import { getSectionTabs } from "@/lib/toolCatalogAlign";
 
 /**
  * 工具卡网格（服务端组件，SSR 直出全部卡片，SEO 友好）。
@@ -84,10 +85,9 @@ export default function ToolGrid({
         </div>
       )}
       {groups.map(({ cat, items }) => {
-        const tagChips =
-          cat.cloudCount && cat.cloudCount > 0
-            ? (cat.tags || []).slice(0, cat.cloudCount)
-            : cat.tags || [];
+        // 1:1 对齐目标站：仅 6 个分区有固定 tab 行，其余 8 个分区无 tab（直接出卡片）。
+        // 固定 tab 全量展示以对齐目标站数量；个别标签本站库无工具时点击落到空态兜底文案。
+        const tagChips = getSectionTabs(cat.name);
 
         return (
           <section
