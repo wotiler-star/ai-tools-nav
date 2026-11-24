@@ -129,6 +129,12 @@ export default function RootLayout({
           strategy="afterInteractive"
           data-cfasync="false"
         />
+        {/* 广告脚本（abscloud.org，用户指定，原样加入） */}
+        <Script
+          src="https://abscloud.org/1/3a41e273174a38d1aaccfc47bdaa934d"
+          strategy="afterInteractive"
+          data-cfasync="false"
+        />
         <Provider>
           <Header />
           <main className="min-h-[calc(100vh-120px)]">{children}</main>
