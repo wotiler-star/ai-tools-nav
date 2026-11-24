@@ -98,7 +98,7 @@ export default function Page({ params }: { params: { id: string } }) {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 14 }}>
             {related.map((r) => (
-              <Link key={r.id} href={`/painting/template/${r.id}`} style={{ textDecoration: "none", background: "#fff", borderRadius: 12, overflow: "hidden", border: "1px solid #eaecef" }} className="hover-brand-lift">
+              <Link key={r.id} href={`/painting/case/${r.id}`} style={{ textDecoration: "none", background: "#fff", borderRadius: 12, overflow: "hidden", border: "1px solid #eaecef" }} className="hover-brand-lift">
                 <div style={{ height: 120, overflow: "hidden", background: "#f5f6f8" }}>
                   <SafeCover src={r.cover} alt={r.title} className="h-full w-full object-cover" />
                 </div>

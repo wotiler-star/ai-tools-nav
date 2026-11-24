@@ -111,7 +111,7 @@ export default function PaintingCasesGallery() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16 }}>
         {shown.map((c) => (
-          <Link key={c.id} href={`/painting/template/${c.id}`} style={{ background: "#fff", borderRadius: 12, overflow: "hidden", display: "block", textDecoration: "none" }} className="group hover-brand tool-card">
+          <Link key={c.id} href={`/painting/case/${c.id}`} style={{ background: "#fff", borderRadius: 12, overflow: "hidden", display: "block", textDecoration: "none" }} className="group hover-brand tool-card">
             <div style={{ position: "relative", height: 150, overflow: "hidden", background: "#f5f6f8" }}>
               <SafeCover src={c.cover} alt={c.title} className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105" />
               <span style={{ position: "absolute", left: 8, top: 8, background: "rgba(0,0,0,.55)", color: "#fff", fontSize: 11, borderRadius: 4, padding: "2px 6px" }}>案例</span>

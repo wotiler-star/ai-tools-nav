@@ -297,7 +297,7 @@ function PromptSection({
                 .map((p) => (
                   <article key={p.id}>
                     <Link
-                      href={p.href ?? `/painting/template/${p.id}`}
+                      href={p.href ?? `/painting/case/${p.id}`}
                       className="group hover-brand-lift block h-full overflow-hidden rounded-2xl bg-white shadow-sm"
                     >
                       {/* 封面：有 cover 用真实图，加载失败则隐藏 img 让分类渐变透出（不破图） */}
@@ -581,7 +581,7 @@ export default async function HomeMagazine() {
     tags: g.tags,
     kind: "draw",
     cover: g.cover,
-    href: `/painting/template/${g.id}`
+    href: `/painting/case/${g.id}`
   }));
   const DRAW_KEYWORDS = ["绘画", "绘图", "图片", "图像", "设计", "插画", "二次元", "3D", "漫", "画"];
   const textCards: HomePrompt[] = (
