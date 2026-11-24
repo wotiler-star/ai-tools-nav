@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Input, Tag } from "antd";
 import { SearchOutlined, EyeOutlined, LikeOutlined, MessageOutlined } from "@ant-design/icons";
@@ -13,12 +13,21 @@ const TOPICS = ["全部", "AI", "编程", "程序员", "AI编程", "GitHub", "Cl
 
 function formatCount(n: number) { return n >= 10000 ? (n/10000).toFixed(1)+"万" : String(n); }
 
-export default function EssayArticlesGallery() {
+export default function EssayArticlesGallery({ initialPage = 1 }: { initialPage?: number }) {
   const [sort, setSort] = useState<(typeof SORTS)[number]>("推荐");
   const [topic, setTopic] = useState("全部");
   const [kw, setKw] = useState("");
-  const [page, setPage] = useState(1);
-  const pageSize = 12;
+  const [page, setPage] = useState(initialPage);
+  // 首屏直出 30 条（1:1 目标站长列表；667 条真实文章按页切分，SSR 即含 30 张卡）
+  const pageSize = 30;
+
+  // 浏览器前进/后退时同步 state（分页用 Link 导航，URL 是唯一真源）
+  useEffect(() => {
+    const p = Math.max(1, Number(new URLSearchParams(window.location.search).get("page")) || 1);
+    setPage(p);
+  }, []);
+
+  const pageHref = (p: number) => `/essay?page=${p}`;
 
   const list = useMemo(() => {
     let arr = [...ESSAY_ARTICLES];
@@ -95,13 +104,27 @@ export default function EssayArticlesGallery() {
       </div>
       {shown.length === 0 && <div style={{ textAlign: "center", color: "#9ca3af", padding: 40 }}>暂无匹配文章</div>}
 
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12, marginTop: 28 }}>
-        <button type="button" disabled={cur <= 1} onClick={() => setPage(cur - 1)}
-          style={{ padding: "6px 16px", borderRadius: 8, border: "1px solid #eaecef", background: "#fff", cursor: cur <= 1 ? "not-allowed" : "pointer", opacity: cur <= 1 ? 0.5 : 1 }}>上一页</button>
-        <span style={{ fontSize: 13, color: "#6b7280" }}>第 {cur} / {totalPages} 页 · 共 {list.length} 篇</span>
-        <button type="button" disabled={cur >= totalPages} onClick={() => setPage(cur + 1)}
-          style={{ padding: "6px 16px", borderRadius: 8, border: "1px solid #eaecef", background: "#fff", cursor: cur >= totalPages ? "not-allowed" : "pointer", opacity: cur >= totalPages ? 0.5 : 1 }}>下一页</button>
-      </div>
+      {/* 分页器：全部用 <Link>，每页可爬取；页码窗口 7 个 + 首尾 */}
+      <nav aria-label="文章分页" style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 6, marginTop: 28, flexWrap: "wrap" }}>
+        <Link href={pageHref(Math.max(1, cur - 1))} aria-disabled={cur <= 1}
+          onClick={(e) => { if (cur <= 1) e.preventDefault(); }}
+          style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #eaecef", background: "#fff", color: cur <= 1 ? "#c9cdd4" : "#4e5969", textDecoration: "none", pointerEvents: cur <= 1 ? "none" : "auto" }}>上一页</Link>
+        {Array.from({ length: Math.min(7, totalPages) }, (_, i) => {
+          const p = Math.min(Math.max(1, cur - 3) + i, totalPages);
+          return (
+            <Link key={p} href={pageHref(p)} aria-current={p === cur ? "page" : undefined}
+              onClick={(e) => { e.preventDefault(); setPage(p); }}
+              style={{ minWidth: 32, textAlign: "center", padding: "6px 10px", borderRadius: 8, fontSize: 13, textDecoration: "none",
+                border: `1px solid ${p === cur ? BRAND : "#eaecef"}`, background: p === cur ? BRAND : "#fff", color: p === cur ? "#fff" : "#4e5969" }}>
+              {p}
+            </Link>
+          );
+        })}
+        <Link href={pageHref(Math.min(totalPages, cur + 1))} aria-disabled={cur >= totalPages}
+          onClick={(e) => { if (cur >= totalPages) e.preventDefault(); }}
+          style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #eaecef", background: "#fff", color: cur >= totalPages ? "#c9cdd4" : "#4e5969", textDecoration: "none", pointerEvents: cur >= totalPages ? "none" : "auto" }}>下一页</Link>
+        <span style={{ fontSize: 13, color: "#6b7280", marginLeft: 8 }}>第 {cur} / {totalPages} 页 · 共 {list.length} 篇</span>
+      </nav>
     </div>
   );
 }

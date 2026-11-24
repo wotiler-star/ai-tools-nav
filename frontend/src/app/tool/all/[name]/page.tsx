@@ -71,20 +71,15 @@ export default async function ToolCategoryPage({
   const current = Math.max(1, Number(sp.current) || 1);
   const pageSize = Math.min(200, Math.max(1, Number(sp.pageSize) || PAGE_SIZE));
 
-  const [categories, toolRes] = await Promise.all([
-    serverFetch<Category[]>("/category/list"),
-    (async () => {
-      // 先按分类名解析 categoryId；分类不存在时仍走搜索/全量，不 500
-      const cats = await serverFetch<Category[]>("/category/list");
-      const cat = cats?.find((c) => c.name === catName);
-      return serverFetch<PageResult<AiTool>>("/ai_tool/list/page", {
-        categoryId: cat?.id || 0,
-        keyword: q || undefined,
-        current,
-        pageSize
-      });
-    })()
-  ]);
+  // 单次取分类，再按分类名解析 categoryId（只发一次 /category/list，降低 TTFB）
+  const cats = await serverFetch<Category[]>("/category/list");
+  const cat = cats?.find((c) => c.name === catName);
+  const toolRes = await serverFetch<PageResult<AiTool>>("/ai_tool/list/page", {
+    categoryId: cat?.id || 0,
+    keyword: q || undefined,
+    current,
+    pageSize
+  });
 
   const total = toolRes?.total ?? 0;
   const records: AiTool[] = toolRes?.records ?? [];
@@ -103,29 +98,23 @@ export default async function ToolCategoryPage({
 
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 16px 64px" }}>
-      <nav aria-label="面包屑" style={{ fontSize: 13, color: "#9ca3af", marginBottom: 16 }}>
-        <Link href="/" style={{ color: "#3874F7", textDecoration: "none" }}>首页</Link>
-        <span> / </span>
-        <Link href="/tool" style={{ color: "#3874F7", textDecoration: "none" }}>AI工具</Link>
-        <span> / </span>
-        <span>{rawName}</span>
-      </nav>
+      {/* 1:1 目标站：标题为解码分类名 + 「相关工具全站搜索」同一行，text-4xl/font-semibold/my-4 */}
+      <h1 style={{ fontSize: 36, fontWeight: 600, margin: "16px 0", padding: "0 4px" }}>
+        {catName}<span style={{ fontWeight: 400 }}>相关工具全站搜索</span>
+      </h1>
 
-      <h1 style={{ fontSize: 26, fontWeight: 800, margin: "0 0 4px" }}>{rawName}</h1>
-      <p style={{ fontSize: 16, color: "#374151", margin: "0 0 20px" }}>相关工具全站搜索</p>
-
-      {/* 搜索表单：GET 提交，q/current/pageSize 与目标站一致 */}
+      {/* 搜索表单：GET 提交，q/current/pageSize 与目标站一致；目标 placeholder 动态含类目名、搜索按钮 sr-only */}
       <form action={pageBase} method="get" style={{ display: "flex", gap: 8, marginBottom: 20 }}>
         <input
           type="text"
           name="q"
           defaultValue={q}
-          placeholder="搜索工具名称或描述"
-          style={{ flex: 1, maxWidth: 420, padding: "8px 14px", borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 14 }}
+          placeholder={`搜索 ${catName} 工具`}
+          style={{ flex: 1, maxWidth: 460, padding: "8px 14px", borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 14 }}
         />
         <input type="hidden" name="current" value="1" />
         <input type="hidden" name="pageSize" value={String(pageSize)} />
-        <button type="submit" style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#3874F7", color: "#fff", fontSize: 14, cursor: "pointer" }}>搜索</button>
+        <button type="submit" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)", whiteSpace: "nowrap" }}>搜索</button>
       </form>
 
       {/* 5 列网格（对齐目标站 lg:grid-cols-5 gap-4） */}
@@ -171,21 +160,6 @@ export default async function ToolCategoryPage({
         共 {total} 个工具 · 第 {current} / {totalPages} 页
       </div>
 
-      {/* 分类导航链接（可爬取，对齐目标站分类体系） */}
-      {categories && categories.length > 0 && (
-        <div style={{ marginTop: 28, paddingTop: 20, borderTop: "1px solid #f0f0f0" }}>
-          <div style={{ fontSize: 13, color: "#8c8c8c", marginBottom: 8 }}>浏览其他分类</div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {categories.map((c) => (
-              <Link
-                key={c.id}
-                href={`/tool/all/${encodeURIComponent(c.name)}`}
-                style={{ padding: "4px 12px", borderRadius: 999, fontSize: 12, textDecoration: "none", background: c.name === catName ? "#3874F7" : "#f5f5f5", color: c.name === catName ? "#fff" : "#595959" }}
-              >{c.name}</Link>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

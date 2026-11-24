@@ -8,6 +8,7 @@ export const metadata = {
   description: "分享最新最有趣的 AI 工具、资源、信息"
 };
 
-export default function EssayPage() {
-  return <EssayArticlesGallery />;
+export default function EssayPage({ searchParams }: { searchParams: { page?: string } }) {
+  const initialPage = Math.max(1, Number(searchParams?.page) || 1);
+  return <EssayArticlesGallery initialPage={initialPage} />;
 }
