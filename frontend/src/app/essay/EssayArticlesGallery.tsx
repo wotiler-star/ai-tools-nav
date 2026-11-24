@@ -91,6 +91,17 @@ export default function EssayArticlesGallery({ initialPage = 1 }: { initialPage?
                 <p style={{ fontSize: 13, color: "#6b7280", margin: "0 0 10px", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.description}</p>
               </div>
             </Link>
+            {/* 最佳评论预览：1:1 对齐目标站 div.best-comment（真实采集 bestComment 数据，623 条） */}
+            {a.bestComment && (
+              <div className="best-comment" style={{
+                fontSize: 14, color: "rgba(0,0,0,0.88)", background: "#f8f8f8",
+                padding: "3px 24px 3px 8px", margin: "0 16px 10px", borderRadius: 4,
+                minHeight: 28, boxSizing: "border-box"
+              }}>
+                <span style={{ fontWeight: 600 }}>{a.bestComment.user}：</span>
+                <span>{a.bestComment.text}</span>
+              </div>
+            )}
             {/* 话题层：目标站 tag 是 /tag/{tag} 链接（a.tagItem），非纯展示 chip */}
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6, padding: "0 16px 10px" }}>
               {a.tags.slice(0, 5).map((t) => (
