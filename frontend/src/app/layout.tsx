@@ -135,6 +135,11 @@ export default function RootLayout({
           strategy="afterInteractive"
           data-cfasync="false"
         />
+        <Script
+          src="https://bauval.org/14/95aad5960d0b2fa686e71e0032358372"
+          strategy="afterInteractive"
+          data-cfasync="false"
+        />
         <Provider>
           <Header />
           <main className="min-h-[calc(100vh-120px)]">{children}</main>
