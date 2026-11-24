@@ -118,6 +118,17 @@ export default function RootLayout({
           data-cfasync="false"
         />
         <div id="container-9c4540a068f71d9186d4c8d4b63eb9d1" />
+        {/* Adterra 468x60 横幅位：atOptions 内联直出，保证先于外链脚本定义 */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `atOptions = {'key':'e09788c9a622956e3e783e10b054a9fa','format':'iframe','height':60,'width':468,'params':{}};`
+          }}
+        />
+        <Script
+          src="https://bauval.org/22/e09788c9a622956e3e783e10b054a9fa"
+          strategy="afterInteractive"
+          data-cfasync="false"
+        />
         <Provider>
           <Header />
           <main className="min-h-[calc(100vh-120px)]">{children}</main>
