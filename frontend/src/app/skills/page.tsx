@@ -116,7 +116,7 @@ export default function SkillsPage() {
             <Link
               key={s.id}
               href={`/skills/${s.id}`}
-              className="group hover-brand tool-card"
+              className="group hover-brand-lift skill-card"
               style={{
                 background: "#fff",
                 borderRadius: 12,

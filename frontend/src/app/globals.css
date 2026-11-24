@@ -568,6 +568,19 @@ body {
   .tool-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
 
+/* /skills 卡片：纵向布局（图标行 + 多行描述）。
+   曾误用 .tool-card（横向 flex + height:56px）导致中文描述被压成 161px 窄列、堆叠成乱码状；
+   改用本 class 独立出来，描述占满卡片宽度。 */
+.skill-card {
+  display: block;
+  box-sizing: border-box;
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
 /* ===== /tool 卡片 1:1 对齐目标站（fnd_L5~L9，DOM computed 金标准）===== */
 /* 目标: a.flex.items-center.gap-2.p-2.rounded-sm.shadow-sm.bg-white, w254 h56 */
 .tool-card {
