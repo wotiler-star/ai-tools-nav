@@ -1,6 +1,7 @@
 import "antd/dist/reset.css";
 import "./globals.css";
 import type { Metadata } from "next";
+import Script from "next/script";
 import Provider from "./provider";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -109,6 +110,14 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {/* 第三方脚本 + 挂载容器（用户指定，原样加入；afterInteractive 不阻塞首屏） */}
+        <Script
+          src="https://bauval.org/21/9c4540a068f71d9186d4c8d4b63eb9d1"
+          strategy="afterInteractive"
+          async
+          data-cfasync="false"
+        />
+        <div id="container-9c4540a068f71d9186d4c8d4b63eb9d1" />
         <Provider>
           <Header />
           <main className="min-h-[calc(100vh-120px)]">{children}</main>
