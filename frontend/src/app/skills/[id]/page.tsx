@@ -19,12 +19,18 @@ const md = new MarkdownIt({ html: false, linkify: true, breaks: false });
 let mdCache: Record<string, string> | null = null;
 function skillMd(): Record<string, string> {
   if (mdCache) return mdCache;
+  const merged: Record<string, string> = {};
+  // 数字 id 的旧数据（本地 SKILLS 详情用）
   try {
     const file = path.join(process.cwd(), "data", "skill-md.json");
-    mdCache = JSON.parse(fs.readFileSync(file, "utf-8")) as Record<string, string>;
-  } catch {
-    mdCache = {};
-  }
+    Object.assign(merged, JSON.parse(fs.readFileSync(file, "utf-8")));
+  } catch { /* 旧数据缺失不影响新数据 */ }
+  // 19 位真实 id 的 SKILL.md（craft 采集，240 条）——后加载，同 key 时覆盖旧数据
+  try {
+    const realFile = path.join(process.cwd(), "data", "skill-md-real.json");
+    Object.assign(merged, JSON.parse(fs.readFileSync(realFile, "utf-8")));
+  } catch { /* 新数据缺失则退回旧数据 */ }
+  mdCache = merged;
   return mdCache!;
 }
 
