@@ -42,8 +42,11 @@ export default function McpDetailPage() {
     );
   }
 
-  const officialUrl =
-    tool.url || `https://www.bing.com/search?q=${encodeURIComponent(tool.name + " MCP GitHub")}`;
+  // 数据已去目标站化：url 为本站路由（/mcp/{id}）时不作外链，避免自链接。
+  const isInternal = !!tool.url && tool.url.startsWith("/");
+  const officialUrl = isInternal
+    ? ""
+    : tool.url || `https://www.bing.com/search?q=${encodeURIComponent(tool.name + " MCP GitHub")}`;
 
   const others = MCP_SERVERS.filter((t: McpServer) => t.id !== tool.id);
   const latest = [...others].sort((a, b) => b.id - a.id).slice(0, 6);
@@ -189,18 +192,20 @@ export default function McpDetailPage() {
                     )}
                   </div>
                 </div>
-                <a
-                  className="brand-btn"
-                  href={officialUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    marginLeft: isMobile ? 0 : "auto",
-                    marginTop: isMobile ? 12 : 0
-                  }}
-                >
-                  <LinkOutlined /> 立即体验
-                </a>
+                {!isInternal && (
+                  <a
+                    className="brand-btn"
+                    href={officialUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      marginLeft: isMobile ? 0 : "auto",
+                      marginTop: isMobile ? 12 : 0
+                    }}
+                  >
+                    <LinkOutlined /> 立即体验
+                  </a>
+                )}
               </div>
 
               <div style={{ height: 1, background: "var(--border)", margin: "16px 0" }} />
