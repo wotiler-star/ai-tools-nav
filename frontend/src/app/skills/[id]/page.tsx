@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import MarkdownIt from "markdown-it";
 import Link from "next/link";
 import { SKILLS, AI_TOOLS } from "@/lib/mockData";
+import { SKILLS_REAL } from "@/lib/skillsReal";
 import { SITE } from "@/config/site";
 import { GithubOutlined, ThunderboltOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import CopyButton from "@/components/CopyButton";
@@ -25,6 +26,23 @@ function skillMd(): Record<string, string> {
     mdCache = {};
   }
   return mdCache!;
+}
+
+/**
+ * 统一查找 skill：先查本地数字 id（mockData，有 SKILL.md 全文），
+ * 再查采集的真实 19 位 id（SKILLS_REAL，用 description 兜底）。
+ * 返回结构对齐两源共有字段，供详情渲染复用。
+ */
+type SkillView = { id: string; name: string; category: string; description: string; url?: string };
+function findSkill(idParam: string): SkillView | undefined {
+  const local = SKILLS.find((s) => s.id === Number(idParam));
+  if (local) return {
+    id: String(local.id), name: local.name, category: String(local.category),
+    description: local.description, url: (local as any).url
+  };
+  const real = SKILLS_REAL.find((s) => s.id === idParam);
+  if (real) return { id: real.id, name: real.name, category: real.category, description: real.description };
+  return undefined;
 }
 
 /** 解析 SKILL.md 的 YAML frontmatter（支持一层嵌套的 metadata） */
@@ -58,7 +76,7 @@ export async function generateMetadata({
 }: {
   params: { id: string };
 }): Promise<Metadata> {
-  const skill = SKILLS.find((s) => s.id === Number(params.id));
+  const skill = findSkill(params.id);
   if (!skill) return { title: { absolute: `AI Skill 详情｜${SITE.name}` } };
   return {
     title: { absolute: `${skill.name} - AI Skill 详情｜${SITE.name}` },
@@ -67,7 +85,7 @@ export async function generateMetadata({
 }
 
 export default function SkillDetailPage({ params }: { params: { id: string } }) {
-  const skill = SKILLS.find((s) => s.id === Number(params.id));
+  const skill = findSkill(params.id);
   if (!skill) notFound();
 
   const raw = skillMd()[String(skill.id)] || "";
@@ -77,12 +95,14 @@ export default function SkillDetailPage({ params }: { params: { id: string } }) 
     skill.url || `https://www.bing.com/search?q=${encodeURIComponent(skill.name + " skill GitHub")}`;
   const install = ghInstall(skill.url || "");
 
-  const others = SKILLS.filter((s) => s.id !== skill.id);
+  // 相关推荐始终用本地数字 id 数据（保证链接可点）；按 name 排除自身，分类去掉 emoji 前缀后比较
+  const catPlain = skill.category.replace(/^[^\u4e00-\u9fa5A-Za-z0-9]+/, "");
+  const others = SKILLS.filter((s) => s.name !== skill.name);
   const latest = [...others].sort((a, b) => b.id - a.id).slice(0, 6);
   const latestIds = new Set(latest.map((t) => t.id));
   const recommended = others.filter((t) => !latestIds.has(t.id)).slice(0, 6);
   const hotTools = [...AI_TOOLS].sort((a, b) => (b.heat || 0) - (a.heat || 0)).slice(0, 6);
-  const related = SKILLS.filter((s) => s.category === skill.category && s.id !== skill.id).slice(0, 8);
+  const related = SKILLS.filter((s) => String(s.category).replace(/^[^\u4e00-\u9fa5A-Za-z0-9]+/, "") === catPlain && s.name !== skill.name).slice(0, 8);
 
   const jsonLd = {
     "@context": "https://schema.org",
