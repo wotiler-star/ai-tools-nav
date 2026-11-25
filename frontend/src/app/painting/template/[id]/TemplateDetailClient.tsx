@@ -1,7 +1,7 @@
 "use client";
 
 // /painting/template/{id} 详情交互组件：原文/中文提示词切换、复制
-// 结构 1:1 对齐目标站 ai.codefather.cn/painting/template/{id}
+// 结构 1:1 对齐目标站 目标站/painting/template/{id}
 import { useState } from "react";
 import { CopyOutlined, CheckOutlined, LinkOutlined } from "@ant-design/icons";
 import type { PaintingCase } from "@/lib/paintingCases";

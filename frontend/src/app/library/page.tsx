@@ -36,7 +36,7 @@ export default function LibraryPage() {
   );
   const allColumns: AiColumn[] = useMemo(() => allData?.data?.records || [], [allData]);
 
-  // 精选教程：优先 Vibe Coding 零基础教程（与鱼皮标杆一致），否则取首个专栏
+  // 精选教程：优先 Vibe Coding 零基础教程（与目标站标杆一致），否则取首个专栏
   const featured: AiColumn | undefined = useMemo(() => {
     return (
       allColumns.find((c) => /vibe\s*coding/i.test(c.title) || c.id === 31) ||
@@ -105,7 +105,7 @@ export default function LibraryPage() {
         />
       </div>
 
-      {/* ===== AI 知识库导航（复刻鱼皮落地页概念：主题分区目录） ===== */}
+      {/* ===== AI 知识库导航（复刻目标站落地页概念：主题分区目录） ===== */}
       {allColumns.length > 0 && (
         <section aria-label="AI 知识库导航" style={{ marginBottom: 32 }}>
           <h2 style={{ fontSize: 20, fontWeight: 800, margin: "0 0 4px" }}>AI 知识库导航</h2>
@@ -217,7 +217,7 @@ export default function LibraryPage() {
         </section>
       )}
 
-      {/* ===== 精选教程（复刻鱼皮落地页概念：特色教程 + 学习路径推荐） ===== */}
+      {/* ===== 精选教程（复刻目标站落地页概念：特色教程 + 学习路径推荐） ===== */}
       {featured && (
         <section aria-label="精选教程" style={{ marginBottom: 32 }}>
           <div

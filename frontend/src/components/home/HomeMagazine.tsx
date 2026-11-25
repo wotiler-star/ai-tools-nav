@@ -560,7 +560,7 @@ export default async function HomeMagazine() {
     href: `/essay/${p.id}`
   }));
 
-  // 首页提示词：1:1 对齐目标站 ai.codefather.cn
+  // 首页提示词：1:1 对齐目标站 目标站
   // 目标站「AI 绘图提示词」卡用的是真实图库条目（标题/tags/封面），且封面是第一方本地资源；
   // 后端 AiPrompt 的 cover 走外链 CDN 会被拦（线上退化为渐变占位），故 draw 卡改用 PAINTING_GALLERY。
   // 目标站首页 draw 卡顺序（REA 证据 2026-11-18）：吉伊卡哇→城市窗外→关键角色→复古怀旧→简约手绘→黏土定格

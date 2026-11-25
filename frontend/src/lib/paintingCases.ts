@@ -1,4 +1,4 @@
-// 自动生成：craft-anything Study 采集 ai.codefather.cn/painting 全量绘图案例
+// 自动生成：craft-anything Study 采集 目标站/painting 全量绘图案例
 // cover 真实封面：沙箱下载目标CDN落地第一方 /painting/covers-real/{id}.webp（服务器侧CDN 514）
 // 详情正文在 data/painting-details.json；3711/3724 真实封面（13张源站404用轮换兜底）
 export interface PaintingCase {

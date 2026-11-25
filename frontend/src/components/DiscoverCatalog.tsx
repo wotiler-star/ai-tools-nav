@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { SearchOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 
 /* ============================================================
- * 「发现…」目录页通用组件 —— 一比一复刻 ai.codefather.cn 的 /mcp、/skills
+ * 「发现…」目录页通用组件 —— 一比一复刻 目标站 的 /mcp、/skills
  * 目标站 DOM（已取证）：
  *   <div class="text-center mt-8">
  *     <h1 class="text-3xl font-semibold text-slate-900">发现全球好用的 MCP 服务器</h1>

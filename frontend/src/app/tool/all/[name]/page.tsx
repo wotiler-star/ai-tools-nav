@@ -4,7 +4,7 @@ import ToolCard from "@/components/ToolCard";
 import type { AiTool, Category } from "@/types";
 
 /**
- * /tool/all/{分类名} 分类独立页 —— 1:1 对齐目标站 ai.codefather.cn/tool/all/{name}
+ * /tool/all/{分类名} 分类独立页 —— 1:1 对齐目标站 目标站/tool/all/{name}
  * 目标站页型：标题「XX相关工具全站搜索」+ 搜索表单(q/current/pageSize 隐藏字段)
  *            + 50 卡/页(5列网格) + ant 分页；pathname 段是 URL 编码中文，标题原样显示编码串。
  * 本站用真实后端数据分页，统计口径用本站真实 total（不照抄目标 750）。

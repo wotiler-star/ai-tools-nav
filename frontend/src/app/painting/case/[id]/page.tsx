@@ -1,4 +1,4 @@
-// /painting/case/{id} —— 1:1 对齐目标站 ai.codefather.cn/painting/case/{19位id}
+// /painting/case/{id} —— 1:1 对齐目标站 目标站/painting/case/{19位id}
 // 复用 template 详情页实现（同一份案例数据/正文/相关推荐），仅把路由形态与 SEO 文案对齐目标站。
 import type { Metadata } from "next";
 import { PAINTING_CASES } from "@/lib/paintingCases";

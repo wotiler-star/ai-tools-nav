@@ -62,7 +62,7 @@ export default function EssayArticleDetail({ article, detail }: { article: Essay
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
             <span style={{ width: 36, height: 36, borderRadius: "50%", background: "linear-gradient(135deg,#3b82f6,#6366f1)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{(detail.author || "鱼")[0]}</span>
             <div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#374151" }}>{detail.author || "程序员鱼皮"}</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#374151" }}>{detail.author || "toolly 编辑部"}</div>
               <div style={{ fontSize: 12, color: "#9ca3af" }}>{detail.publishTime || formatTime(article.createTime)} · 阅读 {formatCount(article.viewCount)}</div>
             </div>
           </div>

@@ -36,7 +36,7 @@ const labelStyle: React.CSSProperties = {
   marginBottom: 6
 };
 
-/** 绘图提示词生成器（对标 ai.codefather.cn 顶部导航「AI提示词 → 绘图提示词生成器」） */
+/** 绘图提示词生成器（对标 目标站 顶部导航「AI提示词 → 绘图提示词生成器」） */
 export default function PromptGeneratorPage() {
   const [subject, setSubject] = useState("");
   const [style, setStyle] = useState(STYLES[0]);

@@ -28,7 +28,7 @@ const SKILLS_FAQ = [
   },
   {
     q: "Skills 库会持续更新吗？",
-    a: "我们会定期更新 Skills 库，您可以收藏 AI 导航，或关注公众号「程序员鱼皮」，确保您能及时获取最新、最实用的 Agent Skills。"
+    a: "我们会定期更新 Skills 库，您可以收藏 toolly，确保您能及时获取最新、最实用的 Agent Skills。"
   },
   {
     q: "如何创建自定义 Skill？",

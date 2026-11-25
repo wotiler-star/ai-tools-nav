@@ -482,7 +482,7 @@ export const AI_PROMPTS: AiPrompt[] = [
 ];
 
 // ===== 首页热门搜索词 =====
-// 1:1 对齐目标站 ai.codefather.cn 首页 Hot Searches（REA 证据 2026-11-18）：
+// 1:1 对齐目标站 目标站 首页 Hot Searches（REA 证据 2026-11-18）：
 // 零基础AI编程课 / AI学习路线 / AI项目 / OpencClaw 中文网
 export const HOT_SEARCHES: string[] = [
   "零基础AI编程课",
@@ -528,7 +528,7 @@ export const NEWS_FEATURED: FeaturedItem[] = [
 ];
 
 // ===== 学习教程 / 项目课程 / 知识百科 =====
-// tutorial 分类 1:1 对齐 ai.codefather.cn/resource/learn 真实 12 篇（标题/摘要/封面逆向自 RSC payload）。
+// tutorial 分类 1:1 对齐 目标站/resource/learn 真实 12 篇（标题/摘要/封面逆向自 RSC payload）。
 // id 用 101–112 以避开 course(6–9) / wiki(10–12)，保证详情页路由与 React key 不冲突。
 export const ARTICLES: Article[] = [
   { id: 101, title: "12 个超火的 DeepSeek Harness 插件，大肥鱼已经落后 N 个版本了。。。", description: "DeepSeek Harness 精选插件推荐合集，教你怎么发现 DSH 优质插件，带你上手 12 大 DSH 实用必装、效率创意、整活玩法插件，让你的鲸鱼变得更强", cover: "https://pic.code-nav.cn/post_cover/1601072287388278786/thumbnail/aBvmWruJDYaVDea0.jpeg", category: "tutorial" },
@@ -552,7 +552,7 @@ export const ARTICLES: Article[] = [
   { id: 12, title: "向量数据库与 Embedding 入门", category: "wiki" }
 ];
 
-// ===== 提示词封面图池（逆向自目标站 ai.codefather.cn /painting 的 prompt-media CDN） =====
+// ===== 提示词封面图池（逆向自目标站 目标站 /painting 的 prompt-media CDN） =====
 // 目标站 /painting 全是「绘图案例」配图，无文字类封面，故仅 draw 类分配真实封面，
 // text 类留空走渐变兜底。图片由目标站 CDN 直链提供；组件侧做了 onError 渐变兜底，
 // 即便 CDN 对跨站请求拦截也不出现破图。
@@ -640,7 +640,7 @@ export const TOOL_TABS: { key: number; label: string }[] = [
   { key: 14, label: "AI应用" }
 ];
 
-// ===== MCP 服务器（/mcp 页，1:1 对齐 ai.codefather.cn/mcp · 2026-11-20 全量采集） =====
+// ===== MCP 服务器（/mcp 页，1:1 对齐 目标站/mcp · 2026-11-20 全量采集） =====
 // craft-anything Study 取证：target total=725，featured 31页(725) + latest 31页(新增566) = 1291 条去重；19 个真实分类。
 // category = 主分类（顶部分类 Tab 过滤用）；tags = 卡片内展示的全部标签（多标签）
 export const MCP_CATEGORIES: string[] = [
@@ -1992,7 +1992,7 @@ function sk(id: number, name: string, category: string, description: string): Sk
   return { id, name, category, description };
 }
 
-// 真实数据来源：鱼皮AI导航 ai.codefather.cn/skills（前 5 页去重后 106 条）
+// 真实数据来源：目标站 目标站/skills（前 5 页去重后 106 条）
 export const SKILLS: SkillItem[] = [
   sk(1, "1password", "🔒 测试与安全", "提供安全的密码与密钥管理能力，支持通过命令行工具集成桌面应用、多账户登录认证，并在隔离的 tmux 会话中安全读取、注入或执行敏感凭据，适用于自动化流程中的机密信息调用场景。"),
   sk(2, "gifgrep", "🎨 内容与媒体", "提供基于命令行和终端界面的 GIF 检索与处理能力，支持对接多个 GIF 平台进行关键词搜索、结果预览、批量下载，并可从动图中精准提取指定时间点的静态帧或生成多帧网格图，便于快速审查与分享。"),
@@ -2101,7 +2101,7 @@ export const SKILLS: SkillItem[] = [
   sk(105, "perplexity-search", "📄 文档处理", "提供实时联网检索能力，基于 Perplexity 多模型（如 Sonar Pro、Sonar Pro Search 等）获取最新网页信息，支持学术文献查找、事实核查、跨领域趋势分析及多源引用生成，适用于需要时效性、权威性和可追溯性的深度研究场景。"),
   sk(106, "scientific-visualization", "📊 数据与分析", "生成符合学术出版标准的高质量图表，支持多子图布局、显著性标注、误差线、色盲友好配色及特定期刊格式（如 Nature、Science、Cell），自动适配分辨率、字体、尺寸与导出格式。"),
 
-  // ===== 补全 4 个空分类（区块链 / 生活方式 / 协作与管理 / 官方精选），来源：ai.codefather.cn/skills?tag= 各分类第 1 页去重 =====
+  // ===== 补全 4 个空分类（区块链 / 生活方式 / 协作与管理 / 官方精选），来源：目标站/skills?tag= 各分类第 1 页去重 =====
   // ⛓️ 区块链（?tag=区块链）
   sk(107, "property-based-testing", "⛓️ 区块链", "通过生成随机输入验证代码在各类边界条件下的行为一致性，适用于序列化、解析、归一化及纯函数等场景，能有效发现隐含缺陷并提升测试覆盖率，尤其适合需要高可靠性的算法与智能合约验证。"),
   sk(108, "compliance-checker", "⛓️ 区块链", "能够对基础设施配置进行合规性评估，检查是否符合 SOC2、HIPAA 和 PCI DSS 等行业标准，识别潜在的安全风险与违规项，并生成改进建议报告，适用于安全审计与合规审查场景。"),

@@ -1,4 +1,4 @@
-// /painting 1:1 对齐目标站 ai.codefather.cn/painting（craft-anything Study 2026-11-20）：
+// /painting 1:1 对齐目标站 目标站/painting（craft-anything Study 2026-11-20）：
 // 目标站是「AI 绘图案例/模板」库（精选/最新 + 类型 + 模型 + 场景 多级筛选），
 // 旧实现用后端文字提示词（小说文案），与目标站不符。改用采集到的真实绘图案例组件。
 import PaintingCasesGallery from "./PaintingCasesGallery";

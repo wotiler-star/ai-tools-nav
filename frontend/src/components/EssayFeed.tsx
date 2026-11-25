@@ -67,7 +67,7 @@ const EXTRA_TAGS = ["AI", "交流", "实战", "经验分享"];
 const COMMENTERS = ["编程导航_小y", "加油鸭", "青碧凝霜", "不会喷火的小火龙", "一天创造一个奇迹", "离殇"];
 const COMMENTS = [
   "太棒了，感谢分享！已经收藏～",
-  "鱼皮这波测评太硬核了，学到了！",
+  "这波测评太硬核了，学到了！",
   "正需要这个，楼主牛！",
   "收藏了，回头慢慢研究。",
   "思路很清晰，受教了🙏",
@@ -612,12 +612,12 @@ export default function EssayFeed({ posts, columns }: EssayFeedProps) {
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
                 <Avatar
                   size={44}
-                  src="https://ai.codefather.cn/logo.png"
+                  src="/icon.svg"
                   icon={<UserOutlined />}
                   style={{ background: BRAND, flexShrink: 0 }}
                 />
                 <div style={{ lineHeight: 1.4 }}>
-                  <div style={{ fontWeight: 700, fontSize: 15 }}>站长：程序员鱼皮</div>
+                  <div style={{ fontWeight: 700, fontSize: 15 }}>站长：toolly</div>
                   <div style={{ fontSize: 12, color: "var(--text-3)" }}>
                     AI 导航创始人 · 全栈工程师
                   </div>

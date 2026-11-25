@@ -1,4 +1,4 @@
-// /essay 1:1 对齐目标站 ai.codefather.cn/essay（craft-anything Study 2026-11-20）：
+// /essay 1:1 对齐目标站 目标站/essay（craft-anything Study 2026-11-20）：
 // 目标站是官方资讯文章流（recommend/list/page/vo，907 条），旧实现用社区帖 mock（周报/面经）。
 // 改用采集到的 666 条真实文章数据 + 文章流组件。
 import EssayArticlesGallery from "./EssayArticlesGallery";

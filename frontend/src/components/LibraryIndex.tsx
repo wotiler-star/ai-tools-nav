@@ -65,7 +65,7 @@ export default function LibraryIndex({
             <h1 style={{ margin: "12px 0 8px", fontSize: 26, fontWeight: 800, color: "var(--text-1)" }}>
               AI 知识库启航
             </h1>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "var(--text-1)" }}>🐟 鱼皮的 AI 知识库</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "var(--text-1)" }}>✦ toolly 的 AI 知识库</div>
             <div style={{ marginTop: 8, fontSize: 14, color: "var(--text-2)" }}>
               完全免费开放的 AI 知识共享平台 | 减少信息差，让每个人都能享受技术红利
             </div>
@@ -74,7 +74,7 @@ export default function LibraryIndex({
           {/* ===== 简介 ===== */}
           <p style={{ margin: "0 0 24px", fontSize: 15, lineHeight: 1.9, color: "var(--text-2)" }}>
             汇总整合目前热门的 AI 工具相关信息，包括产品介绍、使用指南、工具测评、技巧分享、应用场景、AI
-            变现、行业资讯、教程资源等一系列内容。鱼皮希望带领大家打破 AI
+            变现、行业资讯、教程资源等一系列内容。toolly 希望带领大家打破 AI
             技术的信息壁垒，让每个人都能平等获取 AI 时代的工具与认知，利用科技让生活更美好。
           </p>
 

@@ -7,7 +7,7 @@ import { LEARN_POSTS } from "@/lib/mockData";
 
 /* ============================================================
  * 学习资源文章流（/resource/learn、/resource/course、/resource/encyclopedia 共用）
- * 一比一复刻 ai.codefather.cn/resource/learn 的结构：
+ * 一比一复刻 目标站/resource/learn 的结构：
  *  - 两栏：主区（flex） + 侧栏 300px（对标站 md:w-[25%]）
  *  - 主区：h1 标题 + 搜索框 + 文章流（封面图 + 标题(line-clamp-1) + 摘要(line-clamp-2/3) + 作者/时间）
  *  - 侧栏：「推荐教程」列表卡 + 「🔥 热门工具」2 列网格卡 + 广告位

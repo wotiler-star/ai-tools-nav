@@ -5,7 +5,7 @@ import { Input } from "antd";
 import { SearchOutlined, RightOutlined } from "@ant-design/icons";
 
 /**
- * 通用「全量列表 / 分类页」组件（对标 ai.codefather.cn 的 /tool 列表页）。
+ * 通用「全量列表 / 分类页」组件（对标 目标站 的 /tool 列表页）。
  * 采用与 ToolCatalog 完全一致的视觉语言：
  *  - 吸顶筛选区：分类横向 tab（纯文字 + 蓝色下划线 active）+ 搜索框 + 全局标签云
  *  - 内容区：按分类分块，每块含「分类标题 + 数量 + 二级子标签行 + 全部> + 卡片网格」

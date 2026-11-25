@@ -1,4 +1,4 @@
-// 自动生成：对齐 ai.codefather.cn 的 /painting 绘图提示词图库（封面已落地本地）
+// 自动生成：对齐 目标站 的 /painting 绘图提示词图库（封面已落地本地）
 export interface PaintingGalleryItem {
   id: string;
   title: string;

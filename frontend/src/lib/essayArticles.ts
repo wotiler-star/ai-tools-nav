@@ -1,4 +1,4 @@
-// 自动生成：craft-anything Study 采集 ai.codefather.cn/essay 官方资讯文章
+// 自动生成：craft-anything Study 采集 目标站/essay 官方资讯文章
 // cover 真实封面落地第一方 /covers-real/{id}.webp；详情全文在 data/post-details.json
 export interface EssayArticle {
   id: string; title: string; description: string; category: string; tags: string[]; cover: string;

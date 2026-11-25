@@ -9,7 +9,7 @@ import { TOOL_REAL_IDS } from "@/lib/toolRealIds";
 
 /* ============================================================
  * /news 资讯列表客户端组件 —— 由服务端 news/page.tsx 注入 mock 数据（SSR 首屏即含内容）。
- * 结构（与目标站 ai.codefather.cn/news 一致）：
+ * 结构（与目标站 目标站/news 一致）：
  *   两栏 [左：Hero Banner 图 /news_banner.webp + 按日期分组的时间线 |
  *         右 300px：指定日期查询日历 + 🔥热门工具 + 🔥热门文章]
  *  - 数据由 props 直接驱动（不再走 useSWR），首屏 HTML 即含资讯时间线与侧栏热门。
@@ -106,7 +106,7 @@ export default function NewsFeed({
             >
               <img
                 src="/images/news_banner.webp"
-                alt="鱼皮AI导航每日AI资讯"
+                alt="toolly 每日 AI 资讯"
                 draggable={false}
                 style={{ display: "block", width: "100%", aspectRatio: "4 / 1", objectFit: "cover" }}
               />
