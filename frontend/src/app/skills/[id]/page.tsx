@@ -20,16 +20,15 @@ let mdCache: Record<string, string> | null = null;
 function skillMd(): Record<string, string> {
   if (mdCache) return mdCache;
   const merged: Record<string, string> = {};
-  // 数字 id 的旧数据（本地 SKILLS 详情用）
+  // 19 位真实 id 的 SKILL.md（craft 采集，246 条）
   try {
-    const file = path.join(process.cwd(), "data", "skill-md.json");
-    Object.assign(merged, JSON.parse(fs.readFileSync(file, "utf-8")));
-  } catch { /* 旧数据缺失不影响新数据 */ }
-  // 19 位真实 id 的 SKILL.md（craft 采集，240 条）——后加载，同 key 时覆盖旧数据
+    Object.assign(merged, JSON.parse(fs.readFileSync(path.join(process.cwd(), "data", "skill-md-real.json"), "utf-8")));
+  } catch { /* 新数据缺失则走 description 兜底 */ }
+  // 数字 id 的重映射：按 SKILLS name 找到对应真实 skill 的 md（59 条），彻底替换旧错位数据
+  // 旧 skill-md.json 的 key 是独立采集序号，与 SKILLS 数字 id 无关（157 个 id 匹配 0、错位 86）——已弃用
   try {
-    const realFile = path.join(process.cwd(), "data", "skill-md-real.json");
-    Object.assign(merged, JSON.parse(fs.readFileSync(realFile, "utf-8")));
-  } catch { /* 新数据缺失则退回旧数据 */ }
+    Object.assign(merged, JSON.parse(fs.readFileSync(path.join(process.cwd(), "data", "skill-md-remap.json"), "utf-8")));
+  } catch { /* remap 缺失则用真实数据 */ }
   mdCache = merged;
   return mdCache!;
 }
