@@ -10,22 +10,20 @@ const BRAND = "#3874F7";
 
 /**
  * /tool 工具大全页「交互壳」（客户端组件）。
- * 卡片网格本身由服务端组件 ToolGrid 直出并作为 children 注入（SSR/SEO 友好）；
- * 本组件只负责：顶部搜索框（原生 form，无需 JS 即可提交）、分类/标签导航（<Link>，URL 驱动、可爬取）、
- * 侧边栏、滚动高亮等交互。筛选通过 URL 完成，Next 客户端导航即时刷新网格。
+ * 只负责顶部搜索框、分类/标签导航、侧边栏、滚动高亮等交互。
+ * 卡片网格 ToolGrid 由 page.tsx 作为兄弟节点服务端直出（不作为本 client 组件的 children），
+ * 否则整棵卡片子树会被 RSC 序列化进 flight，Googlebot 看不到正文 DOM。
  */
 export default function ToolCatalog({
   categories = [],
   activeCat = 0,
   activeTag = "",
-  keyword = "",
-  children
+  keyword = ""
 }: {
   categories?: Category[];
   activeCat?: number;
   activeTag?: string;
   keyword?: string;
-  children?: React.ReactNode;
 }) {
   const [kw, setKw] = useState(keyword);
 
@@ -186,12 +184,6 @@ export default function ToolCatalog({
         </div>
       </div>
 
-      {/* 内容区：对齐目标站线上版——无左侧栏，内容宽 1400 居中，分类 tab 下直接是分区网格 */}
-      <div style={{ padding: "16px 0 60px" }}>
-        <div style={{ maxWidth: 1400, width: "100%", margin: "0 auto" }}>
-          {children}
-        </div>
-      </div>
     </div>
   );
 }

@@ -78,19 +78,26 @@ export default async function ToolListPage({
   const initialCategories: Category[] = catRes ?? [];
 
   return (
-    <ToolCatalog
-      categories={initialCategories}
-      activeCat={activeCat}
-      activeTag={activeTag}
-      keyword={keyword}
-    >
-      <ToolGrid
-        tools={initialTools}
+    <div style={{ background: "#fff", minHeight: "100vh" }}>
+      <ToolCatalog
         categories={initialCategories}
-        keyword={keyword}
         activeCat={activeCat}
         activeTag={activeTag}
+        keyword={keyword}
       />
-    </ToolCatalog>
+      {/* ToolGrid 必须是 server 直出元素，不能作为 client 组件 ToolCatalog 的 children，
+          否则整棵卡片子树进 RSC flight，Googlebot/SSR 看不到正文（实测 650 卡 DOM=0） */}
+      <div style={{ padding: "16px 0 60px" }}>
+        <div style={{ maxWidth: 1400, width: "100%", margin: "0 auto" }}>
+          <ToolGrid
+            tools={initialTools}
+            categories={initialCategories}
+            keyword={keyword}
+            activeCat={activeCat}
+            activeTag={activeTag}
+          />
+        </div>
+      </div>
+    </div>
   );
 }
