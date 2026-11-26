@@ -388,7 +388,7 @@ export default function McpPage() {
           </div>
         )}
 
-        {/* ===== 分页器（真实页数，不照抄目标站 31 页） ===== */}
+        {/* ===== 分页器：1:1 对齐目标站 antd Pagination 折叠形态（1-5 + ••• + 末页） ===== */}
         <nav aria-label="MCP 分页" style={{ margin: "24px 0 8px", display: "flex", alignItems: "center", gap: 12 }}>
           <ul
             style={{
@@ -417,8 +417,19 @@ export default function McpPage() {
                 <LeftOutlined />
               </button>
             </li>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-              <li key={p}>
+            {Array.from(
+              new Set([
+                ...Array.from({ length: Math.min(5, totalPages) }, (_, i) => i + 1),
+                ...(totalPages > 6 ? [totalPages] : [])
+              ])
+            ).map((p, idx, arr) => (
+              <li key={p} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                {/* 目标站 antd：第 5 页与末页之间插入 •••（title=向后 5 页） */}
+                {idx === arr.length - 1 && totalPages > 6 && arr[idx - 1] === 5 && p === totalPages && (
+                  <span title="向后 5 页" aria-label="向后 5 页" style={{ width: 32, textAlign: "center", fontSize: 13, color: "#4e5969" }}>
+                    •••
+                  </span>
+                )}
                 <Link
                   href={`/mcp?tab=${tab}&current=${p}`}
                   aria-current={p === page ? "page" : undefined}
@@ -434,11 +445,11 @@ export default function McpPage() {
                     justifyContent: "center",
                     width: 32,
                     height: 32,
-                    borderRadius: 8,
+                    borderRadius: 6,
                     fontSize: 13,
-                    fontWeight: p === page ? 700 : 500,
-                    color: p === page ? "#fff" : "#4e5969",
-                    background: p === page ? BRAND : "#fff",
+                    fontWeight: p === page ? 500 : 400,
+                    color: p === page ? BRAND : "#4e5969",
+                    background: p === page ? "#e6f4ff" : "#fff",
                     border: `1px solid ${p === page ? BRAND : "#eaecef"}`,
                     textDecoration: "none"
                   }}
