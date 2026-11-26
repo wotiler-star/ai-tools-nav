@@ -47,18 +47,18 @@ function AuthorRow({ post }: { post: FeedPost }) {
   const levelSrc = post.level ? `/essay-covers/${post.level}` : "";
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, flexWrap: "wrap" }}>
-      <a href={`https://ai.codefather.cn/user/${post.id}`} target="_blank" rel="noreferrer" style={{ display: "flex" }}>
+      <a href="/essay" aria-label={post.author} style={{ display: "flex" }}>
         <Avatar post={post} size={40} />
       </a>
       <div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-          <a href={`https://ai.codefather.cn/user/${post.id}`} target="_blank" rel="noreferrer" style={{ color: "#000", fontSize: 16, textDecoration: "none" }}>
+          <a href="/essay" style={{ color: "#000", fontSize: 16, textDecoration: "none" }}>
             {post.author}
           </a>
-          <a href="https://ai.codefather.cn/post/1620297481155788801" target="_blank" rel="noreferrer">
+          <span title="等级">
             <img src={levelSrc} alt="等级" style={{ width: 32, height: 17 }} />
-          </a>
-          {post.vip && <a href="https://ai.codefather.cn/vip" target="_blank" rel="noreferrer"><img src="/essay-covers/vip.86643c96.svg" alt="vip" style={{ width: 14, height: 16 }} /></a>}
+          </span>
+          {post.vip && <span title="VIP"><img src="/essay-covers/vip.86643c96.svg" alt="vip" style={{ width: 14, height: 16 }} /></span>}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#999", fontSize: 14, marginTop: 2 }}>
           <span>{post.authorDesc}</span>
@@ -93,7 +93,7 @@ function PostCard({ post }: { post: FeedPost }) {
         <img src="/essay-covers/priority_good.8c95f213.png" alt="精选"
           style={{ position: "absolute", right: 0, top: 0, width: 48, height: 48, opacity: 0.4, zIndex: 10 }} />
       )}
-      <div style={{ background: "#fff", borderRadius: 8, padding: 12, boxShadow: "rgba(0,0,0,0.05) 0px 1px 3px 0px" }}>
+      <div className="ant-list-item ant-list-item-no-flex post-card-item post-item" style={{ background: "#fff", borderRadius: 8, padding: 12, boxShadow: "rgba(0,0,0,0.05) 0px 1px 3px 0px" }}>
         <AuthorRow post={post} />
         <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -121,7 +121,7 @@ function PostCard({ post }: { post: FeedPost }) {
         </div>
 
         {post.bestComment && (
-          <div style={{
+          <div className="best-comment" style={{
             background: GREY_BG, borderRadius: 4, padding: "6px 10px", marginTop: 8,
             display: "flex", alignItems: "center", gap: 6, overflow: "hidden", fontSize: 14
           }}>
@@ -135,7 +135,7 @@ function PostCard({ post }: { post: FeedPost }) {
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 8 }}>
           {post.tags.map((t) => (
-            <a key={t} href={`https://ai.codefather.cn/tag/${encodeURIComponent(t)}`} target="_blank" rel="noreferrer"
+            <a key={t} href={`/essay?tag=${encodeURIComponent(t)}`}
               style={{ fontSize: 14, color: "#898989", background: GREY_BG, borderRadius: 4, padding: "3px 8px", textDecoration: "none", lineHeight: 1.5 }}>
               {t}
             </a>
@@ -169,13 +169,13 @@ function Sidebar() {
   return (
     <aside style={{ width: "25%", minWidth: 260, flexShrink: 0 }}>
       <SideCard title="推荐教程"
-        extra={<a href="https://ai.codefather.cn/resource/learn" target="_blank" rel="noreferrer" style={{ fontSize: 14, color: BLUE, textDecoration: "none" }}>更多</a>}>
+        extra={<Link href="/resource/learn" style={{ fontSize: 14, color: BLUE, textDecoration: "none" }}>更多</Link>}>
         {SIDE_TUTORIALS.map((t) => (
-          <a key={t} href="https://ai.codefather.cn/resource/learn" target="_blank" rel="noreferrer"
+          <Link key={t} href="/resource/learn"
             style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, fontSize: 14, color: "#000000e0", textDecoration: "none", padding: "8px 0", borderBottom: "1px solid #f5f5f5" }}>
             <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t}</span>
             <Icon name="right" color="#999" />
-          </a>
+          </Link>
         ))}
       </SideCard>
       <SideCard title={<span>🌟 AI 资讯</span>}
