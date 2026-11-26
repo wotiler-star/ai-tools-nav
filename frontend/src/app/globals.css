@@ -630,3 +630,273 @@ body {
 
 /* /tool 卡片容器：1:1 对齐目标站网格自带浅灰圆角容器（fnd_L11） */
 .tool-grid { background: #f4f4f5; padding: 16px; border-radius: 6px; }
+
+/* ===== /painting AI提示词页 1:1 对齐目标站 2026-11-26 ===== */
+/* 目标站 computed：main=max-w-screen-xl / h1=36px-900 / form=600x40 / 4列瀑布流 / 卡片300px */
+.painting-page {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.painting-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  /* 本地 Header 64px（目标 56px），顶部减 8px 让 h1 绝对坐标仍为 y=104 */
+  padding: 40px 16px 0;
+}
+.painting-title {
+  margin: 0;
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  color: #0f172a;
+}
+.painting-subtitle {
+  margin: 16px 0 0;
+  max-width: 672px;
+  font-size: 16px;
+  line-height: 1.625;
+  color: #64748b;
+}
+.painting-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: calc(100% - 32px);
+  max-width: 600px;
+  height: 40px;
+  margin: 16px auto;
+  padding: 0 8px 0 16px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  box-sizing: border-box;
+}
+.painting-search input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: 14px;
+  color: #0f172a;
+}
+.painting-search input::placeholder { color: #94a3b8; }
+.painting-search-btn {
+  flex-shrink: 0;
+  height: 32px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 9999px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.painting-stats-row {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0 24px;
+}
+.painting-stats {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 6px 8px 6px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  background: #fff;
+  box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.06);
+  font-size: 13px;
+  line-height: 20px;
+  color: #475569;
+}
+.painting-stats b { color: #0f172a; font-weight: 600; }
+.painting-stats-dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.14);
+}
+.painting-stats-sep { color: #e2e8f0; }
+.painting-stats-link {
+  padding: 3px 10px;
+  border-radius: 9999px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.painting-stats-link:hover { background: #dbeafe; }
+.painting-filters { margin: 24px 0 0; }
+.painting-filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-bottom: 16px;
+}
+.painting-filter-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.painting-sort {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 10px;
+  background: #f1f5f9;
+}
+.painting-sort button {
+  height: 32px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.painting-sort button.active {
+  background: #fff;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+.painting-filter-label {
+  font-size: 13px;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+.painting-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.painting-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  background: #fff;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+.painting-pill:hover { color: #2563eb; }
+.painting-pill.active {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: #2563eb;
+  font-weight: 500;
+}
+.painting-scenes { margin-bottom: 20px; }
+.painting-masonry {
+  position: relative;
+  width: 100%;
+  margin: 0;
+}
+.painting-card-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+}
+.painting-card {
+  display: block;
+  border-radius: 12px;
+  background: #fff;
+  color: inherit;
+  text-decoration: none;
+}
+.painting-card-media {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f1f5f9;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.24);
+}
+.painting-card-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.painting-card:hover .painting-card-media img { transform: scale(1.05); }
+.painting-card-badges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  display: flex;
+  gap: 6px;
+}
+.painting-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(6px);
+  color: #334155;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+}
+.painting-badge.new { color: #fff; }
+.painting-card-body { padding: 12px; }
+.painting-card-title {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.375;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  transition: color 0.15s;
+}
+.painting-card:hover .painting-card-title { color: #2563eb; }
+.painting-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 6px;
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.painting-tag-sep { margin: 0 6px 0 0; color: #94a3b8; }
+.painting-empty {
+  padding: 48px 16px;
+  color: #94a3b8;
+  font-size: 14px;
+  text-align: center;
+}
+.painting-sentinel { height: 1px; }
+.painting-loading {
+  padding: 16px 0 32px;
+  color: #94a3b8;
+  font-size: 12px;
+  text-align: center;
+}

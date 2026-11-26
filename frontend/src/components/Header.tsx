@@ -270,9 +270,9 @@ export default function Header() {
                 padding: "12px 10px",
                 borderRadius: 8,
                 fontSize: 15,
-                color: isActive(n.href) ? "#3874F7" : "#1f2329",
+                color: isActive(n.href) ? "#1777ff" : "#1f2329",
                 fontWeight: isActive(n.href) ? 700 : 500,
-                background: isActive(n.href) ? "#eaf1fe" : "transparent"
+                background: "transparent"
               }}
             >
               {n.label}
@@ -401,11 +401,11 @@ export default function Header() {
                     href={n.href}
                     style={{
                       fontSize: 14,
-                      color: isActive(n.href) ? "#3874F7" : "#4e5969",
+                      color: isActive(n.href) ? "#1777ff" : "#4e5969",
                       fontWeight: isActive(n.href) ? 700 : 500,
                       padding: "6px 10px",
                       borderRadius: 8,
-                      background: isActive(n.href) ? "#eaf1fe" : "transparent",
+                      background: "transparent",
                       whiteSpace: "nowrap",
                       display: "inline-flex",
                       alignItems: "center",
@@ -455,11 +455,11 @@ export default function Header() {
                   href={n.href}
                   style={{
                     fontSize: 14,
-                    color: isActive(n.href) ? "#3874F7" : "#4e5969",
+                    color: isActive(n.href) ? "#1777ff" : "#4e5969",
                     fontWeight: isActive(n.href) ? 700 : 500,
                     padding: "6px 10px",
                     borderRadius: 8,
-                    background: isActive(n.href) ? "#eaf1fe" : "transparent",
+                    background: "transparent",
                     whiteSpace: "nowrap"
                   }}
                 >
