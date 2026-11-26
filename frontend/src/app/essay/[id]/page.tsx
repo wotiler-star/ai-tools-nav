@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import type { Metadata } from "next";
 import { SITE } from "@/config/site";
-import { ESSAY_ARTICLES } from "@/lib/essayArticles";
+import { ESSAY_ARTICLES, type EssayArticle } from "@/lib/essayArticles";
 import EssayArticleDetail, { type PostDetail } from "./EssayArticleDetail";
 
 // 详情全文在服务端 JSON（不进客户端 bundle）
@@ -18,11 +18,25 @@ function getDetail(id: string): PostDetail {
   return detailCache[id] || {};
 }
 
+// 社区帖详情（2026-11-26 扩采）：/essay 信息流卡片指向社区帖 id，
+// 全文（content ≤5000 字）在服务端 JSON essay-community-posts.json，920 条。
+let communityCache: Record<string, EssayArticle> | null = null;
+function getCommunityPost(id: string): EssayArticle | undefined {
+  if (!communityCache) {
+    try {
+      const file = path.join(process.cwd(), "data", "essay-community-posts.json");
+      communityCache = JSON.parse(fs.readFileSync(file, "utf-8")) as Record<string, EssayArticle>;
+    } catch { communityCache = {}; }
+  }
+  return communityCache[id];
+}
+
 // /essay 详情页：列表已切换为 666 条真实文章（ESSAY_ARTICLES），详情必须同源。
 // 旧实现走 /ai_post/get（社区帖表），19 位真实文章 id 查不到 → 标题/正文兜底、SEO 全错、列表→详情断链。
 // craft-anything Check 实证：线上用真实 id 打开详情，title=「社区帖子｜toolly」、真实标题命中 0。
+// 2026-11-26：社区信息流扩采后，先查文章，再查社区帖（EssayArticle 兼容形状）。
 function findArticle(id: string) {
-  return ESSAY_ARTICLES.find((a) => String(a.id) === String(id));
+  return ESSAY_ARTICLES.find((a) => String(a.id) === String(id)) || getCommunityPost(id);
 }
 
 export async function generateMetadata({

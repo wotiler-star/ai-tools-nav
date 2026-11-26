@@ -4,10 +4,13 @@
 // 证据：Temp/craft_essay_capture/（craft-anything 2026-11-25 抓取）
 // 颗粒度对齐（AX + DOM 实测）：article/aside/tablist/tab/tabpanel、h1×13、ul/li 列表、
 //   antd SVG 图标、分级等级图标、VIP 条件渲染、精选角标、右对齐分页、footer。
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { FEED_POSTS, SIDE_TUTORIALS, SIDE_NEWS, FEED_TABS, type FeedPost } from "@/lib/essayFeedData";
+import { SIDE_TUTORIALS, SIDE_NEWS, FEED_TABS, type FeedPost } from "@/lib/essayFeedData";
 import { ICON_PATHS } from "@/lib/essayIcons";
+
+// 2026-11-26 改造：数据与分页由服务端提供（page.tsx 读 data/essay-feed.json 真分页），
+// tab / 分页均为真实链接（/essay?tab=X、/essay?current=N），与目标站 URL 形态一致。
 
 const BLUE = "#1677ff";
 const GREY_BG = "#f5f5f5";
@@ -198,44 +201,52 @@ function Sidebar() {
   );
 }
 
-/** 分页：目标站 ul.ant-pagination-mini，右对齐，带上一页/下一页按钮 */
-function Pagination() {
-  const [page, setPage] = useState(1);
+/** 分页：目标站 ul.ant-pagination-mini，右对齐，带上一页/下一页按钮；真实链接 /essay?current=N */
+function Pagination({ page, totalPages, activeTab }: { page: number; totalPages: number; activeTab: string }) {
+  const tabQ = activeTab !== "推荐" ? `&tab=${encodeURIComponent(activeTab)}` : "";
+  const href = (n: number) => `/essay?current=${n}${tabQ}`;
+  // 目标站页 1 显示 1..5 + 向后 5 页 + 末页；翻到后面时显示当前页附近窗口
+  const windowStart = page <= 5 ? 1 : Math.min(Math.max(1, page - 2), Math.max(1, totalPages - 4));
+  const windowPages = Array.from({ length: Math.min(5, totalPages) }, (_, i) => windowStart + i).filter(n => n <= totalPages);
   return (
     <ul className="ant-pagination" aria-label="分页"
       style={{ marginTop: 14, textAlign: "right", display: "flex", justifyContent: "flex-end", gap: 6, listStyle: "none", padding: 0 }}>
       <li title="上一页" aria-disabled={page === 1} style={{ opacity: page === 1 ? 0.4 : 1 }}>
-        <button type="button" disabled={page === 1} onClick={() => setPage(p => Math.max(1, p - 1))}
-          style={{ background: "none", border: 0, cursor: "pointer", padding: 4 }}><Icon name="left" /></button>
+        {page === 1 ? (
+          <span style={{ display: "inline-block", padding: 4 }}><Icon name="left" /></span>
+        ) : (
+          <Link href={href(page - 1)} style={{ display: "inline-block", padding: 4 }}><Icon name="left" /></Link>
+        )}
       </li>
-      {[1, 2, 3, 4, 5].map(n => (
+      {windowPages.map(n => (
         <li key={n} title={String(n)} style={{ minWidth: 32, height: 32, textAlign: "center", lineHeight: "32px" }}>
-          <a href={`/essay?current=${n}`} onClick={(e) => { e.preventDefault(); setPage(n); }}
-            style={{ display: "block", color: page === n ? BLUE : "#000000e0", fontWeight: page === n ? 500 : 400, textDecoration: "none", border: page === n ? `1px solid ${BLUE}` : "1px solid transparent", borderRadius: 6 }}>{n}</a>
+          <Link href={href(n)}
+            style={{ display: "block", color: page === n ? BLUE : "#000000e0", fontWeight: page === n ? 500 : 400, textDecoration: "none", border: page === n ? `1px solid ${BLUE}` : "1px solid transparent", borderRadius: 6 }}>{n}</Link>
         </li>
       ))}
-      <li title="向后 5 页" style={{ minWidth: 32, height: 32, textAlign: "center", lineHeight: "32px" }}><a href="/essay?current=6" style={{ color: "#000000e0", textDecoration: "none" }}><Icon name="double-right" /></a></li>
-      <li title="92" style={{ minWidth: 32, height: 32, textAlign: "center", lineHeight: "32px" }}><a href="/essay?current=92" style={{ color: "#000000e0", textDecoration: "none" }}>92</a></li>
+      <li title="向后 5 页" style={{ minWidth: 32, height: 32, textAlign: "center", lineHeight: "32px" }}>
+        <Link href={href(Math.min(totalPages, page + 5))} style={{ color: "#000000e0", textDecoration: "none" }}><Icon name="double-right" /></Link>
+      </li>
+      <li title={String(totalPages)} style={{ minWidth: 32, height: 32, textAlign: "center", lineHeight: "32px" }}>
+        <Link href={href(totalPages)} style={{ color: "#000000e0", textDecoration: "none" }}>{totalPages}</Link>
+      </li>
       <li title="下一页">
-        <button type="button" onClick={() => setPage(p => Math.min(92, p + 1))} style={{ background: "none", border: 0, cursor: "pointer", padding: 4 }}><Icon name="right" /></button>
+        {page >= totalPages ? (
+          <span style={{ display: "inline-block", padding: 4 }}><Icon name="right" /></span>
+        ) : (
+          <Link href={href(page + 1)} style={{ display: "inline-block", padding: 4 }}><Icon name="right" /></Link>
+        )}
       </li>
     </ul>
   );
 }
 
-export default function CommunityFeed() {
-  const [tab, setTab] = useState("推荐");
+export default function CommunityFeed({
+  posts, page, totalPages, activeTab
+}: {
+  posts: FeedPost[]; page: number; totalPages: number; activeTab: string;
+}) {
   const [draft, setDraft] = useState("");
-  const list = useMemo(() => {
-    let arr = [...FEED_POSTS];
-    if (tab === "精选") arr = arr.filter(p => p.favorites >= 4);
-    else if (tab === "AI编程") arr = arr.filter(p => p.tags.includes("AI编程"));
-    else if (tab === "AI智能体") arr = arr.filter(p => p.title.includes("Agent") || p.tags.includes("AI智能体"));
-    else if (tab === "资源教程") arr = arr.filter(p => p.tags.includes("编程") && p.tags.includes("程序员"));
-    else if (tab === "创意玩法") arr = arr.filter(p => p.tags.includes("AI工具"));
-    else if (tab === "AI工具") arr = arr.filter(p => p.title.includes("工具") || p.tags.includes("AI工具"));
-    return arr;
-  }, [tab]);
 
   return (
     <main style={{ background: GREY_BG, minHeight: "100vh" }}>
@@ -260,26 +271,26 @@ export default function CommunityFeed() {
             </div>
           </div>
 
-          {/* tablist（ARIA 语义，目标站 role=tablist/tab） */}
+          {/* tablist（ARIA 语义，目标站 role=tablist/tab）；真实链接 /essay?tab=X */}
           <div role="tablist" aria-orientation="horizontal"
             style={{ background: "#fff", borderRadius: "8px 8px 0 0", borderBottom: "1px solid #f0f0f0", display: "flex", gap: 24, padding: "14px 16px 0", marginBottom: 8 }}>
-            {FEED_TABS.map((t, idx) => (
-              <div key={t} role="tab" id={`rc-tabs-0-tab-${t}`} aria-selected={tab === t} aria-controls="rc-tabs-0-panel-1"
-                tabIndex={0} onClick={() => setTab(t)}
-                style={{ fontSize: 16, color: tab === t ? BLUE : "#000000e0", fontWeight: tab === t ? 500 : 400, cursor: "pointer", padding: "0 0 12px", borderBottom: tab === t ? `2px solid ${BLUE}` : "2px solid transparent" }}>
+            {FEED_TABS.map((t) => (
+              <Link key={t} role="tab" id={`rc-tabs-0-tab-${t}`} aria-selected={activeTab === t} aria-controls="rc-tabs-0-panel-1"
+                href={t === "推荐" ? "/essay" : `/essay?tab=${encodeURIComponent(t)}`}
+                style={{ fontSize: 16, color: activeTab === t ? BLUE : "#000000e0", fontWeight: activeTab === t ? 500 : 400, cursor: "pointer", padding: "0 0 12px", borderBottom: activeTab === t ? `2px solid ${BLUE}` : "2px solid transparent", textDecoration: "none" }}>
                 {t}
-              </div>
+              </Link>
             ))}
           </div>
 
           {/* tabpanel > ul.ant-list-items > li */}
           <div role="tabpanel" id="rc-tabs-0-panel-1" aria-labelledby="rc-tabs-0-tab-推荐">
             <ul className="ant-list-items" style={{ margin: 0, padding: 0 }}>
-              {list.map(p => <PostCard key={p.id} post={p} />)}
+              {posts.map(p => <PostCard key={p.id} post={p} />)}
             </ul>
           </div>
 
-          <Pagination />
+          <Pagination page={page} totalPages={totalPages} activeTab={activeTab} />
         </div>
         <Sidebar />
       </article>
