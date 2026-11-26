@@ -76,8 +76,10 @@ async function getJSON<T>(path: string, params: Record<string, unknown>): Promis
   });
   const url = `${INTERNAL_API}${path}?${usp.toString()}`;
   try {
+    // 8s 超时：backend 挂起时不再无限等待，宁可丢弃该源也不让 GSC 抓到超时响应
     const res = await fetch(url, {
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json" },
+      signal: AbortSignal.timeout(8000)
     });
     if (!res.ok) return null;
     const json = (await res.json()) as { code?: number };
@@ -154,14 +156,29 @@ export async function GET() {
     if (e) entries.push(e);
   }
 
+  // 5 个数据源并行拉取（2026-11-26）：原先串行，最坏 5 源 × 20 页逐页等待，
+  // 任一源偶发慢就拖到 GSC 抓取超时。并行后总耗时 ≈ 最慢单源。
+  const [
+    tools,
+    columns,
+    articles,
+    catRes,
+    posts
+  ] = await Promise.all([
+    fetchAll<AiTool>("/ai_tool/list/page"),
+    fetchAll<AiColumn>("/ai_column/list"),
+    fetchAll<AiArticle>("/ai_column/article/list"),
+    getJSON<{ code: number; data: Category[] }>("/category/list", {}),
+    fetchAll<AiPostLite>("/ai_post/list/page")
+  ]);
+
   // 动态：工具详情
-  for (const t of await fetchAll<AiTool>("/ai_tool/list/page")) {
+  for (const t of tools) {
     const e = toEntry(base, `/tool/${t.id}`, { lastmod: today, changefreq: "weekly", priority: 0.6 });
     if (e) entries.push(e);
   }
 
   // 动态：知识库专栏（仅已发布 status=1）
-  const columns = await fetchAll<AiColumn>("/ai_column/list");
   for (const c of columns) {
     if (c.status !== undefined && c.status !== 1) continue;
     const e = toEntry(base, `/library/${c.id}`, {
@@ -173,7 +190,6 @@ export async function GET() {
   }
 
   // 动态：知识库文章（仅已发布 status=1，需 columnId 拼二级路径）
-  const articles = await fetchAll<AiArticle>("/ai_column/article/list");
   for (const a of articles) {
     if (a.status !== undefined && a.status !== 1) continue;
     if (!a.columnId) continue;
@@ -186,14 +202,13 @@ export async function GET() {
   }
 
   // 动态：分类页（/category/list 返回 { code, data: Category[] }，data 直接是数组）
-  const catRes = await getJSON<{ code: number; data: Category[] }>("/category/list", {});
   for (const c of catRes?.data ?? []) {
     const e = toEntry(base, `/category/${c.id}`, { lastmod: today, changefreq: "weekly", priority: 0.5 });
     if (e) entries.push(e);
   }
 
   // 动态：社区帖子（/essay/{id}，仅已发布 status=1）
-  for (const p of await fetchAll<AiPostLite>("/ai_post/list/page")) {
+  for (const p of posts) {
     if (p.status !== undefined && p.status !== 1) continue;
     const e = toEntry(base, `/essay/${p.id}`, { lastmod: today, changefreq: "weekly", priority: 0.5 });
     if (e) entries.push(e);
