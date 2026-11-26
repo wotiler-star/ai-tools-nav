@@ -235,7 +235,7 @@ export default function LibraryDetailView({
             </div>
           </div>
 
-          {isLoading ? (
+          {isLoading && articles.length === 0 ? (
             <div style={{ textAlign: "center", padding: 40 }}>
               <Spin />
             </div>
