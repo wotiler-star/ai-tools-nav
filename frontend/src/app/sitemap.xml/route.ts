@@ -221,10 +221,14 @@ export async function GET() {
   }
 
   const finalEntries = entries.slice(0, MAX_URLS);
+  const xml = render(finalEntries);
 
-  return new Response(render(finalEntries), {
+  return new Response(xml, {
     headers: {
       "Content-Type": "application/xml; charset=utf-8",
+      // 显式长度：force-dynamic 默认走 chunked，跨境慢链路下抓取器无法判断
+      // 响应是否完整（GSC「无法抓取」的常见诱因）。gzip 时由 nginx 重新处理。
+      "Content-Length": String(Buffer.byteLength(xml, "utf8")),
       "Cache-Control": "public, max-age=0, s-maxage=3600"
     }
   });
