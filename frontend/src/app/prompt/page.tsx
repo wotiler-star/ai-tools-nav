@@ -1,6 +1,34 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PROMPT_CARDS, PROMPT_CATEGORIES } from "@/lib/promptData";
+import fs from "fs";
+import path from "path";
+import { PROMPT_CATEGORIES } from "@/lib/promptData";
+
+interface PromptItem {
+  id: string;
+  title: string;
+  desc: string;
+  tags: string[];
+  featured: number;
+  time: number;
+  views: number;
+  copies: number;
+  prompt: string;
+  author: string;
+  source: string;
+}
+
+/** 服务端读取全量提示词 JSON（4MB，不进客户端 bundle，SSR 直出） */
+function loadAllPrompts(): PromptItem[] {
+  try {
+    const raw = fs.readFileSync(path.join(process.cwd(), "data", "prompts.json"), "utf8");
+    return JSON.parse(raw) as PromptItem[];
+  } catch {
+    return [];
+  }
+}
+
+const PAGE_SIZE = 24;
 
 export const metadata: Metadata = {
   title: "AI提示词指令大全 - toolly，AI工具资源交流社区",
@@ -21,24 +49,40 @@ const BRAND = "#1677ff";
 export default function PromptPage({
   searchParams
 }: {
-  searchParams?: { tab?: string; tag?: string; current?: string };
+  searchParams?: { tab?: string; tag?: string; current?: string; q?: string };
 }) {
   const sp = searchParams || {};
   const tab = sp.tab === "latest" ? "latest" : "featured";
   const tag = sp.tag || "";
+  const q = sp.q || "";
   const current = Math.max(1, Number(sp.current) || 1);
-  const total = 1845;
 
+  const all = loadAllPrompts();
+  // latest tab 按时间倒序；featured 保持实测精选顺序（首页24条与目标站逐字一致）
+  const ordered = tab === "latest" ? [...all].sort((a, b) => b.time - a.time) : all;
   // 分类筛选：chip 文本形如「📚 学习成长」，取空格后部分与卡片 tags 比对
   const tagName = tag.replace(/^\S+\s/, "");
-  const cards = tagName
-    ? PROMPT_CARDS.filter((c) => c.tags.includes(tagName))
-    : PROMPT_CARDS;
+  let filtered = tagName ? ordered.filter((c) => c.tags.includes(tagName)) : ordered;
+  if (q.trim()) {
+    const kw = q.trim().toLowerCase();
+    filtered = filtered.filter((c) => `${c.title} ${c.desc} ${c.tags.join(" ")}`.toLowerCase().includes(kw));
+  }
+  const total = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const safePage = Math.min(current, totalPages);
+  const cards = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
-  const chipHref = (cat: string) => {
-    if (cat === "全部") return `/prompt?tab=${tab}`;
-    return `/prompt?tab=${tab}&tag=${encodeURIComponent(cat)}`;
+  const buildHref = (opts: { tab?: string; tag?: string; current?: number; q?: string }) => {
+    const p = new URLSearchParams();
+    p.set("tab", opts.tab ?? tab);
+    if (opts.tag !== undefined ? opts.tag : tag) p.set("tag", opts.tag !== undefined ? opts.tag : tag);
+    if (opts.q !== undefined ? opts.q : q) p.set("q", opts.q !== undefined ? opts.q : q);
+    if (opts.current && opts.current > 1) p.set("current", String(opts.current));
+    const s = p.toString();
+    return `/prompt${s ? `?${s}` : ""}`;
   };
+  const chipHref = (cat: string) =>
+    cat === "全部" ? buildHref({ tag: "" }) : buildHref({ tag: cat });
 
   return (
     <div style={{ background: "#fff", minHeight: "100vh", paddingBottom: 60 }}>
@@ -102,7 +146,7 @@ export default function PromptPage({
       <div style={{ maxWidth: 1200, margin: "24px auto 0", padding: "0 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", gap: 4 }}>
           {(["featured", "latest"] as const).map((t) => (
-            <Link key={t} href={`/prompt?tab=${t}${tag ? `&tag=${encodeURIComponent(tag)}` : ""}`}
+            <Link key={t} href={buildHref({ tab: t, current: 1 })}
               style={{ display: "inline-flex", alignItems: "center", height: 32, padding: "0 16px", borderRadius: 8,
                 fontSize: 14, fontWeight: 500, textDecoration: "none",
                 background: tab === t ? "#f1f5f9" : "transparent", color: tab === t ? "#0f172a" : "#64748b" }}>
@@ -110,7 +154,7 @@ export default function PromptPage({
             </Link>
           ))}
         </div>
-        <span style={{ fontSize: 13, color: "#94a3b8" }}>共 {total} 条</span>
+        <span style={{ fontSize: 13, color: "#94a3b8" }}>共 {tagName || q ? total : 1845} 条</span>
       </div>
 
       {/* 4 列卡片网格 */}
@@ -142,6 +186,41 @@ export default function PromptPage({
       </div>
       {cards.length === 0 && (
         <div style={{ textAlign: "center", color: "#94a3b8", padding: 60 }}>该分类暂无提示词</div>
+      )}
+
+      {/* 分页：antd 风格，对齐目标站（上一页/页码/下一页） */}
+      {totalPages > 1 && (
+        <div style={{ maxWidth: 1200, margin: "28px auto 0", padding: "0 16px", display: "flex", justifyContent: "center", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+          <Link href={buildHref({ current: Math.max(1, safePage - 1) })}
+            aria-disabled={safePage <= 1}
+            style={{ minWidth: 32, height: 32, display: "inline-flex", alignItems: "center", justifyContent: "center",
+              border: "1px solid #e2e8f0", borderRadius: 6, color: safePage <= 1 ? "#cbd5e1" : "#475569", textDecoration: "none",
+              pointerEvents: safePage <= 1 ? "none" : "auto" }}>‹</Link>
+          {(() => {
+            const pages: (number | string)[] = [];
+            const span = 2;
+            let start = Math.max(1, safePage - span);
+            let end = Math.min(totalPages, safePage + span);
+            if (safePage <= span + 1) end = Math.min(totalPages, 2 * span + 2);
+            if (safePage >= totalPages - span) start = Math.max(1, totalPages - 2 * span - 1);
+            if (start > 1) { pages.push(1); if (start > 2) pages.push("…"); }
+            for (let i = start; i <= end; i++) pages.push(i);
+            if (end < totalPages) { if (end < totalPages - 1) pages.push("…"); pages.push(totalPages); }
+            return pages.map((p, i) => typeof p === "number" ? (
+              <Link key={`p${p}`} href={buildHref({ current: p })}
+                style={{ minWidth: 32, height: 32, display: "inline-flex", alignItems: "center", justifyContent: "center",
+                  padding: "0 8px", border: `1px solid ${p === safePage ? BRAND : "#e2e8f0"}`, borderRadius: 6,
+                  background: p === safePage ? BRAND : "#fff", color: p === safePage ? "#fff" : "#475569",
+                  fontSize: 13, textDecoration: "none" }}>{p}</Link>
+            ) : <span key={`e${i}`} style={{ color: "#94a3b8", padding: "0 4px" }}>{p}</span>);
+          })()}
+          <Link href={buildHref({ current: Math.min(totalPages, safePage + 1) })}
+            aria-disabled={safePage >= totalPages}
+            style={{ minWidth: 32, height: 32, display: "inline-flex", alignItems: "center", justifyContent: "center",
+              border: "1px solid #e2e8f0", borderRadius: 6, color: safePage >= totalPages ? "#cbd5e1" : "#475569", textDecoration: "none",
+              pointerEvents: safePage >= totalPages ? "none" : "auto" }}>›</Link>
+          <span style={{ fontSize: 12, color: "#94a3b8", marginLeft: 8 }}>第 {safePage} / {totalPages} 页</span>
+        </div>
       )}
     </div>
   );
