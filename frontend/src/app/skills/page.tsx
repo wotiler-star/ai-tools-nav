@@ -12,10 +12,14 @@ interface SkillItem {
   time: number;
 }
 
+// 6MB JSON 每次 readFileSync+parse 耗时 9s；模块级缓存（容器生命周期内只解析一次）
+let allCache: SkillItem[] | null = null;
 function loadAll(): SkillItem[] {
+  if (allCache) return allCache;
   try {
-    return JSON.parse(fs.readFileSync(path.join(process.cwd(), "data", "skills-list.json"), "utf8"));
-  } catch { return []; }
+    allCache = JSON.parse(fs.readFileSync(path.join(process.cwd(), "data", "skills-list.json"), "utf8"));
+    return allCache!;
+  } catch { allCache = []; return []; }
 }
 
 const PAGE_SIZE = 24;
