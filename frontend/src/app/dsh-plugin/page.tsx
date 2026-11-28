@@ -76,7 +76,7 @@ export default function DshPluginPage({
   return (
     <div style={{ background: "#fff", minHeight: "100vh", paddingBottom: 60 }}>
       {/* 头部：标题 + 副标题 + 搜索框 */}
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "36px 16px 0", textAlign: "center" }}>
+      <div style={{ maxWidth: 1312, margin: "0 auto", padding: "36px 16px 0", textAlign: "center" }}>
         <h1 style={{ fontSize: 30, fontWeight: 600, color: "#0f172a", margin: "0 0 16px", letterSpacing: "-0.02em" }}>
           发现好用的 DeepSeek Harness 插件
         </h1>
@@ -113,7 +113,7 @@ export default function DshPluginPage({
       </div>
 
       {/* 分类 chip（20 个，两行） */}
-      <div style={{ maxWidth: 1100, margin: "24px auto 0", padding: "0 16px", display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
+      <div style={{ maxWidth: 1280, margin: "24px auto 0", padding: "0 16px", display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
         {DSH_PLUGIN_TAGS.map((cat) => {
           const active = cat === tag;
           return (
@@ -130,7 +130,7 @@ export default function DshPluginPage({
       </div>
 
       {/* 精选/最新 tab（灰底圆角容器） */}
-      <div style={{ maxWidth: 1200, margin: "24px auto 0", padding: "0 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div style={{ maxWidth: 1312, margin: "24px auto 0", padding: "0 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "inline-flex", gap: 2, background: "#f1f5f9", borderRadius: 10, padding: 3 }}>
           {(["featured", "latest"] as const).map((t) => (
             <Link key={t} href={buildHref({ tab: t, current: 1 })}
@@ -145,7 +145,7 @@ export default function DshPluginPage({
       </div>
 
       {/* 4 列卡片网格（gap 12px，卡片圆角 8px） */}
-      <div style={{ maxWidth: 1200, margin: "20px auto 0", padding: "0 16px",
+      <div style={{ maxWidth: 1312, margin: "20px auto 0", padding: "0 16px",
         display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 12 }}>
         {cards.map((c) => (
           <Link key={c.id} href={`/dsh-plugin/${c.id}`} className="nav-item-card"
@@ -175,7 +175,7 @@ export default function DshPluginPage({
 
       {/* 分页：antd 风格，对齐目标站 */}
       {totalPages > 1 && (
-        <div style={{ maxWidth: 1200, margin: "28px auto 0", padding: "0 16px", display: "flex", justifyContent: "center", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+        <div style={{ maxWidth: 1312, margin: "28px auto 0", padding: "0 16px", display: "flex", justifyContent: "center", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
           <Link href={buildHref({ current: Math.max(1, safePage - 1) })}
             aria-disabled={safePage <= 1}
             style={{ minWidth: 32, height: 32, display: "inline-flex", alignItems: "center", justifyContent: "center",
