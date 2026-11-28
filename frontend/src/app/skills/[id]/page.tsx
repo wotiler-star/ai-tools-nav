@@ -39,6 +39,21 @@ function skillMd(): Record<string, string> {
  * 返回结构对齐两源共有字段，供详情渲染复用。
  */
 type SkillView = { id: string; name: string; category: string; description: string; url?: string };
+// 2026-11-28：新列表（16453 条）兜底，避免卡片→详情断链
+let listCache: Record<string, { title: string; desc: string; tags: string[] }> | null = null;
+function fromSkillList(id: string): SkillView | undefined {
+  if (!listCache) {
+    try {
+      const arr = JSON.parse(fs.readFileSync(path.join(process.cwd(), "data", "skills-list.json"), "utf8")) as
+        Array<{ id: string; title: string; desc: string; tags: string[] }>;
+      listCache = Object.fromEntries(arr.map((s) => [s.id, s]));
+    } catch { listCache = {}; }
+  }
+  const s = listCache[id];
+  if (!s) return undefined;
+  return { id, name: s.title, category: s.tags[0] || "其他", description: s.desc };
+}
+
 function findSkill(idParam: string): SkillView | undefined {
   const local = SKILLS.find((s) => s.id === Number(idParam));
   if (local) return {
@@ -47,7 +62,7 @@ function findSkill(idParam: string): SkillView | undefined {
   };
   const real = SKILLS_REAL.find((s) => s.id === idParam);
   if (real) return { id: real.id, name: real.name, category: real.category, description: real.description };
-  return undefined;
+  return fromSkillList(idParam);
 }
 
 /** 解析 SKILL.md 的 YAML frontmatter（支持一层嵌套的 metadata） */
